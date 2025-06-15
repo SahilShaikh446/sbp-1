@@ -1,8 +1,15 @@
+import { adminSlice } from "@/features/admin/adminSlice";
+import { clientSlice } from "@/features/client/clientSlice";
+import companySlice from "@/features/company/companySlice";
 import { configureStore } from "@reduxjs/toolkit";
 // ...
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    company: companySlice,
+    client: clientSlice.reducer,
+    admin: adminSlice.reducer,
+  },
 });
 
 // Get the type of our store variable

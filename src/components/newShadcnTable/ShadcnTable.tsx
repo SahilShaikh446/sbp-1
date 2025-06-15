@@ -128,8 +128,6 @@ const ShadcnTable: React.FC<ComponentProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const [rowSelection, setRowSelection] = useState({});
   const params = new URLSearchParams(searchParams);
-  const [loader, setLoader] = useState(false);
-  const [isdataLoaded, setisdataLoaded] = useState(false);
 
   const memoizedData = useMemo(() => data ?? [], [data]);
   const memoizedColumns = useMemo(() => columns ?? [], [columns]);
@@ -191,15 +189,6 @@ const ShadcnTable: React.FC<ComponentProps> = ({
     }
     setIsLoading(false);
   }, [globalFilter]);
-
-  useEffect(() => {
-    setLoader(true);
-    setisdataLoaded(false);
-    const timer = setTimeout(() => {
-      setLoader(false);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [data, columns]);
 
   useEffect(() => {
     const page = searchParams.get("page");

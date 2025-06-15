@@ -28,7 +28,7 @@ const Layout = () => {
     dispatch({
       type: "store/reset",
     });
-    // sessionStorage.clear();
+    sessionStorage.clear();
     toast.success("You have successfully logged out!");
     navigate("/login");
   };
@@ -111,61 +111,9 @@ const links = [
     icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
   },
   {
-    label: "Add Company",
-    href: "/add-company",
-    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Set Master",
+    label: "Masters",
     href: "/masters",
-    icon: <Cog className=" h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Products",
-    href: "#",
-    icon: <Package2 className="h-5 w-5 flex-shrink-0" />,
-    children: [
-      {
-        label: "Add Product",
-        href: "/product/add",
-        // icon: <Package2 className="h-5 w-5 flex-shrink-0" />,
-      },
-      {
-        label: "All Products",
-        href: "/product/list",
-        // icon: <Package2 className="h-5 w-5 flex-shrink-0" />,
-      },
-    ],
-  },
-  {
-    label: "Collections",
-    href: "/collections",
-    icon: <Component className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Inventory",
-    href: "/inventory",
-    icon: <LucideWarehouse className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Orders",
-    href: "/orders",
-    icon: <ArrowUpDown className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Returns",
-    href: "/returns",
-    icon: <CircleArrowOutUpLeft className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Exchange",
-    href: "/exchange",
-    icon: <Shuffle className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Discount and Promotions",
-    href: "/discountPromoList",
-    icon: <Percent className="h-5 w-5 flex-shrink-0" />,
+    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
   },
 ];
 

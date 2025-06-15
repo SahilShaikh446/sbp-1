@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { BASE_URL } from "./lib/constants";
 import ProtectedRoutes from "./components/Protected";
 import Login from "./pages/Login";
+import Master from "./pages/masterAdmin/Master";
 
 axios.interceptors.request.use(
   function (config) {
@@ -46,7 +47,16 @@ function App() {
     {
       path: "/",
       element: <ProtectedRoutes />,
-      children: [],
+      children: [
+        // {
+        //   path: "/",
+        //   element: <MasterDashboard />,
+        // },
+        {
+          path: "/masters",
+          element: <Master />,
+        },
+      ],
     },
     {
       path: "/login",

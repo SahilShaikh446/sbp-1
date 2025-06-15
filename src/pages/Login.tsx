@@ -15,25 +15,23 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  email: z.string(),
+  password: z.string(),
 });
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "amelielaurent7622@gmail.com",
-      password: "",
+      email: "admin",
+      password: "admin",
     },
   });
 
@@ -44,11 +42,10 @@ export default function Login() {
     setIsLoading(false);
 
     toast.success("Account created successfully!", {
-      description:
-        "Welcome to Crextio. You can now start your 30-day free trial.",
+      description: "Welcome to L&K.",
     });
-
-    console.log(values);
+    localStorage.setItem("token", "dummy-token");
+    navigate("/");
   }
 
   return (
@@ -59,7 +56,7 @@ export default function Login() {
           <div className="p-12 flex flex-col ">
             {/* Logo */}
             <div className="mb-12 items-start">
-              <img src="/oka.png" alt="Crextio Logo" className="h-12 w-auto " />
+              <img src="/oka.png" alt="l&k" className="h-12 w-auto " />
             </div>
 
             {/* Form */}
@@ -79,7 +76,7 @@ export default function Login() {
                         </FormLabel>
                         <FormControl>
                           <Input
-                            type="email"
+                            type="text"
                             placeholder="Enter your email"
                             {...field}
                           />
