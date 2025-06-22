@@ -57,15 +57,15 @@ function App() {
           path: "/masters",
           element: <Master />,
         },
+        {
+          path: "/report",
+          element: <Report />,
+        },
       ],
     },
     {
       path: "/login",
       element: <Login />,
-    },
-    {
-      path: "/report",
-      element: <Report />,
     },
   ]);
 
