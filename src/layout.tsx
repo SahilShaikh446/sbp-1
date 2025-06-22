@@ -4,20 +4,8 @@ import { Sidebar, SidebarBody, SidebarLink } from "./components/ui/sidebar";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import {
-  ArrowUpDown,
-  CircleArrowOutUpLeft,
-  Cog,
-  Component,
-  LayoutDashboard,
-  LogOutIcon,
-  Package2,
-  Percent,
-  Shuffle,
-  UserPlus,
-} from "lucide-react";
+import { LayoutDashboard, LogOutIcon, UserPlus } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { LucideWarehouse } from "lucide-react";
 import { toast } from "sonner";
 
 const Layout = () => {
@@ -113,6 +101,11 @@ const links = [
   {
     label: "Masters",
     href: "/masters",
+    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Report 1",
+    href: "/report",
     icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
   },
 ];

@@ -59,7 +59,7 @@ const Admin = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post("/api/company/add", data);
+      const res = await axios.post("/API/Add/Admin", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Admin added Successfully");
@@ -87,10 +87,10 @@ const Admin = () => {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                          Name
+                          First Name
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Company Name" />
+                          <Input {...field} placeholder="First Name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

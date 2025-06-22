@@ -6,6 +6,7 @@ import { BASE_URL } from "./lib/constants";
 import ProtectedRoutes from "./components/Protected";
 import Login from "./pages/Login";
 import Master from "./pages/masterAdmin/Master";
+import Report from "./pages/Report";
 
 axios.interceptors.request.use(
   function (config) {
@@ -61,6 +62,10 @@ function App() {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/report",
+      element: <Report />,
     },
   ]);
 

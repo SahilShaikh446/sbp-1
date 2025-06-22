@@ -27,7 +27,7 @@ export const fetchAdminAsync = createAsyncThunk(
   "admin/getAdmin",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/Add/List/Admin");
+      const response = await axios.get("API/List/Admin");
       return response.data;
     } catch (error) {
       if (error instanceof Error) {

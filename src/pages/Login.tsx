@@ -16,16 +16,24 @@ import {
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
+import { BASE_URL } from "@/lib/constants";
+import { useAppDispatch } from "@/app/hooks";
+import { setAuth } from "@/features/authSlice/authSlice";
 
 const formSchema = z.object({
   email: z.string(),
   password: z.string(),
 });
 
+export interface LogInError {
+  message: string;
+}
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,17 +43,49 @@ export default function Login() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      const res = await axios.post(BASE_URL + "API/Login/Check", {
+        username: data.email,
+        password: data.password,
+      });
+      if (res.status === 200) {
+        localStorage.setItem("token", res.data.accessToken);
+        dispatch(
+          setAuth({
+            username: data.email,
+            role: `${res.data.authority}`,
+            roleId: `${res.data.authority_id}`,
+          })
+        );
 
-    toast.success("Account created successfully!", {
-      description: "Welcome to L&K.",
-    });
-    localStorage.setItem("token", "dummy-token");
-    navigate("/");
+        navigate("/");
+        toast.success("Login Successfully");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<LogInError | string>;
+      if (axiosError.response?.data == "Username Not Found") {
+        form.setError("email", {
+          message: "User not found",
+          type: "validate",
+        });
+        form.setFocus("email");
+      } else if (axiosError.response?.data == "Account is Locked") {
+        form.setError("email", {
+          message: "Account locked",
+          type: "validate",
+        });
+        form.setFocus("email");
+      } else if (axiosError.response?.data == "Password is Invalid") {
+        form.setError("password", {
+          message: "Incorrect Password",
+          type: "validate",
+        });
+        form.setFocus("password");
+      } else {
+        toast.error("Uh oh! Something went wrong.");
+      }
+    }
   }
 
   return (
@@ -123,10 +163,10 @@ export default function Login() {
 
                   <Button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={form.formState.isSubmitting}
                     className="w-full bg-[#066dc4] hover:bg-[#0557a0]"
                   >
-                    {isLoading ? (
+                    {form.formState.isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         Login...

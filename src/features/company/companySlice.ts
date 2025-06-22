@@ -23,7 +23,7 @@ export const getCompanyAsync = createAsyncThunk(
   "company/getCompany",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/Add/List/Company");
+      const response = await axios.get("API/Add/List/Company");
       return response.data;
     } catch (error) {
       if (error instanceof Error) {

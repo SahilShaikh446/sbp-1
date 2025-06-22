@@ -53,7 +53,7 @@ const Company = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post("/api/company/add", data);
+      const res = await axios.post("API/Add/Company", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Company added Successfully");
