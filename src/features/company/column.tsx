@@ -64,11 +64,11 @@ export const COLUMNS: ColumnDef<companyType>[] = [
 
       const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-          const res = await axios.post(
-            BASE_URL + `/Crm/Portal/User/updatevendormaster`,
-            { ...data, id: row.original.id }
-          );
-          if (res.status == 201) {
+          const res = await axios.post(BASE_URL + `API/Update/Company`, {
+            ...data,
+            id: row.original.id,
+          });
+          if (res.status == 200) {
             await dispatch(getCompanyAsync()).unwrap();
             toast.success("Company updated Successfully");
             setOpen(false);
@@ -102,40 +102,56 @@ export const COLUMNS: ColumnDef<companyType>[] = [
               </DialogHeader>
 
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-1"
-                >
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Name : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <DialogFooter>
-                    <Button
-                      disabled={form.formState.isSubmitting}
-                      type="submit"
-                      className="mt-5"
-                    >
-                      {form.formState.isSubmitting && (
-                        <>
-                          Updating
-                          <Loader className="animate-spin w-4 mr-1" />
-                        </>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-2">
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                              Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="Company Name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Address
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="eg. 123 Main St"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                      Update
-                    </Button>
-                  </DialogFooter>
+                    />
+                    <div className="col-span-full">
+                      <Button
+                        disabled={form.formState.isSubmitting}
+                        type="submit"
+                      >
+                        {form.formState.isSubmitting && (
+                          <Loader className="animate-spin w-4 mr-1" />
+                        )}
+                        Update Company
+                      </Button>
+                    </div>
+                  </div>
                 </form>
               </Form>
             </DialogContent>

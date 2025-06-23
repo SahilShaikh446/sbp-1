@@ -35,7 +35,7 @@ interface adminType {
   first_name: string;
   last_name: string;
   email: string;
-  number: string;
+  mobile_number: string;
   designation: string;
 }
 
@@ -58,7 +58,7 @@ export const COLUMNS: ColumnDef<adminType>[] = [
   },
   {
     header: "Phone",
-    accessorKey: "number",
+    accessorKey: "mobile_number",
   },
   {
     header: "Designation",
@@ -75,18 +75,18 @@ export const COLUMNS: ColumnDef<adminType>[] = [
           first_name: "",
           last_name: "",
           email: "",
-          number: "",
+          mobile_number: "",
           designation: "",
         },
       });
 
       const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-          const res = await axios.post(BASE_URL + `/API/Update/Client`, {
+          const res = await axios.post(BASE_URL + `API/Update/Admin`, {
             ...data,
             id: row.original.id,
           });
-          if (res.status == 201) {
+          if (res.status == 200) {
             await dispatch(fetchAdminAsync()).unwrap();
             toast.success("Admin updated Successfully");
             setOpen(false);
@@ -102,7 +102,7 @@ export const COLUMNS: ColumnDef<adminType>[] = [
         open && form.setValue("first_name", `${row.original.first_name}`);
         open && form.setValue("last_name", `${row.original.last_name}`);
         open && form.setValue("email", `${row.original.email}`);
-        open && form.setValue("number", `${row.original.number}`);
+        open && form.setValue("mobile_number", `${row.original.mobile_number}`);
         open && form.setValue("designation", `${row.original.designation}`);
       }, [row, open]);
 
@@ -175,7 +175,7 @@ export const COLUMNS: ColumnDef<adminType>[] = [
                   />
                   <FormField
                     control={form.control}
-                    name="number"
+                    name="mobile_number"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>

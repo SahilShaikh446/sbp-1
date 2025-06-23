@@ -26,22 +26,33 @@ import {
   clientError,
   fetchClientAsync,
 } from "./clientSlice";
+import { useAppSelector } from "@/app/hooks";
+import { selectCompany } from "../company/companySlice";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const schema = z.object({
   first_name: z.string().min(1, "First Name is required"),
   last_name: z.string().min(1, "Last Name is required"),
   email: z.string().min(1, "Email is required"),
   company_id: z.string().min(1, "Company ID is required"),
-  phone: z.string().min(1, "Phone is required"),
+  mobile_number: z.string().min(1, "Phone is required"),
   designation: z.string().min(1, "Designation is required"),
 });
 
 const Client = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const data = useSelector(selectClient);
-  const loading = useSelector(clientLoading);
-  const error = useSelector(clientError);
+  const data = useAppSelector(selectClient);
+  const loading = useAppSelector(clientLoading);
+  const error = useAppSelector(clientError);
+
+  const company = useAppSelector(selectCompany);
 
   useEffect(() => {
     !data && dispatch(fetchClientAsync());
@@ -54,14 +65,14 @@ const Client = () => {
       last_name: "",
       email: "",
       company_id: "",
-      phone: "",
+      mobile_number: "",
       designation: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post("/api/company/add", data);
+      const res = await axios.post("/API/Add/Client", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Client added Successfully");
@@ -138,19 +149,31 @@ const Client = () => {
                   name="company_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                        Company ID
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="eg. 123" {...field} />
-                      </FormControl>
+                      <FormLabel>Company</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a company" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {company?.map((i) => (
+                            <SelectItem key={i.id} value={`${i.id}`}>
+                              {i.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name="mobile_number"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">

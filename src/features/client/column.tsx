@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { fetchClientAsync } from "./clientSlice";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { selectCompany } from "../company/companySlice";
 
 interface clientType {
   id: string;
@@ -36,7 +44,7 @@ interface clientType {
   last_name: string;
   email: string;
   company_id: string;
-  phone: string;
+  mobile_number: string;
   designation: string;
 }
 
@@ -63,7 +71,7 @@ export const COLUMNS: ColumnDef<clientType>[] = [
   },
   {
     header: "Phone",
-    accessorKey: "phone",
+    accessorKey: "mobile_number",
   },
   {
     header: "Designation",
@@ -81,26 +89,27 @@ export const COLUMNS: ColumnDef<clientType>[] = [
           last_name: "",
           email: "",
           company_id: "",
-          phone: "",
+          mobile_number: "",
           designation: "",
         },
       });
+      const company = useAppSelector(selectCompany);
 
       const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-          const res = await axios.post(BASE_URL + `/API/Update/Client`, {
+          const res = await axios.post(BASE_URL + `API/Update/Client`, {
             ...data,
             id: row.original.id,
           });
-          if (res.status == 201) {
+          if (res.status == 200) {
             await dispatch(fetchClientAsync()).unwrap();
-            toast.success("Company updated Successfully");
+            toast.success("Client updated Successfully");
             setOpen(false);
           } else {
-            toast.error("Error while updating Company");
+            toast.error("Error while updating Client");
           }
         } catch (error) {
-          toast.error("Error while updating Company");
+          toast.error("Error while updating Client");
         }
       };
 
@@ -109,7 +118,7 @@ export const COLUMNS: ColumnDef<clientType>[] = [
         open && form.setValue("last_name", `${row.original.last_name}`);
         open && form.setValue("email", `${row.original.email}`);
         open && form.setValue("company_id", `${row.original.company_id}`);
-        open && form.setValue("phone", `${row.original.phone}`);
+        open && form.setValue("mobile_number", `${row.original.mobile_number}`);
         open && form.setValue("designation", `${row.original.designation}`);
       }, [row, open]);
 
@@ -130,117 +139,140 @@ export const COLUMNS: ColumnDef<clientType>[] = [
               </DialogHeader>
 
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-1"
-                >
-                  <FormField
-                    control={form.control}
-                    name="first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          First Name : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="First Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Last Name : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Last Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Email : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="Email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="company_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Company ID : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Company ID" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Phone : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Phone" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="designation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Designation : <span className="text-red-600"> *</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Designation" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <DialogFooter>
-                    <Button
-                      disabled={form.formState.isSubmitting}
-                      type="submit"
-                      className="mt-5"
-                    >
-                      {form.formState.isSubmitting && (
-                        <>
-                          Updating
-                          <Loader className="animate-spin w-4 mr-1" />
-                        </>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-2">
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="first_name"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                              Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="Company Name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Last Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="eg. Doe"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
-                      Update
-                    </Button>
-                  </DialogFooter>
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="eg. john@example.com"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="company_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a company" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {company?.map((i) => (
+                                <SelectItem key={i.id} value={`${i.id}`}>
+                                  {i.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="mobile_number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Phone
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="eg. 123-456-7890"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="designation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Designation
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="eg. Developer"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="col-span-full">
+                      <Button
+                        disabled={form.formState.isSubmitting}
+                        type="submit"
+                      >
+                        {form.formState.isSubmitting && (
+                          <Loader className="animate-spin w-4 mr-1" />
+                        )}
+                        Update Client
+                      </Button>
+                    </div>
+                  </div>
                 </form>
               </Form>
             </DialogContent>

@@ -50,7 +50,7 @@ export default function Login() {
         password: data.password,
       });
       if (res.status === 200) {
-        localStorage.setItem("token", res.data.accessToken);
+        localStorage.setItem("token", res.data.access_token);
         dispatch(
           setAuth({
             username: data.email,

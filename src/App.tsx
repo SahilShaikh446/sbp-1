@@ -11,7 +11,7 @@ import Report from "./pages/Report";
 axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    config.headers.Authorization = localStorage.getItem("token");
+    config.headers.accesstoken = localStorage.getItem("token");
     return config;
   },
   function (error) {

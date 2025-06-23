@@ -31,7 +31,7 @@ export const schema = z.object({
   first_name: z.string().min(1, "First Name is required"),
   last_name: z.string().min(1, "Last Name is required"),
   email: z.string().min(1, "Email is required"),
-  number: z.string().min(1, "Number is required"),
+  mobile_number: z.string().min(1, "Number is required"),
   designation: z.string().min(1, "Designation is required"),
 });
 
@@ -52,7 +52,7 @@ const Admin = () => {
       first_name: "",
       last_name: "",
       email: "",
-      number: "",
+      mobile_number: "",
       designation: "",
     },
   });
@@ -133,7 +133,7 @@ const Admin = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="number"
+                  name="mobile_number"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
