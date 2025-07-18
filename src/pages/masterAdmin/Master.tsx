@@ -7,9 +7,9 @@ function Master() {
   return (
     <Tabs defaultValue="company" className="w-full">
       <TabsList>
-        <TabsTrigger value="company">Create Company</TabsTrigger>
-        <TabsTrigger value="client">Create Client</TabsTrigger>
-        <TabsTrigger value="admin">Create Admin</TabsTrigger>
+        <TabsTrigger value="company">Add Company</TabsTrigger>
+        <TabsTrigger value="client">Add Client</TabsTrigger>
+        <TabsTrigger value="admin">Add Admin</TabsTrigger>
       </TabsList>
       <TabsContent value="company">
         <Company />

@@ -40,10 +40,6 @@ axios.interceptors.response.use(
 );
 
 function App() {
-  useEffect(() => {
-    axios.defaults.baseURL = BASE_URL;
-  }, []);
-
   const router = createBrowserRouter([
     {
       path: "/",

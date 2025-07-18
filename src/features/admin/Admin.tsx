@@ -90,7 +90,7 @@ const Admin = () => {
                           First Name
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="First Name" />
+                          <Input {...field} placeholder="eg. John" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -161,7 +161,7 @@ const Admin = () => {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="eg. Developer"
+                          placeholder="eg. Supervisor, Manager, etc."
                           {...field}
                         />
                       </FormControl>

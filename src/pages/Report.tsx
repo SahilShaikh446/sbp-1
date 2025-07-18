@@ -338,7 +338,6 @@ export default function Report() {
             {/* Preview Section */}
             <Card>
               <CardHeader>
-                <CardTitle>Live Preview</CardTitle>
               </CardHeader>
               <CardContent>
                 {showPDF ? (

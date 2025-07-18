@@ -100,10 +100,10 @@ const Client = () => {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                          Name
+                          First Name
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Company Name" />
+                          <Input {...field} placeholder="eg. John" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -201,7 +201,7 @@ const Client = () => {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="eg. Developer"
+                          placeholder="eg. Supervisor, Manager, etc."
                           {...field}
                         />
                       </FormControl>
