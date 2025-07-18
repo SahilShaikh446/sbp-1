@@ -35,7 +35,7 @@ const Layout = () => {
   const [open, setOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const sidebarRef = useRef(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Handle window resize to detect mobile/desktop
   useEffect(() => {
@@ -52,7 +52,7 @@ const Layout = () => {
 
   // Handle hover for desktop
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout;
     if (!isMobile) {
       if (isHovered) {
         timer = setTimeout(() => setOpen(true), 400);
@@ -65,7 +65,7 @@ const Layout = () => {
 
   // Handle click outside to close sidebar on mobile
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         isMobile &&
         open &&
