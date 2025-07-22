@@ -19,10 +19,14 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    padding: 6, // Increased for better spacing (matches previous versions)
+    padding: 6,
     fontSize: 10,
     fontFamily: "Tinos",
     backgroundColor: "#ffffff",
+  },
+  contentWrapper: {
+    flexGrow: 1, // Ensure content takes available space
+    flexDirection: "column",
   },
   header: {
     marginBottom: 10,
@@ -35,7 +39,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   logo: {
-    width: 100, // Fixed width to control rendering
     height: 40,
     objectFit: "contain",
   },
@@ -50,16 +53,16 @@ const styles = StyleSheet.create({
   },
   headerBarYellow: {
     backgroundColor: "#fcae08",
-    height: 8, // Reduced for performance
+    height: 6, // Further reduced for performance
   },
   headerBarBlue: {
     backgroundColor: "#084f88",
-    height: 8,
+    height: 6,
     marginBottom: 8,
   },
   section: {
     marginBottom: 10,
-    paddingHorizontal: 40, // Centered content (matches maxWidth: 75%)
+    paddingHorizontal: 40, // Centered content (75% width)
   },
   reportTitle: {
     textAlign: "center",
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    width: 80, // Fixed width for consistent alignment
+    width: 80,
   },
   colon: {
     width: 20,
@@ -89,15 +92,14 @@ const styles = StyleSheet.create({
   },
   value: {
     fontWeight: "bold",
-    maxWidth: 320, // Constrain client text
+    maxWidth: 320, // Matches preview max-w-[320px]
     flex: 1,
-    fontFamily: "Tinos.bold",
   },
   paragraph: {
     marginBottom: 10,
     fontSize: 13,
     lineHeight: 1.3,
-    maxWidth: 460, // Matches max-w-[700px] in previous versions
+    maxWidth: 460,
   },
   table: {
     fontSize: 12,
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   tableValue: {
-    maxWidth: 300, // Prevent rightward shift
+    maxWidth: 320, // Increased slightly for better wrapping
     flex: 1,
   },
   tableTitle: {
@@ -169,135 +171,135 @@ const Report2 = ({ reportData }: { reportData: ReportData }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerRow}>
-            <View style={{ width: "40%" }}>
-              <Image src="/fonts/oka.png" style={styles.logo} />
+        {/* Main Content */}
+        <View style={styles.contentWrapper}>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <View style={{ width: "40%" }}>
+                <Image src="/oka.png" style={styles.logo} />
+              </View>
+              <View style={styles.logoRight}>
+                <Image src="/l&k.jpeg" style={styles.logo} />
+                <Text style={styles.logoRightText}>
+                  L&K AUTHORIZED SERVICE CENTER
+                </Text>
+              </View>
             </View>
-            <View style={styles.logoRight}>
-              <Image src="/fonts/l&k.jpeg" style={styles.logo} />
-              <Text style={styles.logoRightText}>
-                L&K AUTHORIZED SERVICE CENTER
+            <View style={styles.headerBarYellow} />
+            <View style={styles.headerBarBlue} />
+          </View>
+
+          <View style={styles.section}>
+            <View style={styles.row}>
+              <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                Report No.: 01/25-26
+              </Text>
+              <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                Date: {reportData.report_date || "07.04.2025"}
               </Text>
             </View>
-          </View>
-          <View style={styles.headerBarYellow} />
-          <View style={styles.headerBarBlue} />
-        </View>
 
-        <View style={styles.section}>
-          {/* Report Info */}
-          <View style={styles.row}>
-            <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-              Report No.: 01/25-26
-            </Text>
-            <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-              Date: {reportData.report_date || "07.04.2025"}
-            </Text>
-          </View>
+            <Text style={styles.reportTitle}>OIL FILTRATION TEST REPORT</Text>
 
-          <Text style={styles.reportTitle}>OIL FILTRATION TEST REPORT</Text>
-
-          {/* Client */}
-          <View style={styles.clientRow}>
-            <Text style={styles.label}>CLIENT</Text>
-            <Text style={styles.colon}>:</Text>
-            <View style={styles.value}>
-              {reportData.client ? (
-                <Text>{reportData.client}</Text>
-              ) : (
-                <>
-                  <Text>Ms. Dr. Acharya Laboratories Pvt. Ltd.</Text>
-                  <Text>Anand Nagar, Ambernath (East)</Text>
-                </>
-              )}
-            </View>
-          </View>
-
-          {/* Paragraph */}
-          <Text style={styles.paragraph}>
-            {reportData.report_description ||
-              "We have carried out oil filtration work for your transformer oil for dielectric strength in filtration at site & tested the sample after transformer oil for dielectric strength in accordance with 1866-2017 and the results are as under."}
-          </Text>
-
-          {/* Table */}
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableTitle}>Transformer Details</Text>
-              <Text style={styles.tableColon}></Text>
-              <Text style={styles.tableValue}></Text>
-            </View>
-            {[
-              { label: "KVA", value: reportData.kva || "1250 KVA" },
-              {
-                label: "Voltage",
-                value: reportData.voltage || "22000V / 433V",
-              },
-              { label: "Make", value: reportData.make || "Voltamp" },
-              {
-                label: "Sr. No.",
-                value: reportData.sr_no || "41083/1 Year - 2011",
-              },
-              {
-                label: "Transformer Oil Quantity",
-                value: reportData.transformer_oil_quantity || "1590 LITERS",
-              },
-              {
-                label: "Before Filtration",
-                value: reportData.transformer_before_filtration || "36 KV",
-              },
-              {
-                label: "After Filtration",
-                value:
-                  reportData.transformer_after_filtration ||
-                  "Sample withstood at 80 KV for 1 minute",
-              },
-              {
-                label: "OLTC Oil Quantity",
-                value: reportData.oltc_oil_quantity || "210 LITERS",
-              },
-              {
-                label: "Before Filtration",
-                value: reportData.oltc_before_filtration || "40 KV",
-              },
-              {
-                label: "After Filtration",
-                value:
-                  reportData.oltc_after_filtration ||
-                  "Sample withstood at 80 KV for 1 minute",
-              },
-              {
-                label: "Remark",
-                value:
-                  reportData.remark ||
-                  "Dielectric strength of transformer oil is Satisfactory. Silica Gel Replaced. OLTC Servicing Done. Radiator, Main tank, Cable box, Conservator, Valve OLTC, Top Bottom oil gauge, mog, Total Gasket and Total Gasket Nut Bolt is replaced. OLTC oil new. Filled up and painting Epoxy.",
-              },
-              {
-                label: "Date Of Filtration",
-                value: reportData.date_of_filtration || "April 3rd, 2025",
-              },
-              {
-                label: "Client’s Representative",
-                value:
-                  reportData.clients_representative || "Mr. Sakharam Parab",
-              },
-              {
-                label: "Tested By",
-                value: reportData.tested_by || "M/s. OK AGENCIES",
-              },
-            ].map(({ label, value }, idx) => (
-              <View style={styles.tableRow} key={idx}>
-                <Text style={styles.tableLabel}>{label}</Text>
-                <Text style={styles.tableColon}>:</Text>
-                <Text style={styles.tableValue}>{value || "N/A"}</Text>
+            <View style={styles.clientRow}>
+              <Text style={styles.label}>CLIENT</Text>
+              <Text style={styles.colon}>:</Text>
+              <View style={styles.value}>
+                {reportData.client ? (
+                  reportData.client
+                    .split("\n")
+                    .map((line, index) => <Text key={index}>{line}</Text>)
+                ) : (
+                  <>
+                    <Text>Ms. Dr. Acharya Laboratories Pvt. Ltd.</Text>
+                    <Text>Anand Nagar, Ambernath (East)</Text>
+                  </>
+                )}
               </View>
-            ))}
+            </View>
+
+            <Text style={styles.paragraph}>
+              {reportData.report_description ||
+                "We have carried out oil filtration work for your transformer oil for dielectric strength in filtration at site & tested the sample after transformer oil for dielectric strength in accordance with 1866-2017 and the results are as under."}
+            </Text>
+
+            <View style={styles.table}>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableTitle}>Transformer Details</Text>
+                <Text style={styles.tableColon}></Text>
+                <Text style={styles.tableValue}></Text>
+              </View>
+              {[
+                { label: "KVA", value: reportData.kva || "1250 KVA" },
+                {
+                  label: "Voltage",
+                  value: reportData.voltage || "22000V / 433V",
+                },
+                { label: "Make", value: reportData.make || "Voltamp" },
+                {
+                  label: "Sr. No.",
+                  value: reportData.sr_no || "41083/1 Year - 2011",
+                },
+                {
+                  label: "Transformer Oil Quantity",
+                  value: reportData.transformer_oil_quantity || "1590 LITERS",
+                },
+                {
+                  label: "Before Filtration",
+                  value: reportData.transformer_before_filtration || "36 KV",
+                },
+                {
+                  label: "After Filtration",
+                  value:
+                    reportData.transformer_after_filtration ||
+                    "Sample withstood at 80 KV for 1 minute",
+                },
+                {
+                  label: "OLTC Oil Quantity",
+                  value: reportData.oltc_oil_quantity || "210 LITERS",
+                },
+                {
+                  label: "Before Filtration",
+                  value: reportData.oltc_before_filtration || "40 KV",
+                },
+                {
+                  label: "After Filtration",
+                  value:
+                    reportData.oltc_after_filtration ||
+                    "Sample withstood at 80 KV for 1 minute",
+                },
+                {
+                  label: "Remark",
+                  value:
+                    reportData.remark ||
+                    "Dielectric strength of transformer oil is Satisfactory. Silica Gel Replaced. OLTC Servicing Done. Radiator, Main tank, Cable box, Conservator, Valve OLTC, Top Bottom oil gauge, mog, Total Gasket and Total Gasket Nut Bolt is replaced. OLTC oil new. Filled up and painting Epoxy.",
+                },
+                {
+                  label: "Date Of Filtration",
+                  value: reportData.date_of_filtration || "April 3rd, 2025",
+                },
+                {
+                  label: "Client’s Representative",
+                  value:
+                    reportData.clients_representative || "Mr. Sakharam Parab",
+                },
+                {
+                  label: "Tested By",
+                  value: reportData.tested_by || "M/s. OK AGENCIES",
+                },
+              ].map(({ label, value }, idx) => (
+                <View style={styles.tableRow} key={idx}>
+                  <Text style={styles.tableLabel}>{label}</Text>
+                  <Text style={styles.tableColon}>:</Text>
+                  <Text style={styles.tableValue}>{value || "N/A"}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text>
             <Text style={{ fontWeight: "bold" }}>
               Address for correspondence:
@@ -305,14 +307,14 @@ const Report2 = ({ reportData }: { reportData: ReportData }) => {
             101, Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
           </Text>
           <Text>
-            Mumbai-400081, Email:{" "}
-            <Text style={styles.blueText}>okagencies@gmail.com</Text>, Tel:
-            022-25693547
+            Mumbai-400081, <Text style={{ fontWeight: "bold" }}>Contact:</Text>{" "}
+            9619866401 <Text style={{ fontWeight: "bold" }}>Email:</Text>{" "}
+            <Text style={styles.blueText}>ok_agencies@yahoo.com</Text>,
           </Text>
           <Text>
             <Text style={{ fontWeight: "bold" }}>Website:</Text>{" "}
             <Text style={styles.blueText}>www.okagencies.in</Text>,{" "}
-            <Text style={{ fontWeight: "bold" }}>GST NO:</Text> 27AAHFO4632H1ZP
+            <Text style={{ fontWeight: "bold" }}>GST NO: 27ABDPJ0462B1Z9</Text>
           </Text>
         </View>
       </Page>
