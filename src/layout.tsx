@@ -70,7 +70,7 @@ const Layout = () => {
         isMobile &&
         open &&
         sidebarRef.current &&
-        !sidebarRef.current.contains(event.target)
+        !sidebarRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
       }

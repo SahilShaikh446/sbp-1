@@ -1,14 +1,15 @@
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import Report2 from "./Report2";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 interface ReportData {
   report_date: string;
+  client: string;
   report_description: string;
   kva: string;
   voltage: string;
@@ -30,6 +31,7 @@ interface ReportData {
 export default function Report() {
   const [reportData, setReportData] = useState<ReportData>({
     report_date: "",
+    client: "",
     report_description: "",
     kva: "",
     voltage: "",
@@ -50,34 +52,29 @@ export default function Report() {
 
   const [showPDF, setShowPDF] = useState(false);
 
-  const handleInputChange = (
-    field: keyof ReportData,
-    value: string | number
-  ) => {
-    setReportData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const handleInputChange = useCallback(
+    (field: keyof ReportData, value: string | number) => {
+      setReportData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    },
+    []
+  );
 
   const handleGenerateReport = () => {
     setShowPDF(true);
   };
+
   return (
-    <div className=" flex justify-between h-auto bg-white  font-sans text-sm border border-gray-300 shadow-lg">
-      {/* Header */}
-
-      {/* <PDFViewer width="100%" height="800px">
-        <Report2 />
-      </PDFViewer> */}
-
+    <div className="flex justify-between h-auto bg-white font-sans text-sm border border-gray-300 shadow-lg">
       <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max- mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">
             Oil Filtration Test Report Generator
           </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             {/* Form Section */}
             <Card className="h-fit">
               <CardHeader>
@@ -111,6 +108,17 @@ export default function Report() {
                   </div>
                 </div>
 
+                <div>
+                  <Label htmlFor="client">Client</Label>
+                  <Textarea
+                    id="client"
+                    value={reportData.client}
+                    onChange={(e) =>
+                      handleInputChange("client", e.target.value)
+                    }
+                    placeholder="Client Name"
+                  />
+                </div>
                 <div>
                   <Label htmlFor="report_description">Report Description</Label>
                   <Input
@@ -269,8 +277,20 @@ export default function Report() {
                     />
                   </div>
                 </div>
+                <div>
+                  <Label htmlFor="remark">Remark</Label>
+                  <Textarea
+                    id="remark"
+                    value={reportData.remark}
+                    onChange={(e) =>
+                      handleInputChange("remark", e.target.value)
+                    }
+                    placeholder="Enter detailed remarks about the filtration process..."
+                    rows={4}
+                  />
+                </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gridDIV grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="clients_representative">
                       Client's Representative
@@ -300,434 +320,281 @@ export default function Report() {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="remark">Remark</Label>
-                  <Textarea
-                    id="remark"
-                    value={reportData.remark}
-                    onChange={(e) =>
-                      handleInputChange("remark", e.target.value)
-                    }
-                    placeholder="Enter detailed remarks about the filtration process..."
-                    rows={4}
-                  />
-                </div>
-
                 <div className="flex gap-4 pt-4">
-                  <Button onClick={handleGenerateReport} className="flex-1">
-                    Generate PDF Report
-                  </Button>
-                  {/* {showPDF && (
-                    <PDFDownloadLink
-                      document={<Report2 data={reportData} />}
-                      fileName={`oil-filtration-report-${
-                        reportData.report_date || "draft"
-                      }.pdf`}
-                    >
-                      {({ loading }) => (
-                        <Button variant="outline" disabled={loading}>
-                          {loading ? "Generating..." : "Download PDF"}
-                        </Button>
-                      )}
-                    </PDFDownloadLink>
-                  )} */}
+                  <PDFDownloadLink
+                    document={<Report2 reportData={reportData} />}
+                    fileName="oil_filtration_report.pdf"
+                  >
+                    {({ loading }) =>
+                      loading ? (
+                        <Button disabled>Loading...</Button>
+                      ) : (
+                        <Button>Download PDF</Button>
+                      )
+                    }
+                  </PDFDownloadLink>
                 </div>
               </CardContent>
             </Card>
 
             {/* Preview Section */}
-            <Card>
-              <CardHeader>
-              </CardHeader>
-              <CardContent>
-                {showPDF ? (
-                  <div className="h-[800px]">
-                    <div>
-                      <div className=" mb-4">
-                        <div className=" text-white p-2 flex items-center justify-between">
-                          <div className="flex items-center gap-3 w-[40%]">
-                            <img src="/oka.png" alt="Logo" className="w-full" />
-                          </div>
-                          <div className="text-right text-xs w-[40%]">
-                            <img
-                              src="/l&k.jpeg"
-                              alt="Logo"
-                              className="w-full"
-                            />
-                            <p className="text-[#5c9ed4] font-bold ">
-                              L&K AUTHORIZED SERVICE CENTER
-                            </p>
-                          </div>
-                        </div>
-                        <div className="bg-[#fcae08] text-white text-center py-1 text-xs font-semibold"></div>
-                        <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
+            <Card className="h-fit overflow-auto">
+              <div className="w-[794px] min-h-[1123px] overflow-auto p-8 mx-auto tinos-regular flex flex-col">
+                {/* Header */}
+                <div className="border border-gray-300">
+                  <div className="p-2">
+                    <div className="flex items-center justify-between">
+                      <div className="w-[40%]">
+                        <img src="/oka.png" alt="Logo" className="w-full" />
                       </div>
-
-                      <div className="max-w-[75%] mx-auto">
-                        {/* Report Header */}
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-md font-bold">
-                              Report No.: 01/25-26
-                            </p>
-                          </div>
-                          <div>
-                            <p>
-                              <strong>Date: 07.04.2025</strong>
-                            </p>
-                          </div>
-                        </div>
-
-                        <h2 className="text-center text-xl font-bold mb-2 underline">
-                          OIL FILTRATION TEST REPORT
-                        </h2>
-
-                        {/* Client Information */}
-                        <div className="mb-6 flex items-start gap-4 font-bold">
-                          <p className="w-24 ">CLIENT :</p>
-                          <div>
-                            <p>M/s. Dr. Acharya Laboratories Pvt. Ltd.</p>
-                            <p>Anand Nagar, Ambernath (East)</p>
-                          </div>
-                        </div>
-
-                        <p className="mb-2 text-justify">
-                          We have the pleasure in informing you that we have
-                          carried out transformer oil filtration on site &
-                          tested the sample of transformer oil for dielectric
-                          strength in accordance with 1966-2017 and the results
-                          are as under.
-                        </p>
-
-                        {/* Test Results Table */}
-                        <div className=" mb-2">
-                          <table className="w-full text-xs border-separate border-spacing-y-2">
-                            <tbody className="font-semibold">
-                              <tr className="">
-                                <td className="  font-bold underline text-lg ">
-                                  Transformer Details:
-                                </td>
-                                <td className=""></td>
-                              </tr>
-                              <tr className="">
-                                <td className="w-54">KVA</td>
-                                <td className="">
-                                  <div className="w-12 inline-block">:</div>1250
-                                  KVA
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Voltage</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
-                                  22000V / 433V
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Volume</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>-
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Sr. No.</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
-                                  41083/1 Year - 2011
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Transformer Oil Quantity</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>1500
-                                  LITERS
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Before Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>36
-                                  KV
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">After Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
-                                  Sample withdrawn at 80 KV for 1 minute
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Oil-Cut Oil Quantity</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>240
-                                  LITERS
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">Before Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>40
-                                  KV
-                                </td>
-                              </tr>
-                              <tr className="">
-                                <td className=" ">After Filtration</td>
-                                <td className="">
-                                  <div className="w-12 inline-block">:</div>
-                                  Sample withdrawn at 80 KV for 1 minute
-                                </td>
-                              </tr>
-                              <tr className="align-top">
-                                <td className="align-top font-semibold">
-                                  Remark
-                                </td>
-                                <td className="align-top">
-                                  <div className="flex items-start justify-between">
-                                    <div className="w-64">:</div>
-                                    <div className="max-w-prose">
-                                      Dielectric strength of transformer oil is
-                                      Satisfactory. Silica Gel Replaced. All oil
-                                      Servicing Completed. Transformer Tested.
-                                      Breather & Valve O.L.T.C. Top Bottom oil
-                                      gauge, temp. Total Gasket and Total Gasket
-                                      Not Boil is replaced. O.L.T.C. oil new.
-                                      Filled up and painting Epoxy.
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-
-                        {/* Additional Information */}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="border-t-2 border-blue-600 pt-4 text-xs text-center">
-                        <p>
-                          <strong>Address for correspondence:</strong> 101,
-                          Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
-                        </p>
-                        <p>
-                          Mumbai-400081 Email : okagencies@gmail.com Tel :
-                          022-25693547
-                        </p>
-                        <p>
-                          <strong>Website :</strong>{" "}
-                          <span className="text-blue-600">
-                            www.okagencies.in
-                          </span>{" "}
-                          <strong>GST NO :</strong> 27AAHFO4632H1ZP
+                      <div className="text-right text-xs w-[40%]">
+                        <img src="/l&k.jpeg" alt="Logo" className="w-full" />
+                        <p className="text-blue-600 font-bold">
+                          L&K AUTHORIZED SERVICE CENTER
                         </p>
                       </div>
                     </div>
+                    <div className="bg-[#fcae08] text-white text-center py-1 text-xs font-semibold"></div>
+                    <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
                   </div>
-                ) : (
-                  // <ReportPreview data={reportData} />
-                  <div className="h-[800px]">
-                    <div>
-                      <div className=" mb-4">
-                        <div className=" text-white p-2 flex items-center justify-between">
-                          <div className="flex items-center gap-3 w-[40%]">
-                            <img src="/oka.png" alt="Logo" className="w-full" />
+
+                  <div className="bg-white shadow-lg flex flex-col flex-1">
+                    <div className="px-18 py-4 flex-1">
+                      <div className="">
+                        <div className="flex justify-between items-center ">
+                          <div className="text-md font-bold">
+                            <span className="text-md font-bold">
+                              Report No.:
+                            </span>{" "}
+                            01/25-26
                           </div>
-                          <div className="text-right text-xs w-[40%]">
-                            <img
-                              src="/l&k.jpeg"
-                              alt="Logo"
-                              className="w-full"
-                            />
-                            <p className="text-[#5c9ed4] font-bold ">
-                              L&K AUTHORIZED SERVICE CENTER
-                            </p>
+                          <div className="text-md font-bold">
+                            <span className="font-bold">Date:</span>{" "}
+                            {reportData.report_date || "07.04.2025"}
                           </div>
                         </div>
-                        <div className="bg-[#fcae08] text-white text-center py-1 text-xs font-semibold"></div>
-                        <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
+
+                        {/* Title */}
+                        <div className="text-center py-2">
+                          <h1 className="text-2xl font-bold underline">
+                            OIL FILTRATION TEST REPORT
+                          </h1>
+                        </div>
                       </div>
 
-                      <div className="max-w-[75%] mx-auto">
-                        {/* Report Header */}
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-md font-bold">
-                              Report No.: 01/25-26
-                            </p>
-                          </div>
-                          <div>
-                            <p>
-                              <strong>Date: {reportData.report_date}</strong>
-                            </p>
-                          </div>
-                        </div>
+                      {/* Client Information */}
+                      <table className="table-auto border-collapse">
+                        <tbody className="font-bold">
+                          <tr>
+                            <td className="font-bold  align-top pr-6 ">
+                              CLIENT
+                            </td>
+                            <td className="align-top min-w-[20px]">:</td>
+                            <td className="align-top text-lg ">
+                              {reportData.client ? (
+                                <div className=" max-w-[320px] break-words">
+                                  {reportData.client}
+                                </div>
+                              ) : (
+                                <>
+                                  <div>
+                                    Ms. Dr. Acharya Laboratories Pvt. Ltd.,
+                                  </div>
+                                  <div>Anand Nagar, Ambernath (East)</div>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-                        <h2 className="text-center text-xl font-bold mb-2 underline">
-                          OIL FILTRATION TEST REPORT
+                      {/* Description */}
+                      <div className="mb-2 py-2 text-lg leading-6">
+                        <p className="font-medium leading-tight max-w-[700px] break-words whitespace-pre-wrap overflow-hidden">
+                          {reportData.report_description ||
+                            "We have carried out oil filtration work for your transformer oil for dielectric strength in filtration at site & tested the sample after transformer oil for dielectric strength in accordance with 1866-2017 and the results are as under."}
+                        </p>
+                      </div>
+
+                      {/* Transformer Details */}
+                      <div className="mb-6">
+                        <h2 className="font-bold text-lg mb-4 underline">
+                          Transformer Details:
                         </h2>
 
-                        {/* Client Information */}
-                        <div className="mb-6 flex items-start gap-4 font-bold">
-                          <p className="w-24 ">CLIENT :</p>
-                          <div>
-                            {reportData.clients_representative ? (
-                              <p>{reportData.clients_representative}</p>
-                            ) : (
-                              <p>M/s. Dr. Acharya Laboratories Pvt. Ltd.</p>
-                            )}
-                          </div>
-                        </div>
-
-                        <p className="mb-2 text-justify">
-                          {reportData.report_description ||
-                            "No description available."}
-                        </p>
-
-                        {/* Test Results Table */}
-                        <div className=" mb-2">
-                          <table className="w-full text-xs border-separate border-spacing-y-2">
-                            <tbody className="font-semibold">
+                        <div className="">
+                          <table className="w-full font-medium text-lg ">
+                            <tbody>
                               <tr className="">
-                                <td className="  font-bold underline text-lg ">
-                                  Transformer Details:
+                                <td className="py-0.5 font-medium -r -black w-1/3">
+                                  KVA
                                 </td>
-                                <td className=""></td>
-                              </tr>
-                              <tr className="">
-                                <td className="w-54">KVA</td>
-                                <td className="">
-                                  <div className="w-12 inline-block">:</div>
-                                  {reportData.kva || "1250"} KVA
+                                <td className="py-0.5 text-center -r -black w-16">
+                                  :
+                                </td>
+                                <td className="py-0.5">
+                                  {reportData.kva || "1250 KVA"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Voltage</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">Voltage</td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.voltage || "22000V / 433V"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Volume</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>-
+                                <td className="py-0.5 font-medium">Make</td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
+                                  {reportData.make || "Voltamp"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Sr. No.</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">Sr. No.</td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.sr_no || "41083/1 Year - 2011"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Transformer Oil Quantity</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">
+                                  Transformer Oil Quantity
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.transformer_oil_quantity ||
-                                    "1500"}{" "}
-                                  LITERS
+                                    "1590 LITERS"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Before Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">
+                                  Before Filtration
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.transformer_before_filtration ||
-                                    "36"}{" "}
-                                  KV
+                                    "36 KV"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">After Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">
+                                  After Filtration
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.transformer_after_filtration ||
-                                    "Sample withdrawn at 80 KV for 1 minute"}
+                                    "Sample withstood at 80 KV for 1 minute"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Oil-Cut Oil Quantity</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
-                                  {reportData.oltc_oil_quantity || "240"} LITERS
+                                <td className="py-0.5 font-medium">
+                                  OLTC Oil Quantity
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
+                                  {reportData.oltc_oil_quantity || "210 LITERS"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">Before Filtration</td>
-                                <td className="">
-                                  {" "}
-                                  <div className="w-12 inline-block">:</div>
-                                  {reportData.oltc_before_filtration || "40"} KV
+                                <td className="py-0.5 font-medium">
+                                  Before Filtration
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
+                                  {reportData.oltc_before_filtration || "40 KV"}
                                 </td>
                               </tr>
                               <tr className="">
-                                <td className=" ">After Filtration</td>
-                                <td className="">
-                                  <div className="w-12 inline-block">:</div>
+                                <td className="py-0.5 font-medium">
+                                  After Filtration
+                                </td>
+                                <td className="py-0.5 text-center">:</td>
+                                <td className="py-0.5">
                                   {reportData.oltc_after_filtration ||
-                                    "Sample withdrawn at 80 KV for 1 minute"}{" "}
+                                    "Sample withstood at 80 KV for 1 minute"}
                                 </td>
                               </tr>
-                              <tr className="align-top">
-                                <td className="align-top font-semibold">
+                              <tr>
+                                <td className="py-0.5 font-medium align-top">
                                   Remark
                                 </td>
-                                <td className="align-top">
-                                  <div className="flex items-start justify-between">
-                                    <div className="w-12 ">:</div>
-                                    <div className="max-w-prose text-wrap flex-wrap">
-                                      {reportData.remark ||
-                                        "No remarks available."}
-                                    </div>
-                                  </div>
+                                <td className="py-0.5 text-center align-top">
+                                  :
+                                </td>
+                                <td className="py-1 text-justify leading-tight max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
+                                  {reportData.remark ||
+                                    "Dielectric strength of transformer oil is Satisfactory. Silica Gel Replaced. OLTC Servicing Done. Radiator, Main tank, Cable box, Conservator, Valve OLTC, Top Bottom oil gauge, mog, Total Gasket and Total Gasket Nut Bolt is replaced. OLTC oil new. Filled up and painting Epoxy."}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-0.5 font-medium align-top">
+                                  Date Of Filtration{" "}
+                                </td>
+                                <td className="py-0.5 text-center align-top">
+                                  :
+                                </td>
+                                <td className="py-0.5 text-justify leading-relaxed">
+                                  April 3rd, 2025
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-0.5 font-medium align-top">
+                                  Client’s Representative
+                                </td>
+                                <td className="py-0.5 text-center align-top">
+                                  :
+                                </td>
+                                <td className="py-0.5 text-justify leading-relaxed">
+                                  {reportData.clients_representative ||
+                                    "Mr. Sakharam Parab."}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-0.5 font-medium align-top">
+                                  Tested By
+                                </td>
+                                <td className="py-0.5 text-center align-top">
+                                  :
+                                </td>
+                                <td className="py-0.5 text-justify leading-relaxed">
+                                  {reportData.tested_by || "M/s. OK AGENCIES"}
                                 </td>
                               </tr>
                             </tbody>
                           </table>
                         </div>
-
-                        {/* Additional Information */}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="border-t-2 border-blue-600 pt-4 text-xs text-center">
-                        <p>
-                          <strong>Address for correspondence:</strong> 101,
-                          Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
-                        </p>
-                        <p>
-                          Mumbai-400081 Email : okagencies@gmail.com Tel :
-                          022-25693547
-                        </p>
-                        <p>
-                          <strong>Website :</strong>{" "}
-                          <span className="text-blue-600">
-                            www.okagencies.in
-                          </span>{" "}
-                          <strong>GST NO :</strong> 27AAHFO4632H1ZP
-                        </p>
                       </div>
                     </div>
                   </div>
-                )}
-              </CardContent>
+
+                  {/* Footer */}
+                  <div className="border-t-8 border-[#fcae08] text-center p-3 text-md mt-auto">
+                    <p className="">
+                      <span className="font-bold">
+                        Address for correspondence:
+                      </span>{" "}
+                      101, Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
+                    </p>
+                    <p>
+                      Mumbai-400081, <span className="font-bold">Contact</span>{" "}
+                      - 9619866401, <span className="font-bold">Email</span> -{" "}
+                      <span className="text-blue-900 font-bold">
+                        ok_agencies@yahoo.com,
+                      </span>
+                    </p>
+                    <p>
+                      <span className="font-bold">Website</span>{" "}
+                      <span className="text-blue-900 font-bold">
+                        – www.okagencies.in;
+                      </span>{" "}
+                      <span className="font-bold">
+                        GST NO.: 27ABDPJ0462B1Z9
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </Card>
           </div>
         </div>

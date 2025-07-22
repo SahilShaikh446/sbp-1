@@ -1,4 +1,5 @@
 import { RootState } from "@/app/store";
+import { BASE_URL } from "@/lib/constants";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -24,7 +25,7 @@ export const getCompanyAsync = createAsyncThunk(
   "company/getCompany",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("API/List/Company");
+      const response = await axios.get(BASE_URL + "API/List/Company");
       return response.data;
     } catch (error) {
       if (error instanceof Error) {

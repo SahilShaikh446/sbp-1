@@ -1,4 +1,5 @@
 import { RootState } from "@/app/store";
+import { BASE_URL } from "@/lib/constants";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -27,7 +28,7 @@ export const fetchAdminAsync = createAsyncThunk(
   "admin/getAdmin",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("API/List/Admin");
+      const response = await axios.get(BASE_URL + "API/List/Admin");
       return response.data;
     } catch (error) {
       if (error instanceof Error) {
