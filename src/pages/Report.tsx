@@ -80,7 +80,7 @@ export default function Report() {
               <CardHeader>
                 <CardTitle>Report Details Form</CardTitle>
               </CardHeader>
-              {/* <CardContent className="space-y-4 max-h-[800px] overflow-y-auto">
+              <CardContent className="space-y-4 max-h-[800px] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="report_date">Report Date</Label>
@@ -337,10 +337,10 @@ export default function Report() {
                     <Report2 reportData={reportData} />
                   </PDFViewer>
                 </div>
-              </CardContent> */}
-              <PDFViewer width="100%" height="600px">
+              </CardContent>
+              {/* <PDFViewer width="100%" height="600px">
                 <Report2 reportData={reportData} />
-              </PDFViewer>
+              </PDFViewer> */}
             </Card>
 
             {/* Preview Section */}
