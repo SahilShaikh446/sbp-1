@@ -28,7 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getCompanyAsync } from "./companySlice";
+import { fetchCompanyAsync } from "./companySlice";
 
 interface companyType {
   id: string;
@@ -69,7 +69,7 @@ export const COLUMNS: ColumnDef<companyType>[] = [
             id: row.original.id,
           });
           if (res.status == 200) {
-            await dispatch(getCompanyAsync()).unwrap();
+            await dispatch(fetchCompanyAsync()).unwrap();
             toast.success("Company updated Successfully");
             setOpen(false);
           } else {

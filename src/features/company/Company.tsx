@@ -22,7 +22,7 @@ import { COLUMNS } from "./column";
 import {
   companyError,
   companyLoading,
-  getCompanyAsync,
+  fetchCompanyAsync,
   selectCompany,
 } from "./companySlice";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
@@ -40,7 +40,7 @@ const Company = () => {
   const error = useSelector(companyError);
 
   useEffect(() => {
-    !data && dispatch(getCompanyAsync());
+    !data && dispatch(fetchCompanyAsync());
   }, [data, dispatch]);
 
   const form = useForm({
@@ -57,7 +57,7 @@ const Company = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Company added Successfully");
-        await dispatch(getCompanyAsync()).unwrap();
+        await dispatch(fetchCompanyAsync()).unwrap();
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Company");

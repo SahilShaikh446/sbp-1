@@ -2,6 +2,7 @@ import { adminSlice } from "@/features/admin/adminSlice";
 import { authSlice } from "@/features/authSlice/authSlice";
 import { clientSlice } from "@/features/client/clientSlice";
 import companySlice from "@/features/company/companySlice";
+import { oilReportSlice } from "@/features/oilReport/oilReportSlice";
 import { configureStore } from "@reduxjs/toolkit";
 // ...
 
@@ -11,6 +12,7 @@ export const store = configureStore({
     client: clientSlice.reducer,
     admin: adminSlice.reducer,
     auth: authSlice.reducer,
+    oilReport: oilReportSlice.reducer,
   },
 });
 

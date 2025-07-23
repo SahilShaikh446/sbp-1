@@ -1,3 +1,9 @@
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import {
+  companyType,
+  fetchCompanyAsync,
+  selectCompany,
+} from "@/features/company/companySlice";
 import {
   Document,
   Page,
@@ -7,6 +13,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
+import { useEffect } from "react";
 
 // Register Tinos fonts (regular and bold)
 Font.register({
@@ -32,11 +39,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headerRow: {
-    padding: 5,
+    padding: 2,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 2,
   },
   logo: {
     height: 40,
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
   },
   reportTitle: {
     textAlign: "center",
-    fontSize: 17,
+    fontSize: 22,
     fontWeight: "bold",
     textDecoration: "underline",
     marginBottom: 12,
@@ -87,13 +94,12 @@ const styles = StyleSheet.create({
     width: 80,
   },
   colon: {
-    width: 20,
+    width: 5,
     textAlign: "center",
   },
   value: {
     fontWeight: "bold",
-    maxWidth: 320, // Matches preview max-w-[320px]
-    flex: 1,
+    marginLeft: 10,
   },
   paragraph: {
     marginBottom: 10,
@@ -110,11 +116,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tableLabel: {
-    width: 160,
+    width: 130,
     fontWeight: "medium",
   },
   tableColon: {
-    width: 20,
+    width: 40,
     textAlign: "center",
   },
   tableValue: {
@@ -147,7 +153,6 @@ const styles = StyleSheet.create({
 
 interface ReportData {
   report_date: string;
-  client: string;
   report_description: string;
   kva: string;
   voltage: string;
@@ -163,11 +168,16 @@ interface ReportData {
   date_of_filtration: string;
   clients_representative: string;
   tested_by: string;
-  company_id: number;
+  company_id: string;
 }
 
-const Report2 = ({ reportData }: { reportData: ReportData }) => {
-  console.log("Report Data:", reportData);
+const OilReport = ({
+  reportData,
+  companyData,
+}: {
+  reportData: ReportData;
+  companyData: companyType[];
+}) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -205,14 +215,27 @@ const Report2 = ({ reportData }: { reportData: ReportData }) => {
               <Text style={styles.label}>CLIENT</Text>
               <Text style={styles.colon}>:</Text>
               <View style={styles.value}>
-                {reportData.client ? (
-                  reportData.client
-                    .split("\n")
-                    .map((line, index) => <Text key={index}>{line}</Text>)
+                {reportData.company_id ? (
+                  <>
+                    <Text>
+                      {
+                        companyData?.find(
+                          (i) => `${i.id}` == `${reportData.company_id}`
+                        )?.name
+                      }
+                    </Text>
+                    <Text>
+                      {
+                        companyData?.find(
+                          (i) => `${i.id}` == `${reportData.company_id}`
+                        )?.address
+                      }
+                    </Text>
+                  </>
                 ) : (
                   <>
-                    <Text>Ms. Dr. Acharya Laboratories Pvt. Ltd.</Text>
-                    <Text>Anand Nagar, Ambernath (East)</Text>
+                    <div>Ms. Dr. Acharya Laboratories Pvt. Ltd.,</div>
+                    <div>Anand Nagar, Ambernath (East)</div>
                   </>
                 )}
               </View>
@@ -245,11 +268,11 @@ const Report2 = ({ reportData }: { reportData: ReportData }) => {
                   value: reportData.transformer_oil_quantity || "1590 LITERS",
                 },
                 {
-                  label: "Before Filtration",
+                  label: "BDV Before Filtration",
                   value: reportData.transformer_before_filtration || "36 KV",
                 },
                 {
-                  label: "After Filtration",
+                  label: "BDV After Filtration",
                   value:
                     reportData.transformer_after_filtration ||
                     "Sample withstood at 80 KV for 1 minute",
@@ -322,4 +345,4 @@ const Report2 = ({ reportData }: { reportData: ReportData }) => {
   );
 };
 
-export default Report2;
+export default OilReport;

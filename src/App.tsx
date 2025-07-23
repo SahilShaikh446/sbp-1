@@ -1,12 +1,10 @@
-import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import { BASE_URL } from "./lib/constants";
 import ProtectedRoutes from "./components/Protected";
 import Login from "./pages/Login";
 import Master from "./pages/masterAdmin/Master";
-import Report from "./pages/Report";
+import OilReportTabs from "./pages/OilReportTabs";
 
 axios.interceptors.request.use(
   function (config) {
@@ -54,8 +52,8 @@ function App() {
           element: <Master />,
         },
         {
-          path: "/report",
-          element: <Report />,
+          path: "/oil-report/:id?",
+          element: <OilReportTabs />,
         },
       ],
     },

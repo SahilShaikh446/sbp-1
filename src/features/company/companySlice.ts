@@ -21,7 +21,7 @@ const initialState: CompanyState = {
   error: false,
 };
 
-export const getCompanyAsync = createAsyncThunk(
+export const fetchCompanyAsync = createAsyncThunk(
   "company/getCompany",
   async (_, { rejectWithValue }) => {
     try {
@@ -42,16 +42,12 @@ export const companySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getCompanyAsync.pending, (state) => {
-        state.loading = true;
-        state.error = false;
-      })
-      .addCase(getCompanyAsync.fulfilled, (state, action) => {
+      .addCase(fetchCompanyAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload;
         state.error = false;
       })
-      .addCase(getCompanyAsync.rejected, (state, action) => {
+      .addCase(fetchCompanyAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = true;
       });

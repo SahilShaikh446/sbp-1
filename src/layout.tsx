@@ -104,7 +104,7 @@ const Layout = () => {
     },
     {
       label: "OIL Filteration Report",
-      href: "/report",
+      href: "/oil-report",
       icon: <FileText className="h-5 w-5 flex-shrink-0" />,
     },
   ];
