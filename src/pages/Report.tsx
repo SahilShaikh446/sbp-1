@@ -333,9 +333,9 @@ export default function Report() {
                       )
                     }
                   </PDFDownloadLink>
-                  <PDFViewer width="100%" height="600px">
+                  {/* <PDFViewer width="100%" height="600px">
                     <Report2 reportData={reportData} />
-                  </PDFViewer>
+                  </PDFViewer> */}
                 </div>
               </CardContent>
               {/* <PDFViewer width="100%" height="600px">
