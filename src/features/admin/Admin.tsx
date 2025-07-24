@@ -26,6 +26,7 @@ import {
   adminError,
   fetchAdminAsync,
 } from "./adminSlice";
+import { BASE_URL } from "@/lib/constants";
 
 export const schema = z.object({
   first_name: z.string().min(1, "First Name is required"),
@@ -59,7 +60,7 @@ const Admin = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post("/API/Add/Admin", data);
+      const res = await axios.post(BASE_URL + "/API/Add/Admin", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Admin added Successfully");
