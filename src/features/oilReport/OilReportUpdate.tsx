@@ -1,11 +1,8 @@
-import OilReport from "../components/template/OilReport";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { use, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import {
   Form,
   FormControl,
@@ -35,10 +32,10 @@ import { enUS } from "date-fns/locale";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { toast } from "sonner";
-import { useParams } from "react-router-dom";
-import { fetchOilReportAsync } from "@/features/oilReport/oilReportSlice";
-import { Loader } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
+import { fetchOilReportAsync } from "./oilReportSlice";
+import { Loader } from "lucide-react";
 
 export const reportFormSchema = z.object({
   report_date: z.string().min(1, "Report date is required"),
@@ -97,7 +94,7 @@ function convertDOF(dateStr: string): string {
   }
 }
 
-export default function Report() {
+export default function OilReportUpdate() {
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
@@ -120,7 +117,8 @@ export default function Report() {
       date_of_filtration: "",
     },
   });
-
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const company = useAppSelector(selectCompany);
   const dispatch = useAppDispatch();
 
@@ -131,42 +129,97 @@ export default function Report() {
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
     try {
       const res = await axios.post(
-        BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        data
+        BASE_URL + "API/Update/Oil/Filtration/Test/Report",
+        { ...data, id }
       );
-      if (res.status === 201) {
-        toast.success("Report submitted successfully!");
+      if (res.status === 200) {
+        toast.success("Report updated successfully!");
         form.reset();
+        navigate("/oil-report");
         dispatch(fetchOilReportAsync());
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
       console.error("Error submitting report:", error);
     }
-    // You can also make an API POST request here
   }
 
   const { id } = useParams();
 
+  const fetchReport = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}API/GetById/Oil/Filtration/Test/Report`,
+        {
+          id: id,
+        }
+      );
+      if (res.status === 200) {
+        form.setValue("report_date", res.data.report_date);
+        form.setValue("report_description", res.data.report_description);
+        form.setValue("kva", res.data.kva);
+        form.setValue("voltage", res.data.voltage);
+        form.setValue("make", res.data.make);
+        form.setValue("sr_no", res.data.sr_no);
+        form.setValue(
+          "transformer_oil_quantity",
+          res.data.transformer_oil_quantity
+        );
+        form.setValue(
+          "transformer_before_filtration",
+          res.data.transformer_before_filtration
+        );
+        form.setValue(
+          "transformer_after_filtration",
+          res.data.transformer_after_filtration
+        );
+        form.setValue("oltc_oil_quantity", res.data.oltc_oil_quantity);
+        form.setValue(
+          "oltc_before_filtration",
+          res.data.oltc_before_filtration
+        );
+        form.setValue("oltc_after_filtration", res.data.oltc_after_filtration);
+        form.setValue("remark", res.data.remark);
+        form.setValue(
+          "clients_representative",
+          res.data.clients_representative
+        );
+        form.setValue("tested_by", res.data.tested_by);
+        form.setValue("company_id", `${res.data.company_id}`);
+        form.setValue("date_of_filtration", res.data.date_of_filtration);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch report data. Please try again.");
+      console.error("Error fetching report:", error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (id) {
+      fetchReport(id);
     }
   }, [id]);
+
+  if (loading) {
+    return <PreLoader messages={["Loading", "Just there"]} dotCount={3} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
-        <Card className="h-fit">
+        <Card>
           <CardHeader>
             <h2 className="text-2xl font-bold text-gray-800">
-              Create Oil Filtration Test Report
+              Update Oil Filtration Test Report
             </h2>
             <p className="text-gray-600">
-              Fill in the details below to create a new report
+              Modify the existing report details below
             </p>
           </CardHeader>
-          <CardContent className="space-y-4 max-h-[800px] overflow-y-auto">
+          <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -461,10 +514,10 @@ export default function Report() {
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <Loader className="animate-spin" />
-                      <span>Submitting... Report</span>
+                      <span>Updating... Report</span>
                     </div>
                   ) : (
-                    "Submit Report"
+                    "Update Report"
                   )}
                 </Button>
               </form>

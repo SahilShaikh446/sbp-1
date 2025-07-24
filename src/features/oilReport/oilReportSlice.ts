@@ -12,7 +12,7 @@ interface OilReportState {
 
 const initialState: OilReportState = {
   entity: null,
-  loading: false,
+  loading: true,
   error: false,
 };
 
