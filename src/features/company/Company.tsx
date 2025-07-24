@@ -26,6 +26,7 @@ import {
   selectCompany,
 } from "./companySlice";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
+import { BASE_URL } from "@/lib/constants";
 
 export const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -53,7 +54,7 @@ const Company = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post("API/Add/Company", data);
+      const res = await axios.post(BASE_URL + "API/Add/Company", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Company added Successfully");
