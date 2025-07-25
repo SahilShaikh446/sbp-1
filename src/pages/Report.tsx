@@ -43,29 +43,22 @@ import { PreLoader } from "@/components/ui/Preloader";
 export const reportFormSchema = z.object({
   report_date: z.string().min(1, "Report date is required"),
   report_description: z.string().min(1, "Description is required"),
-  kva: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "KVA must be Number")
-    .min(1, "KVA is required"),
+  kva: z.string().min(1, "KVA is required"),
   voltage: z.string().min(1, "Voltage is required"),
   make: z.string().min(1, "Make is required"),
   sr_no: z.string().min(1, "Serial number is required"),
   transformer_oil_quantity: z
     .string()
-    .regex(/^-?\d*\.?\d+$/, "Transformer oil quantity must be Number")
     .min(1, "Transformer oil quantity is required"),
   transformer_before_filtration: z
     .string()
-    .regex(/^-?\d*\.?\d+$/, "BDV before filtration must be Number")
     .min(1, "Value before filtration is required"),
   transformer_after_filtration: z
     .string()
-    .regex(/^-?\d*\.?\d+$/, "BDV after filtration must be Number")
     .min(1, "Value after filtration is required"),
   oltc_oil_quantity: z.string().min(1, "OLTC oil quantity is required"),
   oltc_before_filtration: z
     .string()
-    .regex(/^-?\d*\.?\d+$/, "before filtration must be Number")
     .min(1, "OLTC before filtration is required"),
   oltc_after_filtration: z.string().min(1, "OLTC after filtration is required"),
   remark: z.string().min(1, "Remark is required"),
