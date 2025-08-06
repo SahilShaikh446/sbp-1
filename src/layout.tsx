@@ -19,7 +19,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -28,6 +27,60 @@ import {
 } from "@/components/ui/sidebar";
 import { useEffect, useState, useRef } from "react";
 import { cn } from "./lib/utils";
+import { useAppSelector } from "./app/hooks";
+
+const MasterAdminSidebar = [
+  {
+    label: "Dashboard",
+    href: "/",
+    icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Masters",
+    href: "/masters",
+    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
+  },
+];
+
+const AdminSidebar = [
+  {
+    label: "Dashboard",
+    href: "/",
+    icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Masters",
+    href: "/masters",
+    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "OIL Filteration Report",
+    href: "/oil-report",
+    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "ABC Report",
+    href: "/abc-report",
+    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
+  },
+];
+const clientAdminSidebar = [
+  {
+    label: "Dashboard",
+    href: "/",
+    icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Masters",
+    href: "/masters",
+    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "OIL Filteration Report",
+    href: "/oil-report",
+    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
+  },
+];
 
 const Layout = () => {
   const dispatch = useDispatch();
@@ -36,6 +89,13 @@ const Layout = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const role = useAppSelector((state) => state.auth.role);
+  const sidebar =
+    role === "Master Admin"
+      ? MasterAdminSidebar
+      : role === "Admin"
+      ? AdminSidebar
+      : clientAdminSidebar;
 
   // Handle window resize to detect mobile/desktop
   useEffect(() => {
@@ -90,24 +150,6 @@ const Layout = () => {
   const toggleSidebar = () => {
     setOpen((prev) => !prev);
   };
-
-  const links = [
-    {
-      label: "Dashboard",
-      href: "/",
-      icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Masters",
-      href: "/masters",
-      icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "OIL Filteration Report",
-      href: "/oil-report",
-      icon: <FileText className="h-5 w-5 flex-shrink-0" />,
-    },
-  ];
 
   return (
     <SidebarProvider open={open} onOpenChange={setOpen}>
@@ -179,7 +221,7 @@ const Layout = () => {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
-                    {links.map((link, idx) => {
+                    {sidebar.map((link, idx) => {
                       const isActive = window.location.pathname === link.href;
                       return (
                         <SidebarMenuItem key={idx}>
@@ -203,7 +245,9 @@ const Layout = () => {
                               <div className="flex-shrink-0">{link.icon}</div>
                               <motion.span
                                 initial={false}
-                                animate={{ opacity: open || isMobile ? 1 : 0 }}
+                                animate={{
+                                  opacity: open || isMobile ? 1 : 0,
+                                }}
                                 transition={{
                                   duration: 0.2,
                                   ease: "easeInOut",

@@ -29,7 +29,7 @@ export const fetchClientAsync = createAsyncThunk(
   "client/getClient",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(BASE_URL + "/API/List/Client");
+      const response = await axios.get(BASE_URL + "API/List/Client");
       return response.data;
     } catch (error) {
       if (error instanceof Error) {

@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 10,
     paddingHorizontal: 40, // Centered content (75% width)
+    position: "relative",
   },
   reportTitle: {
     textAlign: "center",
@@ -171,13 +172,32 @@ interface ReportData {
   company_id: string;
 }
 
+interface ImageConstraints {
+  left: string | number;
+  top: string | number;
+  width: string | number;
+  height: string | number;
+}
+
 const OilReport = ({
   reportData,
   companyData,
+  imageConstraints = { left: 0, top: 0, width: "100px", height: "100px" },
 }: {
   reportData: ReportData;
   companyData: companyType[];
+  imageConstraints?: ImageConstraints;
 }) => {
+  const pixelsToPoints = (value: string | number): number => {
+    if (typeof value === "number") {
+      return value * 0.75; // Convert pixels to points
+    }
+    if (typeof value === "string" && value.includes("px")) {
+      return parseFloat(value) * 0.75; // Remove "px" and convert
+    }
+    return parseFloat(value) || 0; // Fallback to 0 if invalid
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -317,6 +337,18 @@ const OilReport = ({
                   <Text style={styles.tableValue}>{value || "N/A"}</Text>
                 </View>
               ))}
+            </View>
+            <View>
+              <Image
+                src={"/image.png"}
+                style={{
+                  width: pixelsToPoints(imageConstraints.width),
+                  height: pixelsToPoints(imageConstraints.height),
+                  position: "absolute",
+                  left: pixelsToPoints(imageConstraints.left),
+                  top: pixelsToPoints(imageConstraints.top),
+                }}
+              />
             </View>
           </View>
         </View>

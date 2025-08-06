@@ -73,7 +73,7 @@ const Client = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post(BASE_URL + "/API/Add/Client", data);
+      const res = await axios.post(BASE_URL + "API/Add/Client", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Client added Successfully");

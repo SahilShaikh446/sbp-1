@@ -60,7 +60,7 @@ const Admin = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const res = await axios.post(BASE_URL + "/API/Add/Admin", data);
+      const res = await axios.post(BASE_URL + "API/Add/Admin", data);
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Admin added Successfully");
@@ -175,7 +175,7 @@ const Admin = () => {
                     {form.formState.isSubmitting && (
                       <Loader className="animate-spin w-4 mr-1" />
                     )}
-                    Add Client
+                    Add Admin
                   </Button>
                 </div>
               </div>
@@ -184,7 +184,7 @@ const Admin = () => {
         </CardContent>
       </Card>
       <ShadcnTable
-        name="Client"
+        name="Admin"
         data={data}
         columns={COLUMNS}
         loading={loading}

@@ -38,10 +38,6 @@ interface companyType {
 
 export const COLUMNS: ColumnDef<companyType>[] = [
   {
-    header: "ID",
-    accessorKey: "id",
-  },
-  {
     header: "Name",
     accessorKey: "name",
   },

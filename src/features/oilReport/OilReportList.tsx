@@ -21,7 +21,7 @@ function OilReportList() {
 
   return (
     <ShadcnTable
-      name="Client"
+      name="Oil Filteration Report"
       data={data}
       columns={COLUMNS}
       loading={loading}

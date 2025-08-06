@@ -223,7 +223,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
           <div className="flex flex-wrap md:flex-nowrap items-center justify-start gap-4">
             {/* Column Toggle Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button variant="outline" className="flex items-center">
                   <MixerVerticalIcon
                     className="opacity-60 rotate-90"
@@ -456,7 +456,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                                 </Button>
                               ) : (
                                 <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
+                                  <DropdownMenuTrigger>
                                     <Button
                                       size="icon"
                                       variant="ghost"

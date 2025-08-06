@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Master from "./pages/masterAdmin/Master";
 import OilReportTabs from "./pages/OilReportTabs";
 import OilReportUpdate from "./features/oilReport/OilReportUpdate";
+import ABCReport from "./pages/ABCReport";
 
 axios.interceptors.request.use(
   function (config) {
@@ -59,6 +60,10 @@ function App() {
         {
           path: "/oil-report/:id",
           element: <OilReportUpdate />,
+        },
+        {
+          path: "/abc-report",
+          element: <ABCReport />,
         },
       ],
     },

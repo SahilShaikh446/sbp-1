@@ -50,10 +50,6 @@ interface clientType {
 
 export const COLUMNS: ColumnDef<clientType>[] = [
   {
-    header: "ID",
-    accessorKey: "id",
-  },
-  {
     header: "First Name",
     accessorKey: "first_name",
   },
@@ -64,10 +60,6 @@ export const COLUMNS: ColumnDef<clientType>[] = [
   {
     header: "Email",
     accessorKey: "email",
-  },
-  {
-    header: "Company ID",
-    accessorKey: "company_id",
   },
   {
     header: "Phone",

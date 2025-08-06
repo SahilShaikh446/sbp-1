@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Report from "./Report";
+import OilReportCreate from "../features/oilReport/OilReportCreate";
 import OilReportList from "@/features/oilReport/OilReportList";
 
 function OilReportTabs() {
@@ -10,7 +10,7 @@ function OilReportTabs() {
         <TabsTrigger value="create Report">Create Report</TabsTrigger>
       </TabsList>
       <TabsContent value="create Report">
-        <Report />
+        <OilReportCreate />
       </TabsContent>
       <TabsContent value="view Report">
         <OilReportList />

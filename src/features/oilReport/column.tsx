@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ReportType } from "@/pages/Report";
+import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp, Edit, Eye } from "lucide-react";
 import {
@@ -16,6 +16,7 @@ import { JSX, useEffect } from "react";
 import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
+import { addYears, format, parseISO } from "date-fns";
 
 type ExtendedReportType = ReportType & { id: string };
 
@@ -23,65 +24,74 @@ type CustomColumnDef<T> = ColumnDef<T> & {
   expandedContent?: (row: { original: T }) => JSX.Element;
 };
 
+function addOneYear(dateString: string): string {
+  try {
+    const parsed = parseISO(dateString); // safely parses YYYY-MM-DD
+    const newDate = addYears(parsed, 1);
+    return format(newDate, "yyyy-MM-dd");
+  } catch (e) {
+    console.error("Error parsing date:", dateString);
+    return "Invalid date";
+  }
+}
+
 export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
+  // {
+  //   id: "expander",
+  //   header: () => null,
+  //   cell: ({ row, table }) => {
+  //     return (
+  //       <Button
+  //         onClick={() => row.toggleExpanded()}
+  //         className=" shadow-none text-muted-foreground w-full"
+  //         size="icon"
+  //         variant="ghost"
+  //       >
+  //         {row.getIsExpanded() ? (
+  //           <ChevronUp
+  //             className="opacity-60"
+  //             size={16}
+  //             strokeWidth={2}
+  //             aria-hidden="true"
+  //           />
+  //         ) : (
+  //           <ChevronDown
+  //             className="opacity-60"
+  //             size={16}
+  //             strokeWidth={2}
+  //             aria-hidden="true"
+  //           />
+  //         )}
+  //       </Button>
+  //     );
+  //   },
+  //   expandedContent: ({ original }) => <ExpandedRowContent {...original} />,
+  // },
   {
-    id: "expander",
-    header: () => null,
-    cell: ({ row, table }) => {
-      return (
-        <Button
-          onClick={() => row.toggleExpanded()}
-          className=" shadow-none text-muted-foreground w-full"
-          size="icon"
-          variant="ghost"
-        >
-          {row.getIsExpanded() ? (
-            <ChevronUp
-              className="opacity-60"
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          ) : (
-            <ChevronDown
-              className="opacity-60"
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          )}
-        </Button>
-      );
-    },
-    expandedContent: ({ original }) => <ExpandedRowContent {...original} />,
+    header: "Serial No",
+    accessorKey: "sr_no",
   },
   {
     header: "Report Date",
     accessorKey: "report_date",
   },
   {
-    header: "Company",
-    accessorKey: "company_id",
-  },
-  {
-    header: "KVA Rating",
-    accessorKey: "kva",
-  },
-  {
-    header: "Voltage",
-    accessorKey: "voltage",
-  },
-  {
-    header: "Before Filtration",
-    accessorKey: "transformer_before_filtration",
-  },
-  {
-    header: "After Filtration",
-    accessorKey: "transformer_after_filtration",
-  },
-  {
     header: "Filtration Date",
     accessorKey: "date_of_filtration",
+  },
+  {
+    header: "Next Date of Filtration",
+    cell: ({ row }) => {
+      return <span>{addOneYear(row.original.date_of_filtration)}</span>;
+    },
+  },
+  {
+    header: "Company Name",
+    accessorKey: "company_name",
+  },
+  {
+    header: "Company Address",
+    accessorKey: "",
   },
   {
     header: "Actions",
@@ -89,6 +99,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
     cell: ({ row }) => {
       const company = useAppSelector(selectCompany);
       const dispatch = useAppDispatch();
+      const role = useAppSelector((state) => state.auth.role);
 
       useEffect(() => {
         !company && dispatch(fetchCompanyAsync());
@@ -96,7 +107,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
       const navigate = useNavigate();
 
       return (
-        <div className="flex  items-center justify-end gap-2 sm:justify-between sm:flex-col md:flex-row md:items-center">
+        <div className="flex  items-center gap-2  sm:flex-col md:flex-row md:items-center">
           <Dialog>
             <DialogTrigger asChild>
               <Button
@@ -108,7 +119,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
                 View PDF
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[95vw] p-6 sm:max-w-[600px] ">
+            <DialogContent className="max-w-[90%] sm:max-w-[95%] md:max-w-[80%] lg:max-w-[80%] xl:max-w-[60%] p-8">
               <DialogHeader>
                 <DialogDescription className="max-h-[80vh] overflow-auto ">
                   <PDFViewer width="100%" height="600px" className="w-full">
@@ -122,15 +133,17 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
             </DialogContent>
           </Dialog>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 bg-transparent w-full sm:w-auto"
-            onClick={() => navigate(`/oil-report/${row.original.id}`)}
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
+          {role === "Admin" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1 bg-transparent w-full sm:w-auto"
+              onClick={() => navigate(`/oil-report/${row.original.id}`)}
+            >
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+          )}
         </div>
       );
     },
@@ -160,9 +173,7 @@ const ExpandedRowContent: React.FC<ExtendedReportType> = (props) => {
       </div>
       <div className="mt-3">
         <span className="font-medium">Remarks:</span>
-        <p className="text-sm text-muted-foreground mt-1">
-          {props.remark}
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">{props.remark}</p>
       </div>
     </div>
   );

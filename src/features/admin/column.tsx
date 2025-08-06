@@ -41,10 +41,6 @@ interface adminType {
 
 export const COLUMNS: ColumnDef<adminType>[] = [
   {
-    header: "ID",
-    accessorKey: "id",
-  },
-  {
     header: "First Name",
     accessorKey: "first_name",
   },
@@ -210,13 +206,14 @@ export const COLUMNS: ColumnDef<adminType>[] = [
                       type="submit"
                       className="mt-5"
                     >
-                      {form.formState.isSubmitting && (
+                      {form.formState.isSubmitting ? (
                         <>
-                          Updating
                           <Loader className="animate-spin w-4 mr-1" />
+                          Updating
                         </>
+                      ) : (
+                        "Update"
                       )}
-                      Update
                     </Button>
                   </DialogFooter>
                 </form>

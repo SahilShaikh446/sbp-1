@@ -1,6 +1,6 @@
 import { RootState } from "@/app/store";
 import { BASE_URL } from "@/lib/constants";
-import { ReportType } from "@/pages/Report";
+import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 

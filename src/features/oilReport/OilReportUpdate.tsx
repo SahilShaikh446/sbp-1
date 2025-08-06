@@ -38,40 +38,27 @@ import { fetchOilReportAsync } from "./oilReportSlice";
 import { Loader } from "lucide-react";
 
 export const reportFormSchema = z.object({
-  report_date: z.string().min(1, "Report date is required"),
-  report_description: z.string().min(1, "Description is required"),
-  kva: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "KVA must be Number")
-    .min(1, "KVA is required"),
-  voltage: z.string().min(1, "Voltage is required"),
-  make: z.string().min(1, "Make is required"),
-  sr_no: z.string().min(1, "Serial number is required"),
-  transformer_oil_quantity: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "Transformer oil quantity must be Number")
-    .min(1, "Transformer oil quantity is required"),
-  transformer_before_filtration: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "BDV before filtration must be Number")
-    .min(1, "Value before filtration is required"),
-  transformer_after_filtration: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "BDV after filtration must be Number")
-    .min(1, "Value after filtration is required"),
-  oltc_oil_quantity: z.string().min(1, "OLTC oil quantity is required"),
-  oltc_before_filtration: z
-    .string()
-    .regex(/^-?\d*\.?\d+$/, "before filtration must be Number")
-    .min(1, "OLTC before filtration is required"),
-  oltc_after_filtration: z.string().min(1, "OLTC after filtration is required"),
-  remark: z.string().min(1, "Remark is required"),
-  clients_representative: z
-    .string()
-    .min(1, "Client representative is required"),
-  tested_by: z.string().min(1, "Tested by is required"),
-  company_id: z.string().min(1, "Company  is required"),
-  date_of_filtration: z.string().min(1, "Date of filtration is required"),
+  report_date: z.string(),
+  report_description: z.string().min(1, {
+    message: "Description is required",
+  }),
+  kva: z.string(),
+  voltage: z.string(),
+  make: z.string(),
+  sr_no: z.string(),
+  transformer_oil_quantity: z.string(),
+  transformer_before_filtration: z.string(),
+  transformer_after_filtration: z.string(),
+  oltc_make_type: z.string(),
+  oltc_oil_quantity: z.string(),
+  oltc_before_filtration: z.string(),
+  oltc_after_filtration: z.string(),
+  remark: z.string(),
+  clients_representative: z.string(),
+  tested_by: z.string(),
+  company_id: z.string(),
+  date_of_filtration: z.string(),
+  manufacturing_year: z.string(),
 });
 
 export type ReportType = z.infer<typeof reportFormSchema>;
@@ -107,6 +94,7 @@ export default function OilReportUpdate() {
       transformer_oil_quantity: "",
       transformer_before_filtration: "",
       transformer_after_filtration: "",
+      oltc_make_type: "",
       oltc_oil_quantity: "",
       oltc_before_filtration: "",
       oltc_after_filtration: "",
@@ -115,6 +103,7 @@ export default function OilReportUpdate() {
       tested_by: "",
       company_id: "",
       date_of_filtration: "",
+      manufacturing_year: "",
     },
   });
   const [loading, setLoading] = useState(false);
@@ -347,7 +336,34 @@ export default function OilReportUpdate() {
                     )}
                   />
                 </div>
-
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="manufacturing_year"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Manufacturing Year</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., 2011" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="manufacturing_year"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Transformer Oil Quantity</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., 1500 LITERS" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="transformer_oil_quantity"
@@ -393,20 +409,34 @@ export default function OilReportUpdate() {
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="oltc_oil_quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>OLTC Oil Quantity</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 240 LITERS" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="oltc_make_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>OLTC Make/Type</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., 240 LITERS" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="oltc_oil_quantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>OLTC Oil Quantity</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., 240 LITERS" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -514,10 +544,10 @@ export default function OilReportUpdate() {
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <Loader className="animate-spin" />
-                      <span>Updating... Report</span>
+                      <span>Submitting... Report</span>
                     </div>
                   ) : (
-                    "Update Report"
+                    "Submit Report"
                   )}
                 </Button>
               </form>
@@ -557,7 +587,7 @@ export default function OilReportUpdate() {
                       <div className="text-md font-bold">
                         <span className="font-bold">Date:</span>{" "}
                         {convertReportDate(form.watch("report_date")) ||
-                          "07.04.2025"}
+                          "--/--/----"}
                       </div>
                     </div>
 
@@ -597,8 +627,8 @@ export default function OilReportUpdate() {
                             </>
                           ) : (
                             <>
-                              <div>Ms. Dr. Acharya Laboratories Pvt. Ltd.,</div>
-                              <div>Anand Nagar, Ambernath (East)</div>
+                              <div>--</div>
+                              <div>--</div>
                             </>
                           )}
                         </td>
@@ -609,8 +639,7 @@ export default function OilReportUpdate() {
                   {/* Description */}
                   <div className="mb-2 py-2 text-lg leading-6">
                     <p className="font-medium leading-tight max-w-[700px] break-words whitespace-pre-wrap overflow-hidden">
-                      {form.watch("report_description") ||
-                        "We have carried out oil filtration work for your transformer oil for dielectric strength in filtration at site & tested the sample after transformer oil for dielectric strength in accordance with 1866-2017 and the results are as under."}
+                      {form.watch("report_description") || "--"}
                     </p>
                   </div>
 
@@ -633,28 +662,35 @@ export default function OilReportUpdate() {
                             <td className="py-0.5">
                               {form.watch("kva")
                                 ? `${form.watch("kva")} KVA`
-                                : "1250 KVA"}
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
                             <td className="py-0.5 font-medium">Voltage</td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("voltage") || "22000V / 433V"}
+                              {form.watch("voltage") || "--"}
                             </td>
                           </tr>
                           <tr className="">
                             <td className="py-0.5 font-medium">Make</td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("make") || "Voltamp"}
+                              {form.watch("make") || "--"}
                             </td>
                           </tr>
                           <tr className="">
                             <td className="py-0.5 font-medium">Sr. No.</td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("sr_no") || "41083/1 Year - 2011"}
+                              {form.watch("sr_no") || "--"}
+                            </td>
+                          </tr>
+                          <tr className="">
+                            <td className="py-0.5 font-medium">Sr. No.</td>
+                            <td className="py-0.5 text-center">:</td>
+                            <td className="py-0.5">
+                              {form.watch("manufacturing_year") || "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -667,7 +703,7 @@ export default function OilReportUpdate() {
                                 ? `${form.watch(
                                     "transformer_oil_quantity"
                                   )} LITERS`
-                                : "1590 LITERS"}
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -677,7 +713,7 @@ export default function OilReportUpdate() {
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("transformer_before_filtration") +
-                                " KV" || "36 KV"}
+                                " KV" || "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -687,8 +723,16 @@ export default function OilReportUpdate() {
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("transformer_after_filtration") +
-                                " KV" ||
-                                "Sample withstood at 80 KV for 1 minute"}
+                                " KV" || "--"}
+                            </td>
+                          </tr>
+                          <tr className="">
+                            <td className="py-0.5 font-medium">
+                              OLTC Make/Type
+                            </td>
+                            <td className="py-0.5 text-center">:</td>
+                            <td className="py-0.5">
+                              {form.watch("oltc_make_type") || "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -698,7 +742,7 @@ export default function OilReportUpdate() {
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("oltc_oil_quantity") + " LITERS" ||
-                                "210 LITERS"}
+                                "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -708,7 +752,7 @@ export default function OilReportUpdate() {
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("oltc_before_filtration") + " KV" ||
-                                "40 KV"}
+                                "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -717,8 +761,7 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("oltc_after_filtration") ||
-                                "Sample withstood at 80 KV for 1 minute"}
+                              {form.watch("oltc_after_filtration") || "--"}
                             </td>
                           </tr>
                           <tr>
@@ -727,8 +770,7 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center align-top">:</td>
                             <td className="py-1 text-justify leading-tight max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
-                              {form.watch("remark") ||
-                                "Dielectric strength of transformer oil is Satisfactory. Silica Gel Replaced. OLTC Servicing Done. Radiator, Main tank, Cable box, Conservator, Valve OLTC, Top Bottom oil gauge, mog, Total Gasket and Total Gasket Nut Bolt is replaced. OLTC oil new. Filled up and painting Epoxy."}
+                              {form.watch("remark") || "--"}
                             </td>
                           </tr>
                           <tr>
@@ -738,7 +780,7 @@ export default function OilReportUpdate() {
                             <td className="py-0.5 text-center align-top">:</td>
                             <td className="py-0.5 text-justify leading-relaxed">
                               {convertDOF(form.watch("date_of_filtration")) ||
-                                "April 7th, 2025"}
+                                "--"}
                             </td>
                           </tr>
                           <tr>
@@ -747,8 +789,7 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center align-top">:</td>
                             <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("clients_representative") ||
-                                "Mr. Sakharam Parab."}
+                              {form.watch("clients_representative") || "--"}
                             </td>
                           </tr>
                           <tr>
@@ -757,7 +798,7 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center align-top">:</td>
                             <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("tested_by") || "M/s. OK AGENCIES"}
+                              {form.watch("tested_by") || "--"}
                             </td>
                           </tr>
                         </tbody>
