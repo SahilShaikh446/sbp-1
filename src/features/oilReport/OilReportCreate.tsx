@@ -84,13 +84,11 @@ function convertDOF(dateStr: string): string {
 }
 
 export default function OilReportCreate() {
-  const containerRef = useRef(null);
-  const imgRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const [imageConstraints, setImageConstraints] = useState({
-    left: "0px", // Position
-    top: "0px", // Position
-    width: "100px", // Size
-    height: "100px", // Size
+    left: 0,
+    top: 0,
   });
 
   const form = useForm({
@@ -143,18 +141,12 @@ export default function OilReportCreate() {
     // You can also make an API POST request here
   }
 
-  const { id } = useParams();
-
-  useEffect(() => {
-    if (id) {
-    }
-  }, [id]);
-
+  console.log(imageConstraints);
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
-        {/* <Card className="h-fit">
+        <Card className="h-fit">
           <CardHeader>
             <h2 className="text-2xl font-bold text-gray-800">
               Create Oil Filtration Test Report
@@ -508,7 +500,7 @@ export default function OilReportCreate() {
               </form>
             </Form>
           </CardContent>
-        </Card> */}
+        </Card>
 
         {/* Preview Section */}
         <Card className="h-auto overflow-auto">
@@ -779,17 +771,30 @@ export default function OilReportCreate() {
                   ref={imgRef}
                   drag
                   dragConstraints={containerRef}
-                  onDrag={(event, info) => {
-                    console.log("Current position:", info.point);
+                  onDragEnd={(event, info) => {
+                    const el = containerRef.current;
+                    if (!el) return;
+
+                    const rect = el.getBoundingClientRect();
+                    const relativeX = info.point.x - rect.left;
+                    const relativeY = info.point.y - rect.top;
+
                     setImageConstraints({
-                      left: `${info.point.x}px`, // Position
-                      top: `${info.point.y}px`, // Position
-                      width: "100px", // Fixed size or from another source
-                      height: "100px", // Fixed size or from another source
+                      left: relativeX,
+                      top: relativeY,
                     });
                   }}
-                  src="/image.png"
-                  className="absolute w-36 h-12 right-3.5 object-cover"
+                  initial={{
+                    x: imageConstraints.left,
+                    y: imageConstraints.top,
+                  }}
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    position: "absolute",
+                  }}
+                  className="object-contain"
+                  src={"/stamp.jpg"}
                 />
               </div>
 
@@ -818,13 +823,13 @@ export default function OilReportCreate() {
           </div>
         </Card>
 
-        <PDFViewer width="100%" height="600px" className="w-full">
+        {/* <PDFViewer width="100%" height="600px" className="w-full">
           <OilReport
             reportData={form.watch()}
             companyData={company || []}
             imageConstraints={imageConstraints}
           />
-        </PDFViewer>
+        </PDFViewer> */}
       </div>
     </div>
   );

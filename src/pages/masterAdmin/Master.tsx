@@ -9,16 +9,12 @@ function Master() {
       <TabsList>
         <TabsTrigger value="company">Add Company</TabsTrigger>
         <TabsTrigger value="client">Add Client</TabsTrigger>
-        <TabsTrigger value="admin">Add Admin</TabsTrigger>
       </TabsList>
       <TabsContent value="company">
         <Company />
       </TabsContent>
       <TabsContent value="client">
         <Client />
-      </TabsContent>
-      <TabsContent value="admin">
-        <Admin />
       </TabsContent>
     </Tabs>
   );

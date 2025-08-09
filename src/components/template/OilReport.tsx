@@ -4,6 +4,7 @@ import {
   fetchCompanyAsync,
   selectCompany,
 } from "@/features/company/companySlice";
+import { reportFormSchema } from "@/features/oilReport/OilReportCreate";
 import {
   Document,
   Page,
@@ -14,6 +15,7 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import { useEffect } from "react";
+import { z } from "zod";
 
 // Register Tinos fonts (regular and bold)
 Font.register({
@@ -152,52 +154,30 @@ const styles = StyleSheet.create({
   },
 });
 
-interface ReportData {
-  report_date: string;
-  report_description: string;
-  kva: string;
-  voltage: string;
-  make: string;
-  sr_no: string;
-  transformer_oil_quantity: string;
-  transformer_before_filtration: string;
-  transformer_after_filtration: string;
-  oltc_oil_quantity: string;
-  oltc_before_filtration: string;
-  oltc_after_filtration: string;
-  remark: string;
-  date_of_filtration: string;
-  clients_representative: string;
-  tested_by: string;
-  company_id: string;
-}
-
 interface ImageConstraints {
   left: string | number;
   top: string | number;
-  width: string | number;
-  height: string | number;
 }
 
 const OilReport = ({
   reportData,
   companyData,
-  imageConstraints = { left: 0, top: 0, width: "100px", height: "100px" },
+  imageConstraints = { left: 0, top: 0 },
 }: {
-  reportData: ReportData;
+  reportData: z.infer<typeof reportFormSchema>;
   companyData: companyType[];
   imageConstraints?: ImageConstraints;
 }) => {
   const pixelsToPoints = (value: string | number): number => {
-    if (typeof value === "number") {
-      return value * 0.75; // Convert pixels to points
-    }
-    if (typeof value === "string" && value.includes("px")) {
-      return parseFloat(value) * 0.75; // Remove "px" and convert
-    }
-    return parseFloat(value) || 0; // Fallback to 0 if invalid
+    if (typeof value === "number") return value * 0.75;
+    if (typeof value === "string" && value.endsWith("px"))
+      return parseFloat(value) * 0.75;
+    return parseFloat(value) * 0.75; // treat bare numbers as px too
   };
-
+  console.log(
+    pixelsToPoints(imageConstraints.left),
+    pixelsToPoints(imageConstraints.top)
+  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -219,7 +199,7 @@ const OilReport = ({
             <View style={styles.headerBarBlue} />
           </View>
 
-          <View style={styles.section}>
+          <View style={[styles.section, { position: "relative" }]}>
             <View style={styles.row}>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
                 Report No.: 01/25-26
@@ -284,6 +264,10 @@ const OilReport = ({
                   value: reportData.sr_no || "41083/1 Year - 2011",
                 },
                 {
+                  label: "Manufacturing Year",
+                  value: reportData.manufacturing_year || "41083/1 Year - 2011",
+                },
+                {
                   label: "Transformer Oil Quantity",
                   value: reportData.transformer_oil_quantity || "1590 LITERS",
                 },
@@ -293,9 +277,11 @@ const OilReport = ({
                 },
                 {
                   label: "BDV After Filtration",
-                  value:
-                    reportData.transformer_after_filtration ||
-                    "Sample withstood at 80 KV for 1 minute",
+                  value: reportData.transformer_after_filtration || "--",
+                },
+                {
+                  label: "OLTC Make/Type",
+                  value: reportData.oltc_make_type || "--",
                 },
                 {
                   label: "OLTC Oil Quantity",
@@ -338,18 +324,17 @@ const OilReport = ({
                 </View>
               ))}
             </View>
-            <View>
-              <Image
-                src={"/image.png"}
-                style={{
-                  width: pixelsToPoints(imageConstraints.width),
-                  height: pixelsToPoints(imageConstraints.height),
-                  position: "absolute",
-                  left: pixelsToPoints(imageConstraints.left),
-                  top: pixelsToPoints(imageConstraints.top),
-                }}
-              />
-            </View>
+            <Image
+              src={"/stamp.jpg"}
+              style={{
+                position: "absolute",
+                objectFit: "contain",
+                left: pixelsToPoints(imageConstraints.left) /* px -> pt */,
+                top: pixelsToPoints(imageConstraints.top) /* px -> pt */,
+                width: "150px",
+                height: "150px",
+              }}
+            />
           </View>
         </View>
 
