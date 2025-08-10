@@ -744,8 +744,7 @@ export default function OilReportCreate() {
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("transformer_before_filtration")
-                                ? form.watch("transformer_before_filtration") +
-                                  " KV"
+                                ? form.watch("transformer_before_filtration")
                                 : "--"}
                             </td>
                           </tr>

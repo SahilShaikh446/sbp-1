@@ -35,7 +35,22 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
 import { fetchOilReportAsync } from "./oilReportSlice";
-import { Loader } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, Loader } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
@@ -82,6 +97,8 @@ function convertDOF(dateStr: string): string {
 }
 
 export default function OilReportUpdate() {
+  const [open, setOpen] = useState(false);
+
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
@@ -230,36 +247,73 @@ export default function OilReportUpdate() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="company_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
+                  <div className="*:not-first:mt-2">
+                    <Label>Company</Label>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger className="w-full">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
+                            form.formState.errors.company_id
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a company" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {company?.map((company) => (
-                              <SelectItem
-                                key={company.id}
-                                value={`${company.id}`}
-                              >
-                                {company.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <span
+                            className={cn(
+                              "truncate",
+                              !form.watch("company_id") &&
+                                "text-muted-foreground"
+                            )}
+                          >
+                            {form.watch("company_id")
+                              ? company?.find(
+                                  (c) => `${c.id}` === form.watch("company_id")
+                                )?.name || "Select company"
+                              : "Select company"}
+                          </span>
+                          <ChevronDownIcon
+                            size={16}
+                            className="text-muted-foreground/80 shrink-0"
+                            aria-hidden="true"
+                          />
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent
+                        className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                        align="start"
+                      >
+                        <Command>
+                          <CommandInput placeholder="Search Company..." />
+                          <CommandList>
+                            <CommandEmpty>No company found.</CommandEmpty>
+                            <CommandGroup>
+                              {company?.map((c) => (
+                                <CommandItem
+                                  key={c.id}
+                                  value={c.name} // search works by name
+                                  onSelect={() => {
+                                    form.setValue("company_id", `${c.id}`, {
+                                      shouldValidate: true,
+                                    });
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {c.name}
+                                  {`${c.id}` === form.watch("company_id") && (
+                                    <CheckIcon size={16} className="ml-auto" />
+                                  )}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <FormField
                   control={form.control}
@@ -533,10 +587,10 @@ export default function OilReportUpdate() {
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <Loader className="animate-spin" />
-                      <span>Submitting... Report</span>
+                      <span>Updating... Report</span>
                     </div>
                   ) : (
-                    "Submit Report"
+                    "Update Report"
                   )}
                 </Button>
               </form>
