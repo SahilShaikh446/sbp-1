@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
 
-type ExtendedReportType = ReportType & { id: string };
+type ExtendedReportType = ReportType & { id: string; image_date: any };
 
 type CustomColumnDef<T> = ColumnDef<T> & {
   expandedContent?: (row: { original: T }) => JSX.Element;
@@ -91,7 +91,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
   },
   {
     header: "Company Address",
-    accessorKey: "",
+    accessorKey: "company_address",
   },
   {
     header: "Actions",
@@ -126,6 +126,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
                     <OilReport
                       reportData={row.original}
                       companyData={company || []}
+                      imageConstraints={row.original.image_date?.x}
                     />
                   </PDFViewer>
                 </DialogDescription>

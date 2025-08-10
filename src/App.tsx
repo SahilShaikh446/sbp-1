@@ -7,6 +7,7 @@ import Master from "./pages/masterAdmin/Master";
 import OilReportTabs from "./pages/OilReportTabs";
 import OilReportUpdate from "./features/oilReport/OilReportUpdate";
 import ABCReport from "./pages/ABCReport";
+import ContactUs from "./pages/ContactUs";
 
 axios.interceptors.request.use(
   function (config) {
@@ -64,6 +65,10 @@ function App() {
         {
           path: "/abc-report",
           element: <ABCReport />,
+        },
+        {
+          path: "/contact-us",
+          element: <ContactUs />,
         },
       ],
     },

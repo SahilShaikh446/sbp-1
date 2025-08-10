@@ -75,23 +75,21 @@ const Company = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-2">
-                <div className="mt-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                          Name
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Company Name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                        Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Company Name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="address"

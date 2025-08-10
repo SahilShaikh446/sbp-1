@@ -61,6 +61,7 @@ export const reportFormSchema = z.object({
   company_id: z.string(),
   date_of_filtration: z.string(),
   manufacturing_year: z.string(),
+  id: z.string(),
 });
 
 export type ReportType = z.infer<typeof reportFormSchema>;
@@ -84,18 +85,59 @@ function convertDOF(dateStr: string): string {
 }
 
 export default function OilReportCreate() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const [imageConstraints, setImageConstraints] = useState({
-    left: 0,
-    top: 0,
-  });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialX = position.x;
+    const initialY = position.y;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!containerRef.current || !imgRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const imgRect = imgRef.current.getBoundingClientRect();
+
+      // Get size of image without translation effect
+      const imgWidth = imgRect.width;
+      const imgHeight = imgRect.height;
+
+      // Calculate the delta
+      let newX = initialX + (moveEvent.clientX - startX);
+      let newY = initialY + (moveEvent.clientY - startY);
+
+      // Clamp so it stays inside container
+      const minX = 0;
+      const minY = 0;
+      const maxX = containerRect.width - imgWidth - 100;
+      const maxY = containerRect.height - imgHeight;
+
+      newX = Math.min(Math.max(newX, minX), maxX);
+      newY = Math.min(Math.max(newY, minY), maxY);
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
 
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_date: "",
-      report_description: "",
+      report_description:
+        "We have the pleasure in forming you that we have carried out transformer oil filtration at site & tested the sample of transformer oil for dielectric strength in accordance with 1866:2017 and the results are as under.",
       kva: "",
       voltage: "",
       make: "",
@@ -113,6 +155,7 @@ export default function OilReportCreate() {
       company_id: "",
       date_of_filtration: "",
       manufacturing_year: "",
+      id: "0",
     },
   });
 
@@ -127,7 +170,7 @@ export default function OilReportCreate() {
     try {
       const res = await axios.post(
         BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        data
+        { ...data, image_data: { x: position.x } }
       );
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
@@ -141,7 +184,6 @@ export default function OilReportCreate() {
     // You can also make an API POST request here
   }
 
-  console.log(imageConstraints);
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
@@ -297,9 +339,10 @@ export default function OilReportCreate() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
-                    name="manufacturing_year"
+                    name="transformer_oil_quantity"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Transformer Oil Quantity</FormLabel>
@@ -311,19 +354,6 @@ export default function OilReportCreate() {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="transformer_oil_quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Transformer Oil Quantity</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 1500 LITERS" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -331,7 +361,7 @@ export default function OilReportCreate() {
                     name="transformer_before_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Transformer Before Filtration</FormLabel>
+                        <FormLabel>BDV Before Filtration</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., 36 KV" {...field} />
                         </FormControl>
@@ -344,7 +374,7 @@ export default function OilReportCreate() {
                     name="transformer_after_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Transformer After Filtration</FormLabel>
+                        <FormLabel>BDV After Filtration</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
@@ -391,7 +421,7 @@ export default function OilReportCreate() {
                     name="oltc_before_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OLTC Before Filtration</FormLabel>
+                        <FormLabel>Before Filtration</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., 40 KV" {...field} />
                         </FormControl>
@@ -404,7 +434,7 @@ export default function OilReportCreate() {
                     name="oltc_after_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OLTC After Filtration</FormLabel>
+                        <FormLabel>After Filtration</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
@@ -504,7 +534,7 @@ export default function OilReportCreate() {
 
         {/* Preview Section */}
         <Card className="h-auto overflow-auto">
-          <div className="w-[794px]  overflow-auto px-8 mx-auto tinos-regular flex flex-col">
+          <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto tinos-regular flex flex-col">
             {/* Header */}
             <div className="border border-gray-300">
               <div className="p-2">
@@ -524,10 +554,10 @@ export default function OilReportCreate() {
               </div>
 
               <div
+                className="relative bg-white  flex flex-col flex-1"
                 ref={containerRef}
-                className="relative bg-white shadow-lg flex flex-col flex-1"
               >
-                <div className="px-18 py-4 flex-1">
+                <div className="px-18 py- flex-1">
                   <div className="">
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
@@ -543,14 +573,17 @@ export default function OilReportCreate() {
 
                     {/* Title */}
                     <div className="text-center py-2">
-                      <h1 className="text-2xl font-bold underline">
+                      <h1
+                        style={{ fontSize: "29px" }}
+                        className=" font-bold underline"
+                      >
                         OIL FILTRATION TEST REPORT
                       </h1>
                     </div>
                   </div>
 
                   {/* Client Information */}
-                  <table className="table-auto border-collapse">
+                  <table className="table-auto border-collapse ">
                     <tbody className="font-bold">
                       <tr>
                         <td className="font-bold  align-top pr-6 ">CLIENT</td>
@@ -594,13 +627,13 @@ export default function OilReportCreate() {
                   </div>
 
                   {/* Transformer Details */}
-                  <div className="mb-6">
+                  <div className="">
                     <h2 className="font-bold text-lg mb-4 underline">
                       Transformer Details:
                     </h2>
 
                     <div className="">
-                      <table className="w-full font-medium text-lg ">
+                      <table className="w-full font-medium ">
                         <tbody>
                           <tr className="">
                             <td className="py-0.5 font-medium -r -black w-1/3">
@@ -730,7 +763,7 @@ export default function OilReportCreate() {
                               Remark
                             </td>
                             <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-1 text-justify leading-tight max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
+                            <td className="py-1 text-justify  max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
                               {form.watch("remark") || "--"}
                             </td>
                           </tr>
@@ -767,34 +800,15 @@ export default function OilReportCreate() {
                     </div>
                   </div>
                 </div>
-                <motion.img
+                <img
                   ref={imgRef}
-                  drag
-                  dragConstraints={containerRef}
-                  onDragEnd={(event, info) => {
-                    const el = containerRef.current;
-                    if (!el) return;
-
-                    const rect = el.getBoundingClientRect();
-                    const relativeX = info.point.x - rect.left;
-                    const relativeY = info.point.y - rect.top;
-
-                    setImageConstraints({
-                      left: relativeX,
-                      top: relativeY,
-                    });
-                  }}
-                  initial={{
-                    x: imageConstraints.left,
-                    y: imageConstraints.top,
-                  }}
+                  className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab ml-[65px]"
+                  src="/stamp.jpg"
+                  onMouseDown={handleMouseDown}
                   style={{
-                    width: "150px",
-                    height: "150px",
-                    position: "absolute",
+                    transform: `translateX(${position.x}px)`,
                   }}
-                  className="object-contain"
-                  src={"/stamp.jpg"}
+                  alt="Stamp"
                 />
               </div>
 
@@ -827,7 +841,7 @@ export default function OilReportCreate() {
           <OilReport
             reportData={form.watch()}
             companyData={company || []}
-            imageConstraints={imageConstraints}
+            imageConstraints={position.x}
           />
         </PDFViewer> */}
       </div>

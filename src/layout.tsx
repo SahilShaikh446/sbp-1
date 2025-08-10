@@ -6,6 +6,7 @@ import {
   FileText,
   LayoutDashboard,
   LogOutIcon,
+  Mail,
   Menu,
   UserPlus,
   X,
@@ -39,6 +40,16 @@ const MasterAdminSidebar = [
     label: "Masters",
     href: "/masters",
     icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "OIL Filteration Report",
+    href: "/oil-report",
+    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Contact Us",
+    href: "/contact-us",
+    icon: <Mail className="h-5 w-5 flex-shrink-0" />,
   },
 ];
 

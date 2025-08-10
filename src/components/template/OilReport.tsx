@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   section: {
-    marginBottom: 10,
     paddingHorizontal: 40, // Centered content (75% width)
     position: "relative",
   },
@@ -115,8 +114,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 4,
-    marginBottom: 4,
+    paddingVertical: 5,
   },
   tableLabel: {
     width: 130,
@@ -137,11 +135,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   footer: {
-    bottom: 20, // Space from page bottom
+    bottom: 10, // Space from page bottom
     left: 0,
     right: 0,
-    borderTopWidth: 2,
-    borderColor: "#084f88",
+    borderTopWidth: 4,
+    borderColor: "#fcae08",
     paddingTop: 8,
     paddingHorizontal: 40,
     fontSize: 12,
@@ -162,22 +160,12 @@ interface ImageConstraints {
 const OilReport = ({
   reportData,
   companyData,
-  imageConstraints = { left: 0, top: 0 },
+  imageConstraints,
 }: {
   reportData: z.infer<typeof reportFormSchema>;
   companyData: companyType[];
-  imageConstraints?: ImageConstraints;
+  imageConstraints?: number; // Optional prop for image constraints
 }) => {
-  const pixelsToPoints = (value: string | number): number => {
-    if (typeof value === "number") return value * 0.75;
-    if (typeof value === "string" && value.endsWith("px"))
-      return parseFloat(value) * 0.75;
-    return parseFloat(value) * 0.75; // treat bare numbers as px too
-  };
-  console.log(
-    pixelsToPoints(imageConstraints.left),
-    pixelsToPoints(imageConstraints.top)
-  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -205,7 +193,7 @@ const OilReport = ({
                 Report No.: 01/25-26
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Date: {reportData.report_date || "07.04.2025"}
+                Date: {reportData.report_date || ""}
               </Text>
             </View>
 
@@ -325,14 +313,14 @@ const OilReport = ({
               ))}
             </View>
             <Image
-              src={"/stamp.jpg"}
+              src="/stamp.jpg"
               style={{
-                position: "absolute",
                 objectFit: "contain",
-                left: pixelsToPoints(imageConstraints.left) /* px -> pt */,
-                top: pixelsToPoints(imageConstraints.top) /* px -> pt */,
-                width: "150px",
-                height: "150px",
+                bottom: 10,
+                left: 0,
+                transform: `translateX(${imageConstraints}px)`,
+                width: 110, // 150px * 0.75
+                height: 110, // 150px * 0.75
               }}
             />
           </View>
