@@ -234,7 +234,11 @@ export default function OilReportCreate() {
                           type="button"
                           variant="outline"
                           role="combobox"
-                          className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
+                            form.formState.errors.company_id
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         >
                           <span
                             className={cn(
@@ -245,9 +249,8 @@ export default function OilReportCreate() {
                           >
                             {form.watch("company_id")
                               ? company?.find(
-                                  (company) =>
-                                    `${company.id}` === form.watch("company_id")
-                                )?.name
+                                  (c) => `${c.id}` === form.watch("company_id")
+                                )?.name || "Select company"
                               : "Select company"}
                           </span>
                           <ChevronDownIcon
@@ -257,6 +260,7 @@ export default function OilReportCreate() {
                           />
                         </Button>
                       </PopoverTrigger>
+
                       <PopoverContent
                         className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
                         align="start"
@@ -266,24 +270,19 @@ export default function OilReportCreate() {
                           <CommandList>
                             <CommandEmpty>No company found.</CommandEmpty>
                             <CommandGroup>
-                              {company?.map((company) => (
+                              {company?.map((c) => (
                                 <CommandItem
-                                  key={company.id}
-                                  value={company.name} // force string
-                                  onSelect={(currentValue) => {
-                                    const currentId = form.watch("company_id");
-                                    form.setValue(
-                                      "company_id",
-                                      currentValue === currentId
-                                        ? ""
-                                        : currentValue
-                                    );
+                                  key={c.id}
+                                  value={c.name} // search works by name
+                                  onSelect={() => {
+                                    form.setValue("company_id", `${c.id}`, {
+                                      shouldValidate: true,
+                                    });
                                     setOpen(false);
                                   }}
                                 >
-                                  {company.name}
-                                  {`${company.id}` ===
-                                    form.watch("company_id") && (
+                                  {c.name}
+                                  {`${c.id}` === form.watch("company_id") && (
                                     <CheckIcon size={16} className="ml-auto" />
                                   )}
                                 </CommandItem>

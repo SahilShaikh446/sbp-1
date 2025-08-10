@@ -171,7 +171,7 @@ const Client = () => {
                     Company
                   </Label>
                   <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger className={`w-full`}>
+                    <PopoverTrigger className="w-full">
                       <Button
                         type="button"
                         variant="outline"
@@ -190,9 +190,8 @@ const Client = () => {
                         >
                           {form.watch("company_id")
                             ? company?.find(
-                                (company) =>
-                                  `${company.id}` === form.watch("company_id")
-                              )?.name
+                                (c) => `${c.id}` === form.watch("company_id")
+                              )?.name || "Select company"
                             : "Select company"}
                         </span>
                         <ChevronDownIcon
@@ -202,6 +201,7 @@ const Client = () => {
                         />
                       </Button>
                     </PopoverTrigger>
+
                     <PopoverContent
                       className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
                       align="start"
@@ -211,25 +211,19 @@ const Client = () => {
                         <CommandList>
                           <CommandEmpty>No company found.</CommandEmpty>
                           <CommandGroup>
-                            {company?.map((company) => (
+                            {company?.map((c) => (
                               <CommandItem
-                                key={company.id}
-                                value={company.name} 
-                                onSelect={(currentValue) => {
-                                  const currentId = form.watch("company_id");
-                                  form.setValue(
-                                    "company_id",
-                                    currentValue === currentId
-                                      ? ""
-                                      : currentValue,
-                                    { shouldValidate: true }
-                                  );
+                                key={c.id}
+                                value={c.name} // search works by name
+                                onSelect={() => {
+                                  form.setValue("company_id", `${c.id}`, {
+                                    shouldValidate: true,
+                                  });
                                   setOpen(false);
                                 }}
                               >
-                                {company.name}
-                                {`${company.id}` ===
-                                  form.watch("company_id") && (
+                                {c.name}
+                                {`${c.id}` === form.watch("company_id") && (
                                   <CheckIcon size={16} className="ml-auto" />
                                 )}
                               </CommandItem>
