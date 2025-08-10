@@ -214,7 +214,7 @@ const Client = () => {
                             {company?.map((company) => (
                               <CommandItem
                                 key={company.id}
-                                value={`${company.id}`} // force string
+                                value={company.name} 
                                 onSelect={(currentValue) => {
                                   const currentId = form.watch("company_id");
                                   form.setValue(
