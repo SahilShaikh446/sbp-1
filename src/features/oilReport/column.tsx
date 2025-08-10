@@ -69,7 +69,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
   // },
   {
     header: "Serial No",
-    accessorKey: "sr_no",
+    accessorKey: "id",
   },
   {
     header: "Report Date",
@@ -134,7 +134,7 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
             </DialogContent>
           </Dialog>
 
-          {role === "Admin" && (
+          {role === "Master Admin" && (
             <Button
               variant="outline"
               size="sm"

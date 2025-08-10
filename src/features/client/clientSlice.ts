@@ -11,6 +11,7 @@ export interface clientType {
   company_id: number;
   phone: string;
   designation: string;
+  company_name: string;
 }
 
 interface ClientState {

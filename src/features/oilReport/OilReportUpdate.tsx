@@ -151,6 +151,7 @@ export default function OilReportUpdate() {
         form.setValue("voltage", res.data.voltage);
         form.setValue("make", res.data.make);
         form.setValue("sr_no", res.data.sr_no);
+        form.setValue("manufacturing_year", res.data.manufacturing_year);
         form.setValue(
           "transformer_oil_quantity",
           res.data.transformer_oil_quantity
@@ -163,6 +164,7 @@ export default function OilReportUpdate() {
           "transformer_after_filtration",
           res.data.transformer_after_filtration
         );
+        form.setValue("oltc_make_type", res.data.oltc_make_type);
         form.setValue("oltc_oil_quantity", res.data.oltc_oil_quantity);
         form.setValue(
           "oltc_before_filtration",
@@ -352,7 +354,7 @@ export default function OilReportUpdate() {
                   />
                   <FormField
                     control={form.control}
-                    name="manufacturing_year"
+                    name="transformer_oil_quantity"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Transformer Oil Quantity</FormLabel>
@@ -364,19 +366,6 @@ export default function OilReportUpdate() {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="transformer_oil_quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Transformer Oil Quantity</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., 1500 LITERS" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppDispatch } from "@/app/store";
 import {
   Form,
@@ -16,7 +16,7 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { Loader } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, Loader } from "lucide-react";
 import { toast } from "sonner";
 import { COLUMNS } from "./column";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
@@ -36,6 +36,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BASE_URL } from "@/lib/constants";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 export const schema = z.object({
   first_name: z.string().min(1, "First Name is required"),
@@ -48,6 +63,7 @@ export const schema = z.object({
 
 const Client = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const [open, setOpen] = useState(false);
 
   const data = useAppSelector(selectClient);
   const loading = useAppSelector(clientLoading);
@@ -145,33 +161,90 @@ const Client = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="company_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
+
+                <div className="*:not-first:mt-2">
+                  <Label
+                    className={`after:content-['*'] after:ml-0.5 after:text-red-500 ${
+                      form.formState.errors.company_id ? "text-red-500" : ""
+                    }`}
+                  >
+                    Company
+                  </Label>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger className={`w-full`}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        role="combobox"
+                        className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
+                          form.formState.errors.company_id
+                            ? "border-red-500"
+                            : ""
+                        }`}
                       >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a company" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {company?.map((i) => (
-                            <SelectItem key={i.id} value={`${i.id}`}>
-                              {i.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
+                        <span
+                          className={cn(
+                            "truncate",
+                            !form.watch("company_id") && "text-muted-foreground"
+                          )}
+                        >
+                          {form.watch("company_id")
+                            ? company?.find(
+                                (company) =>
+                                  `${company.id}` === form.watch("company_id")
+                              )?.name
+                            : "Select company"}
+                        </span>
+                        <ChevronDownIcon
+                          size={16}
+                          className="text-muted-foreground/80 shrink-0"
+                          aria-hidden="true"
+                        />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                      align="start"
+                    >
+                      <Command>
+                        <CommandInput placeholder="Search Company..." />
+                        <CommandList>
+                          <CommandEmpty>No company found.</CommandEmpty>
+                          <CommandGroup>
+                            {company?.map((company) => (
+                              <CommandItem
+                                key={company.id}
+                                value={`${company.id}`} // force string
+                                onSelect={(currentValue) => {
+                                  const currentId = form.watch("company_id");
+                                  form.setValue(
+                                    "company_id",
+                                    currentValue === currentId
+                                      ? ""
+                                      : currentValue,
+                                    { shouldValidate: true }
+                                  );
+                                  setOpen(false);
+                                }}
+                              >
+                                {company.name}
+                                {`${company.id}` ===
+                                  form.watch("company_id") && (
+                                  <CheckIcon size={16} className="ml-auto" />
+                                )}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {form.formState.errors.company_id && (
+                    <FormMessage>
+                      {form.formState.errors.company_id.message}
+                    </FormMessage>
                   )}
-                />
+                </div>
                 <FormField
                   control={form.control}
                   name="mobile_number"

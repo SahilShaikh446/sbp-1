@@ -12,6 +12,7 @@ export interface ContactUs {
   contact_us_company: string;
   contact_us_number: string;
   contact_us_remarks: string;
+  mail_date: string;
 }
 
 interface contactUsState {

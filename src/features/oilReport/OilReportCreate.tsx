@@ -32,18 +32,27 @@ import { enUS } from "date-fns/locale";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { toast } from "sonner";
-import { useParams } from "react-router-dom";
 import { fetchOilReportAsync } from "@/features/oilReport/oilReportSlice";
-import { Loader } from "lucide-react";
-import { motion } from "framer-motion";
-import { PDFViewer } from "@react-pdf/renderer";
-import OilReport from "@/components/template/OilReport";
+import { CheckIcon, ChevronDownIcon, Loader } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
-  report_description: z.string().min(1, {
-    message: "Description is required",
-  }),
+  report_description: z.string(),
   kva: z.string(),
   voltage: z.string(),
   make: z.string(),
@@ -88,6 +97,7 @@ export default function OilReportCreate() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [open, setOpen] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -96,7 +106,6 @@ export default function OilReportCreate() {
     const startY = e.clientY;
     const initialX = position.x;
     const initialY = position.y;
-
     const onMouseMove = (moveEvent: MouseEvent) => {
       if (!containerRef.current || !imgRef.current) return;
 
@@ -217,36 +226,74 @@ export default function OilReportCreate() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="company_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
+                  <div className="*:not-first:mt-2">
+                    <Label>Company</Label>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger className="w-full">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className="bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
                         >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a company" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {company?.map((company) => (
-                              <SelectItem
-                                key={company.id}
-                                value={`${company.id}`}
-                              >
-                                {company.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <span
+                            className={cn(
+                              "truncate",
+                              !form.watch("company_id") &&
+                                "text-muted-foreground"
+                            )}
+                          >
+                            {form.watch("company_id")
+                              ? company?.find(
+                                  (company) =>
+                                    `${company.id}` === form.watch("company_id")
+                                )?.name
+                              : "Select company"}
+                          </span>
+                          <ChevronDownIcon
+                            size={16}
+                            className="text-muted-foreground/80 shrink-0"
+                            aria-hidden="true"
+                          />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                        align="start"
+                      >
+                        <Command>
+                          <CommandInput placeholder="Search Company..." />
+                          <CommandList>
+                            <CommandEmpty>No company found.</CommandEmpty>
+                            <CommandGroup>
+                              {company?.map((company) => (
+                                <CommandItem
+                                  key={company.id}
+                                  value={`${company.id}`} // force string
+                                  onSelect={(currentValue) => {
+                                    const currentId = form.watch("company_id");
+                                    form.setValue(
+                                      "company_id",
+                                      currentValue === currentId
+                                        ? ""
+                                        : currentValue
+                                    );
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {company.name}
+                                  {`${company.id}` ===
+                                    form.watch("company_id") && (
+                                    <CheckIcon size={16} className="ml-auto" />
+                                  )}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <FormField
                   control={form.control}

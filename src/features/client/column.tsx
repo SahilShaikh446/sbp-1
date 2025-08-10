@@ -46,9 +46,14 @@ interface clientType {
   company_id: string;
   mobile_number: string;
   designation: string;
+  company_name: string;
 }
 
 export const COLUMNS: ColumnDef<clientType>[] = [
+  {
+    header: "Company",
+    accessorKey: "company_name",
+  },
   {
     header: "First Name",
     accessorKey: "first_name",
@@ -106,170 +111,166 @@ export const COLUMNS: ColumnDef<clientType>[] = [
       };
 
       useEffect(() => {
-        open && form.setValue("first_name", `${row.original.first_name}`);
-        open && form.setValue("last_name", `${row.original.last_name}`);
-        open && form.setValue("email", `${row.original.email}`);
-        open && form.setValue("company_id", `${row.original.company_id}`);
-        open && form.setValue("mobile_number", `${row.original.mobile_number}`);
-        open && form.setValue("designation", `${row.original.designation}`);
+        if (open) {
+          form.setValue("first_name", `${row.original.first_name}`);
+          form.setValue("last_name", `${row.original.last_name}`);
+          form.setValue("email", `${row.original.email}`);
+          form.setValue("company_id", `${row.original.company_id}`);
+          form.setValue("mobile_number", `${row.original.mobile_number}`);
+          form.setValue("designation", `${row.original.designation}`);
+        }
       }, [row, open]);
 
       return (
-        <>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button variant="link" size="icon">
-                <SquarePen className="w-5 text-green-700" strokeWidth={2} />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle>Edit Company</DialogTitle>
-                <DialogDescription className="text-red-600 text-xs">
-                  * marked fields are required
-                </DialogDescription>
-              </DialogHeader>
-
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                  <div className="grid sm:grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-2">
-                    <div className="mt-2">
-                      <FormField
-                        control={form.control}
-                        name="first_name"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                              Name
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Company Name" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="last_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                            Last Name
-                          </FormLabel>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="link" size="icon">
+              <SquarePen className="w-5 text-green-700" strokeWidth={2} />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="md:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Company</DialogTitle>
+              <DialogDescription className="text-red-600 text-xs">
+                * marked fields are required
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                {/* Responsive Grid with consistent spacing */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          First Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="eg. John" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Last Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="eg. Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Email
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="eg. john@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="company_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="eg. Doe"
-                              {...field}
-                            />
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a company" />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                          <SelectContent>
+                            {company?.map((i) => (
+                              <SelectItem key={i.id} value={`${i.id}`}>
+                                {i.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="mobile_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Phone
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="eg. 123-456-7890"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="designation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Designation
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="eg. Developer"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Full-width button row */}
+                  <div className="col-span-full flex justify-end mt-4">
+                    <Button
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                      className="w-full sm:w-auto"
+                    >
+                      {form.formState.isSubmitting && (
+                        <Loader className="animate-spin w-4 mr-1" />
                       )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                            Email
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="eg. john@example.com"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="company_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Company</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a company" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {company?.map((i) => (
-                                <SelectItem key={i.id} value={`${i.id}`}>
-                                  {i.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="mobile_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                            Phone
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="eg. 123-456-7890"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="designation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
-                            Designation
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="eg. Developer"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="col-span-full">
-                      <Button
-                        disabled={form.formState.isSubmitting}
-                        type="submit"
-                      >
-                        {form.formState.isSubmitting && (
-                          <Loader className="animate-spin w-4 mr-1" />
-                        )}
-                        Update Client
-                      </Button>
-                    </div>
+                      Update Client
+                    </Button>
                   </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-        </>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       );
     },
   },

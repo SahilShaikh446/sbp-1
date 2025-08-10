@@ -82,11 +82,6 @@ const clientAdminSidebar = [
     icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
   },
   {
-    label: "Masters",
-    href: "/masters",
-    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
     label: "OIL Filteration Report",
     href: "/oil-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,

@@ -1,24 +1,16 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ContactUs } from "./contactUsSlice";
-import { AtSign, Building, Mail, MessageSquare, Phone } from "lucide-react";
+import { AtSign, Building, Calendar, Mail, MessageSquare, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export const COLUMNS: ColumnDef<ContactUs>[] = [
   {
     header: () => (
       <div className="text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs font-semibold py-3">
-        <Mail className="inline-block h-4 w-4 mr-1" /> From
+        <Calendar className="inline-block h-4 w-4 mr-1" /> Date
       </div>
     ),
-    accessorKey: "mail_from",
-  },
-  {
-    header: () => (
-      <div className="text-left text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs font-semibold py-3">
-        <Mail className="inline-block h-4 w-4 mr-1" /> To
-      </div>
-    ),
-    accessorKey: "mail_to",
+    accessorKey: "mail_date",
   },
   {
     header: () => (
