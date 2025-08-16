@@ -95,7 +95,6 @@ export const acbInspectionSchema = z.object({
 
   // Operations & Electrical
   on_off_operations_manual: z.string().optional(),
-  on_off_operations_fixed: z.string().optional(),
   electrical: z.string().optional(),
 
   // Contact Conditions
@@ -206,34 +205,41 @@ function ABCReport() {
       location: "",
       type_of_acb: "",
       acb_sr_no: "",
+      feeder_designation: "",
       current_rating: "",
+      closing_coil_voltage: "",
+      motor_voltage: "",
+      shunt_release: "",
+      u_v_release: "",
+      type_of_release: "",
+      setting: "",
+      on_off_operations_manual: "",
+      electrical: "",
+      condition_of_main_contacts_fixed: "",
+      condition_of_main_contacts_moving: "",
+      condition_of_arcing_contacts_fixed: "",
+      condition_of_arcing_contacts_moving: "",
+      condition_of_sic_fixed: "",
+      condition_of_sic_moving: "",
+      condition_of_jaw_contact: "",
+      condition_of_cradle_terminals: "",
+      condition_of_earthing_terminals: "",
+      arcing_contact_gap: "",
+      condition_of_arc_chute: "",
+      dusty_housing: "",
+      broken_housing: "",
+      clean: "",
+      operation_of_auxiliary_contacts: "",
+      condition_of_current_transformers: "",
+      check_control_wiring_of_acb_for_proper_connections: "",
+      greasing_of_moving_parts_in_pole_assembly: "",
+      greasing_of_moving_parts_of_mechanism_and_rails: "",
+      recommended_spares_for_replacement: "",
+      remarks: "",
+      client_repres: "",
+      service_repres: "",
       company_id: "",
-      acb_release_testing: [
-        {
-          protection: "LT",
-          setting_1: "",
-          characteristics: "",
-          tms_as_per_relay_setting: "",
-          actual_tms: "",
-          result: "",
-        },
-        {
-          protection: "ST",
-          setting_1: "",
-          characteristics: "",
-          tms_as_per_relay_setting: "",
-          actual_tms: "",
-          result: "",
-        },
-        {
-          protection: "GF",
-          setting_1: "",
-          characteristics: "",
-          tms_as_per_relay_setting: "",
-          actual_tms: "",
-          result: "",
-        },
-      ],
+      acb_release_testing: [],
     },
   });
 
@@ -251,10 +257,11 @@ function ABCReport() {
 
   async function onSubmit(data: ACBInspectionForm) {
     try {
-      const res = await axios.post(
-        BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        { ...data, image_data: { x: position.x } }
-      );
+      const res = await axios.post(BASE_URL + "Add/ACB/Report", {
+        ...data,
+        image_data: { x: position.x },
+      });
+      console.log(data);
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
@@ -595,8 +602,16 @@ function ABCReport() {
                       label: "ON/OFF Operations Manual:",
                     },
                     {
-                      name: "on_off_operations_fixed",
-                      label: "ON/OFF Operations Moving:",
+                      name: "electrical",
+                      label: "Electrical:",
+                    },
+                    {
+                      name: "condition_of_main_contacts_fixed",
+                      label: "Condition of Main Contacts (Fixed):",
+                    },
+                    {
+                      name: "condition_of_main_contacts_moving",
+                      label: "Condition of Main Contacts (Moving):",
                     },
                     {
                       name: "condition_of_arcing_contacts_fixed",
@@ -808,23 +823,7 @@ function ABCReport() {
                           <FormLabel>
                             Greasing of moving parts in pole assembly
                           </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value as string}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="done">Done</SelectItem>
-                              <SelectItem value="not_required">
-                                Not Required
-                              </SelectItem>
-                              <SelectItem value="pending">Pending</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Input placeholder="Enter details" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -837,23 +836,7 @@ function ABCReport() {
                           <FormLabel>
                             Greasing of moving parts of mechanism & rails
                           </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value as string}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="done">Done</SelectItem>
-                              <SelectItem value="not_required">
-                                Not Required
-                              </SelectItem>
-                              <SelectItem value="pending">Pending</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Input placeholder="Enter details" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1273,8 +1256,21 @@ function ABCReport() {
                         {form.watch("on_off_operations_manual") || "--"}
                       </td>
                       <td className=" text-left w-1/2 px-2">
-                        <span className="font-bold mr-12">Moving:</span>
-                        {form.watch("on_off_operations_fixed") || "--"}
+                        <span className="font-bold mr-12">Electrical:</span>
+                        {form.watch("electrical") || "--"}
+                      </td>
+                    </tr>
+                    <tr className="border-t border-black flex justify-between pr-8 pl-4">
+                      <td className=" text-left w-2/2 border-r border-black">
+                        <span className="font-bold mr-20">
+                          Condition of Main Contacts (Fixed):{"           "}
+                        </span>
+                        {form.watch("condition_of_main_contacts_fixed") || "--"}
+                      </td>
+                      <td className=" text-left w-1/2 px-2">
+                        <span className="font-bold mr-11">Moving: </span>
+                        {form.watch("condition_of_main_contacts_moving") ||
+                          "--"}
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">

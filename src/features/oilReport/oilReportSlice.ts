@@ -21,7 +21,7 @@ export const fetchOilReportAsync = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        BASE_URL + "API/List/Oil/Filtration/Test/Report"
+        BASE_URL + "/List/ACB/Report"
       );
       return response.data;
     } catch (error) {

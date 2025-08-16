@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { ACBInspectionForm } from "@/pages/ABCReport";
+import { ACBInspectionForm } from "@/pages/ACBReport";
 import { companyType } from "@/features/company/companySlice"; // Adjust import path
 
 // Register Tinos fonts (regular and bold)
@@ -396,6 +396,22 @@ const ACBReport = ({
                   <Text style={styles.label}>Moving: </Text>
                   <Text style={styles.value}>
                     {reportData.condition_of_arcing_contacts_moving || "N/A"}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.tableRowSplit}>
+                <View style={styles.tableLabel}>
+                  <Text style={styles.label}>
+                    Condition of Main Contacts (Fixed):{" "}
+                  </Text>
+                  <Text style={styles.value}>
+                    {reportData.condition_of_main_contacts_fixed || "N/A"}
+                  </Text>
+                </View>
+                <View style={styles.tableValue}>
+                  <Text style={styles.label}>Moving: </Text>
+                  <Text style={styles.value}>
+                    {reportData.condition_of_main_contacts_moving || "N/A"}
                   </Text>
                 </View>
               </View>
