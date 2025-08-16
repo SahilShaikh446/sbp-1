@@ -84,14 +84,6 @@ export function convertReportDate(dateStr: string): string {
     return "";
   }
 }
-function convertDOF(dateStr: string): string {
-  try {
-    const date = parseISO(dateStr); // accepts 'YYYY-MM-DD'
-    return formatWithOrdinal(date, "MMMM do, yyyy", { locale: enUS });
-  } catch {
-    return "";
-  }
-}
 
 export default function OilReportCreate() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,7 +138,7 @@ export default function OilReportCreate() {
     defaultValues: {
       report_date: "",
       report_description:
-        "We have the pleasure in forming you that we have carried out transformer oil filtration at site & tested the sample of transformer oil for dielectric strength in accordance with 1866:2017 and the results are as under.",
+        "We have the pleasure in informing you that we have carried out transformer oil filtration at site & tested the sample of transformer oil for dielectric strength in accordance with 1866:2017 and the results are as under.",
       kva: "",
       voltage: "",
       make: "",
@@ -467,7 +459,7 @@ export default function OilReportCreate() {
                     name="oltc_before_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Before Filtration</FormLabel>
+                        <FormLabel>BDV Before Filtration</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., 40 KV" {...field} />
                         </FormControl>
@@ -480,7 +472,7 @@ export default function OilReportCreate() {
                     name="oltc_after_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>After Filtration</FormLabel>
+                        <FormLabel>BDV After Filtration</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
@@ -514,27 +506,10 @@ export default function OilReportCreate() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="date_of_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Filteration</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            placeholder="e.g., Mr. Sakharam Parab"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name="clients_representative"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Client Representative</FormLabel>
+                        <FormLabel>For Client</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Mr. Sakharam Parab"
@@ -550,7 +525,7 @@ export default function OilReportCreate() {
                     name="tested_by"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tested By</FormLabel>
+                        <FormLabel>For Ok Agencies</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., M/s. OK AGENCIES"
@@ -812,36 +787,20 @@ export default function OilReportCreate() {
                               {form.watch("remark") || "--"}
                             </td>
                           </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Date Of Filtration{" "}
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {convertDOF(form.watch("date_of_filtration")) ||
-                                "--/--/----"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Client’s Representative
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("clients_representative") || "--"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Tested By
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("tested_by") || "--"}
-                            </td>
-                          </tr>
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                  <div className="w-full flex justify-between items-center font-bold text-lg">
+                    <div className="flex flex-col">
+                      <span className="">For Client :</span>
+                      <span>
+                        {form.watch("clients_representative") || "--"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="">For Ok Agencies :</span>
+                      <span>{form.watch("tested_by") || "--"}</span>
                     </div>
                   </div>
                 </div>
@@ -881,14 +840,6 @@ export default function OilReportCreate() {
             </div>
           </div>
         </Card>
-
-        {/* <PDFViewer width="100%" height="600px" className="w-full">
-          <OilReport
-            reportData={form.watch()}
-            companyData={company || []}
-            imageConstraints={position.x}
-          />
-        </PDFViewer> */}
       </div>
     </div>
   );

@@ -8,9 +8,9 @@ import { store } from "./app/store.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider store={store}>
-      <Toaster position="top-center" richColors closeButton />
-      <App />
-    </Provider>
+  <Provider store={store}>
+    <Toaster position="top-center" richColors closeButton />
+    <App />
+  </Provider>
   </StrictMode>
 );

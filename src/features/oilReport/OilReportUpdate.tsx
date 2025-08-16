@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
@@ -97,7 +97,52 @@ function convertDOF(dateStr: string): string {
 }
 
 export default function OilReportUpdate() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialX = position.x;
+    const initialY = position.y;
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!containerRef.current || !imgRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const imgRect = imgRef.current.getBoundingClientRect();
+
+      // Get size of image without translation effect
+      const imgWidth = imgRect.width;
+      const imgHeight = imgRect.height;
+
+      // Calculate the delta
+      let newX = initialX + (moveEvent.clientX - startX);
+      let newY = initialY + (moveEvent.clientY - startY);
+
+      // Clamp so it stays inside container
+      const minX = 0;
+      const minY = 0;
+      const maxX = containerRect.width - imgWidth - 100;
+      const maxY = containerRect.height - imgHeight;
+
+      newX = Math.min(Math.max(newX, minX), maxX);
+      newY = Math.min(Math.max(newY, minY), maxY);
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
 
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
@@ -531,58 +576,6 @@ export default function OilReportUpdate() {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="date_of_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Filteration</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            placeholder="e.g., Mr. Sakharam Parab"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="clients_representative"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Representative</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., Mr. Sakharam Parab"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="tested_by"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tested By</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., M/s. OK AGENCIES"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
@@ -600,7 +593,7 @@ export default function OilReportUpdate() {
 
         {/* Preview Section */}
         <Card className="h-auto overflow-auto">
-          <div className="w-[794px]  overflow-auto px-8 mx-auto tinos-regular flex flex-col">
+          <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto tinos-regular flex flex-col">
             {/* Header */}
             <div className="border border-gray-300">
               <div className="p-2">
@@ -619,8 +612,11 @@ export default function OilReportUpdate() {
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
 
-              <div className="bg-white shadow-lg flex flex-col flex-1">
-                <div className="px-18 py-4 flex-1">
+              <div
+                className="relative bg-white  flex flex-col flex-1"
+                ref={containerRef}
+              >
+                <div className="px-18 py- flex-1">
                   <div className="">
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
@@ -636,14 +632,17 @@ export default function OilReportUpdate() {
 
                     {/* Title */}
                     <div className="text-center py-2">
-                      <h1 className="text-2xl font-bold underline">
+                      <h1
+                        style={{ fontSize: "29px" }}
+                        className=" font-bold underline"
+                      >
                         OIL FILTRATION TEST REPORT
                       </h1>
                     </div>
                   </div>
 
                   {/* Client Information */}
-                  <table className="table-auto border-collapse">
+                  <table className="table-auto border-collapse ">
                     <tbody className="font-bold">
                       <tr>
                         <td className="font-bold  align-top pr-6 ">CLIENT</td>
@@ -670,8 +669,8 @@ export default function OilReportUpdate() {
                             </>
                           ) : (
                             <>
-                              <div>--</div>
-                              <div>--</div>
+                              <div>-</div>
+                              <div>-</div>
                             </>
                           )}
                         </td>
@@ -682,18 +681,18 @@ export default function OilReportUpdate() {
                   {/* Description */}
                   <div className="mb-2 py-2 text-lg leading-6">
                     <p className="font-medium leading-tight max-w-[700px] break-words whitespace-pre-wrap overflow-hidden">
-                      {form.watch("report_description") || "--"}
+                      {form.watch("report_description") || "-"}
                     </p>
                   </div>
 
                   {/* Transformer Details */}
-                  <div className="mb-6">
+                  <div className="">
                     <h2 className="font-bold text-lg mb-4 underline">
                       Transformer Details:
                     </h2>
 
                     <div className="">
-                      <table className="w-full font-medium text-lg ">
+                      <table className="w-full font-medium ">
                         <tbody>
                           <tr className="">
                             <td className="py-0.5 font-medium -r -black w-1/3">
@@ -730,7 +729,9 @@ export default function OilReportUpdate() {
                             </td>
                           </tr>
                           <tr className="">
-                            <td className="py-0.5 font-medium">Sr. No.</td>
+                            <td className="py-0.5 font-medium">
+                              Manufacturing Year
+                            </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
                               {form.watch("manufacturing_year") || "--"}
@@ -755,8 +756,9 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("transformer_before_filtration") +
-                                " KV" || "--"}
+                              {form.watch("transformer_before_filtration")
+                                ? form.watch("transformer_before_filtration")
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -765,8 +767,10 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("transformer_after_filtration") +
-                                " KV" || "--"}
+                              {form.watch("transformer_after_filtration")
+                                ? form.watch("transformer_after_filtration") +
+                                  " KV"
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -775,17 +779,21 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("oltc_make_type") || "--"}
+                              {form.watch("oltc_make_type")
+                                ? form.watch("oltc_make_type")
+                                : "--"}
                             </td>
                           </tr>
+
                           <tr className="">
                             <td className="py-0.5 font-medium">
                               OLTC Oil Quantity
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("oltc_oil_quantity") + " LITERS" ||
-                                "--"}
+                              {form.watch("oltc_oil_quantity")
+                                ? form.watch("oltc_oil_quantity") + " LITERS"
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -794,8 +802,9 @@ export default function OilReportUpdate() {
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
-                              {form.watch("oltc_before_filtration") + " KV" ||
-                                "--"}
+                              {form.watch("oltc_before_filtration")
+                                ? form.watch("oltc_before_filtration") + " KV"
+                                : "--"}
                             </td>
                           </tr>
                           <tr className="">
@@ -812,43 +821,37 @@ export default function OilReportUpdate() {
                               Remark
                             </td>
                             <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-1 text-justify leading-tight max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
+                            <td className="py-1 text-justify  max-w-[50px] break-words whitespace-pre-wrap overflow-hidden">
                               {form.watch("remark") || "--"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Date Of Filtration{" "}
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {convertDOF(form.watch("date_of_filtration")) ||
-                                "--"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Client’s Representative
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("clients_representative") || "--"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="py-0.5 font-medium align-top">
-                              Tested By
-                            </td>
-                            <td className="py-0.5 text-center align-top">:</td>
-                            <td className="py-0.5 text-justify leading-relaxed">
-                              {form.watch("tested_by") || "--"}
                             </td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
+                  <div className="w-full flex justify-between items-center font-bold text-lg">
+                    <div className="flex flex-col">
+                      <span className="">For Client :</span>
+                      <span>
+                        {form.watch("clients_representative") || "--"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="">For Ok Agencies :</span>
+                      <span>{form.watch("tested_by") || "--"}</span>
+                    </div>
+                  </div>
                 </div>
+                <img
+                  ref={imgRef}
+                  className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab ml-[65px]"
+                  src="/stamp.jpg"
+                  onMouseDown={handleMouseDown}
+                  style={{
+                    transform: `translateX(${position.x}px)`,
+                  }}
+                  alt="Stamp"
+                />
               </div>
 
               {/* Footer */}

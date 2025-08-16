@@ -24,9 +24,10 @@ const ProtectedRoutes = () => {
         localStorage.setItem("token", res.data.access_token);
         dispatch(
           setAuth({
-            username: res.data.email,
+            username: res.data.user_name,
             role: `${res.data.authority}`,
             roleId: `${res.data.authority_id}`,
+            email: res.data.email,
           })
         );
       }

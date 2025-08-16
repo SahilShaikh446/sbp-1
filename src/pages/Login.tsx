@@ -53,9 +53,10 @@ export default function Login() {
         localStorage.setItem("token", res.data.access_token);
         dispatch(
           setAuth({
-            username: data.email,
+            username: res.data.user_name,
             role: `${res.data.authority}`,
             roleId: `${res.data.authority_id}`,
+            email: res.data.email,
           })
         );
 
@@ -64,13 +65,16 @@ export default function Login() {
       }
     } catch (error) {
       const axiosError = error as AxiosError<LogInError | string>;
-      if (axiosError.response?.data == "Username Not Found") {
+      if (
+        typeof axiosError.response?.data === "object" &&
+        axiosError.response?.data?.message === "Username Not Found"
+      ) {
         form.setError("email", {
           message: "User not found",
           type: "validate",
         });
         form.setFocus("email");
-      } else if (axiosError.response?.data == "Account is Locked") {
+      } else if (axiosError.response?.data === "Account is Locked") {
         form.setError("email", {
           message: "Account locked",
           type: "validate",

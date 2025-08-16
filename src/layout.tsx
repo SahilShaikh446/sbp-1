@@ -1,15 +1,14 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ChevronRight,
+  Droplet,
   FileText,
   LayoutDashboard,
   LogOutIcon,
   Mail,
-  Menu,
   UserPlus,
-  X,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -19,16 +18,16 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { useEffect, useState, useRef } from "react";
 import { cn } from "./lib/utils";
 import { useAppSelector } from "./app/hooks";
+import { resetStore } from "./app/store";
+import Navbar from "./components/Navbar";
 
 const MasterAdminSidebar = [
   {
@@ -44,6 +43,11 @@ const MasterAdminSidebar = [
   {
     label: "OIL Filteration Report",
     href: "/oil-report",
+    icon: <Droplet className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "ABC Report",
+    href: "/abc-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,
   },
   {
@@ -53,28 +57,6 @@ const MasterAdminSidebar = [
   },
 ];
 
-const AdminSidebar = [
-  {
-    label: "Dashboard",
-    href: "/",
-    icon: <LayoutDashboard className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Masters",
-    href: "/masters",
-    icon: <UserPlus className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "OIL Filteration Report",
-    href: "/oil-report",
-    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "ABC Report",
-    href: "/abc-report",
-    icon: <FileText className="h-5 w-5 flex-shrink-0" />,
-  },
-];
 const clientAdminSidebar = [
   {
     label: "Dashboard",
@@ -97,11 +79,7 @@ const Layout = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const role = useAppSelector((state) => state.auth.role);
   const sidebar =
-    role === "Master Admin"
-      ? MasterAdminSidebar
-      : role === "Admin"
-      ? AdminSidebar
-      : clientAdminSidebar;
+    role === "Master Admin" ? MasterAdminSidebar : clientAdminSidebar;
 
   // Handle window resize to detect mobile/desktop
   useEffect(() => {
@@ -146,7 +124,7 @@ const Layout = () => {
   }, [open, isMobile]);
 
   const handleLogout = () => {
-    dispatch({ type: "store/reset" });
+    dispatch(resetStore());
     sessionStorage.clear();
     toast.success("You have successfully logged out!");
     navigate("/login");
@@ -154,181 +132,148 @@ const Layout = () => {
   };
 
   const toggleSidebar = () => {
-    setOpen((prev) => !prev);
+    setOpen(!open);
   };
 
   return (
-    <SidebarProvider open={open} onOpenChange={setOpen}>
-      <div className="flex h-screen w-full">
-        {/* Sidebar */}
-        <div
-          ref={sidebarRef}
-          onMouseEnter={() => !isMobile && setIsHovered(true)}
-          onMouseLeave={() => !isMobile && setIsHovered(false)}
-          className={cn(
-            "fixed inset-y-0 left-0 z-40 transition-transform duration-300 ease-in-out",
-            isMobile
-              ? open
-                ? "translate-x-0"
-                : "-translate-x-full"
-              : "translate-x-0",
-            "md:static md:flex md:flex-col"
+    <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
+      {/* Fixed navbar at top */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-16">
+        <Navbar onMenuClick={toggleSidebar} />
+      </div>
+
+      {/* Content area below navbar */}
+      <div className="flex flex-1  overflow-hidden">
+        <SidebarProvider open={open} onOpenChange={setOpen}>
+          {/* Mobile overlay */}
+          {isMobile && open && (
+            <div
+              className="fixed inset-0 bg-black/50 z-30"
+              onClick={() => setOpen(false)}
+            />
           )}
-        >
-          <Sidebar
-            collapsible={isMobile ? "none" : "icon"}
+
+          {/* Sidebar */}
+          <div
+            ref={sidebarRef}
+            onMouseEnter={() => !isMobile && setIsHovered(true)}
+            onMouseLeave={() => !isMobile && setIsHovered(false)}
             className={cn(
-              "border-r border-neutral-200 dark:border-neutral-700 h-full",
-              isMobile
-                ? "w-72 bg-white dark:bg-neutral-900"
-                : "w-[60px] md:w-auto"
+              // Mobile: Fixed positioning
+              isMobile && "fixed left-0 top-16 bottom-0 z-40",
+              isMobile && "transition-transform duration-300 ease-in-out",
+              isMobile && (open ? "translate-x-0" : "-translate-x-full"),
+              // Desktop: Static positioning
+              !isMobile && "relative flex-shrink-0"
             )}
           >
-            <SidebarHeader className="border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900  ">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`${
-                    open || isMobile ? "w-[3rem]" : "w-[2rem]"
-                  } rounded-lg flex items-center justify-center flex-shrink-0`}
-                >
-                  <img
-                    src="/1halfLogo.png"
-                    alt="OK Agencies"
-                    className="w-auto h-auto object-contain"
-                  />
-                </div>
-                <motion.div
-                  initial={false}
-                  animate={{
-                    opacity: open || isMobile ? 1 : 0,
-                    width: open || isMobile ? "auto" : 0,
-                  }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <img
-                    src="/2halfLogo.png"
-                    alt="OK Agencies"
-                    className="w-auto h-auto object-contain"
-                  />
-                </motion.div>
-                {isMobile && (
-                  <button
-                    onClick={toggleSidebar}
-                    className=" top-4 right-4 p-2 md:hidden"
-                  >
-                    <X className="h-6 w-6 text-neutral-700 dark:text-neutral-300" />
-                  </button>
-                )}
-              </div>
-            </SidebarHeader>
-
-            <SidebarContent>
-              <SidebarGroup>
-                <SidebarGroupContent>
-                  <SidebarMenu className="space-y-1">
-                    {sidebar.map((link, idx) => {
-                      const isActive = window.location.pathname === link.href;
-                      return (
-                        <SidebarMenuItem key={idx}>
-                          <SidebarMenuButton
-                            asChild
-                            className={cn(
-                              "h-10 transition-colors duration-200",
-                              isActive
-                                ? "bg-blue-600 text-white hover:bg-blue-700"
-                                : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                            )}
-                            tooltip={
-                              !open && !isMobile ? link.label : undefined
-                            }
-                          >
-                            <Link
-                              to={link.href}
-                              className="flex items-center gap-3 w-full px-3"
-                              onClick={() => isMobile && setOpen(false)}
-                            >
-                              <div className="flex-shrink-0">{link.icon}</div>
-                              <motion.span
-                                initial={false}
-                                animate={{
-                                  opacity: open || isMobile ? 1 : 0,
-                                }}
-                                transition={{
-                                  duration: 0.2,
-                                  ease: "easeInOut",
-                                }}
-                                className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                              >
-                                {link.label}
-                              </motion.span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </SidebarContent>
-
-            <SidebarFooter className="border-t border-neutral-200 dark:border-neutral-700">
-              <SidebarMenu>
-                <SidebarMenuButton
-                  onClick={handleLogout}
-                  className="group relative transition-all duration-300 rounded-xl h-12 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                >
-                  <div className="flex-shrink-0 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 group-hover:bg-red-100 dark:group-hover:bg-red-900/30 transition-colors duration-300">
-                    <LogOutIcon className="h-5 w-5" />
-                  </div>
-                  <AnimatePresence>
-                    {(open || isMobile) && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex items-center justify-between flex-1"
-                      >
-                        <span className="font-medium text-sm">Logout</span>
-                        <ChevronRight className="h-4 w-4 transition-transform duration-200 opacity-0 group-hover:opacity-100" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </SidebarMenuButton>
-              </SidebarMenu>
-            </SidebarFooter>
-
-            <SidebarRail />
-          </Sidebar>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 h-screen overflow-auto">
-          <div className="md:hidden bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 p-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <img
-                src="/1halfLogo.png"
-                alt="OK Agencies"
-                className="h-8 w-auto object-contain"
-              />
-            </div>
-            <button
-              onClick={toggleSidebar}
+            <Sidebar
+              collapsible={isMobile ? "none" : "icon"}
               className={cn(
-                "p-2 rounded-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700",
-                open && "hidden"
+                "border-r border-neutral-200 dark:border-neutral-700 h-full flex flex-col",
+                isMobile
+                  ? "w-72 bg-white dark:bg-neutral-900"
+                  : open
+                  ? "w-64"
+                  : "w-16"
               )}
             >
-              <Menu className="h-6 w-6 text-neutral-700 dark:text-neutral-300" />
-            </button>
+              {/* Main content area - scrollable */}
+              <SidebarContent className="flex-1 overflow-y-auto">
+                <SidebarGroup>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="space-y-1 md:mt-18 ">
+                      {sidebar.map((link, idx) => {
+                        const isActive = window.location.pathname === link.href;
+                        return (
+                          <SidebarMenuItem key={idx}>
+                            <SidebarMenuButton
+                              asChild
+                              className={cn(
+                                "h-10 transition-colors duration-200 w-full",
+                                isActive
+                                  ? "bg-blue-600 text-white hover:bg-blue-700 "
+                                  : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                              )}
+                              tooltip={
+                                !open && !isMobile ? link.label : undefined
+                              }
+                            >
+                              <Link
+                                to={link.href}
+                                className="flex items-center gap-3 w-full"
+                                onClick={() => isMobile && setOpen(false)}
+                              >
+                                <div className="flex-shrink-0">{link.icon}</div>
+                                {(open || isMobile) && (
+                                  <motion.span
+                                    initial={{ opacity: 0, width: 0 }}
+                                    animate={{ opacity: 1, width: "auto" }}
+                                    exit={{ opacity: 0, width: 0 }}
+                                    transition={{
+                                      duration: 0.2,
+                                      ease: "easeInOut",
+                                    }}
+                                    className="text-sm font-medium whitespace-nowrap"
+                                  >
+                                    {link.label}
+                                  </motion.span>
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+
+              {/* Footer - always visible at bottom */}
+              <SidebarFooter className="border-t border-neutral-200 dark:border-neutral-700  flex-shrink-0">
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={handleLogout}
+                      className="group w-full h-12 transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="flex-shrink-0 p-1">
+                          <LogOutIcon className="h-5 w-5" />
+                        </div>
+                        {(open || isMobile) && (
+                          <motion.div
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: "auto" }}
+                            exit={{ opacity: 0, width: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center justify-between flex-1"
+                          >
+                            <span className="font-medium text-sm">Logout</span>
+                            <ChevronRight className="h-4 w-4 transition-transform duration-200 opacity-0 group-hover:opacity-100" />
+                          </motion.div>
+                        )}
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarFooter>
+            </Sidebar>
           </div>
-          <div className="p-2 bg-white dark:bg-neutral-900 w-full h-full overflow-auto">
+
+          {/* Main content */}
+          <main
+            className="flex-1 overflow-auto bg-background p-4"
+            style={{
+              height: "calc(100vh - 3.5rem)", // Subtract navbar height (h-16 = 4rem)
+              marginTop: "4rem", // Match navbar height to push content below
+            }}
+          >
             <Outlet />
-          </div>
-        </div>
+          </main>
+        </SidebarProvider>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 

@@ -31,7 +31,7 @@ function addOneYear(dateString: string): string {
     return format(newDate, "yyyy-MM-dd");
   } catch (e) {
     console.error("Error parsing date:", dateString);
-    return "Invalid date";
+    return "date error";
   }
 }
 
@@ -76,13 +76,9 @@ export const COLUMNS: CustomColumnDef<ExtendedReportType>[] = [
     accessorKey: "report_date",
   },
   {
-    header: "Filtration Date",
-    accessorKey: "date_of_filtration",
-  },
-  {
     header: "Next Date of Filtration",
     cell: ({ row }) => {
-      return <span>{addOneYear(row.original.date_of_filtration)}</span>;
+      return <span>{addOneYear(row.original.report_date)}</span>;
     },
   },
   {

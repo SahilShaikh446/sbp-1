@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   footer: {
-    bottom: 10, // Space from page bottom
+    bottom: 8, // Space from page bottom
     left: 0,
     right: 0,
     borderTopWidth: 4,
@@ -256,7 +256,7 @@ const OilReport = ({
                   value: reportData.manufacturing_year || "41083/1 Year - 2011",
                 },
                 {
-                  label: "Transformer Oil Quantity",
+                  label: "Transformer Oil Qty",
                   value: reportData.transformer_oil_quantity || "1590 LITERS",
                 },
                 {
@@ -276,11 +276,11 @@ const OilReport = ({
                   value: reportData.oltc_oil_quantity || "210 LITERS",
                 },
                 {
-                  label: "Before Filtration",
+                  label: "BDV Before Filtration",
                   value: reportData.oltc_before_filtration || "40 KV",
                 },
                 {
-                  label: "After Filtration",
+                  label: "BDV After Filtration",
                   value:
                     reportData.oltc_after_filtration ||
                     "Sample withstood at 80 KV for 1 minute",
@@ -291,19 +291,6 @@ const OilReport = ({
                     reportData.remark ||
                     "Dielectric strength of transformer oil is Satisfactory. Silica Gel Replaced. OLTC Servicing Done. Radiator, Main tank, Cable box, Conservator, Valve OLTC, Top Bottom oil gauge, mog, Total Gasket and Total Gasket Nut Bolt is replaced. OLTC oil new. Filled up and painting Epoxy.",
                 },
-                {
-                  label: "Date Of Filtration",
-                  value: reportData.date_of_filtration || "April 3rd, 2025",
-                },
-                {
-                  label: "Client’s Representative",
-                  value:
-                    reportData.clients_representative || "Mr. Sakharam Parab",
-                },
-                {
-                  label: "Tested By",
-                  value: reportData.tested_by || "M/s. OK AGENCIES",
-                },
               ].map(({ label, value }, idx) => (
                 <View style={styles.tableRow} key={idx}>
                   <Text style={styles.tableLabel}>{label}</Text>
@@ -311,6 +298,27 @@ const OilReport = ({
                   <Text style={styles.tableValue}>{value || "N/A"}</Text>
                 </View>
               ))}
+            </View>
+            <View
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                fontWeight: "bold",
+                fontSize: 15,
+              }}
+            >
+              <View
+                style={{ display: "flex", flexDirection: "column", gap: 5 }}
+              >
+                <Text>For Client :</Text>
+                <Text>{reportData.clients_representative || "--"}</Text>
+              </View>
+              <View style={{ display: "flex", flexDirection: "column" }}>
+                <Text>For Ok Agencies :</Text>
+                <Text>{reportData.tested_by || "--"}</Text>
+              </View>
             </View>
             <Image
               src="/stamp.jpg"

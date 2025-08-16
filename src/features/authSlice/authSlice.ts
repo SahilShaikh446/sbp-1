@@ -6,12 +6,14 @@ export interface AuthState {
   role: string | null;
   roleId: string | null;
   username: string | null;
+  email: string | null;
 }
 
 const initialState: AuthState = {
   role: null,
   roleId: null,
   username: null,
+  email: null,
 };
 
 export const authSlice = createSlice({
@@ -22,10 +24,12 @@ export const authSlice = createSlice({
       state.role = action.payload.role;
       state.roleId = action.payload.roleId;
       state.username = action.payload.username;
+      state.email = action.payload.email;
     },
     cleanAuth: (state) => {
       state.role = null;
       state.roleId = null;
+      
     },
   },
 });

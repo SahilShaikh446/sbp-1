@@ -8,6 +8,8 @@ import OilReportTabs from "./pages/OilReportTabs";
 import OilReportUpdate from "./features/oilReport/OilReportUpdate";
 import ABCReport from "./pages/ABCReport";
 import ContactUs from "./pages/ContactUs";
+import MasterDashboard from "./pages/masterAdmin/MasterDashboard";
+import { Dashboard } from "./pages/dashboard";
 
 axios.interceptors.request.use(
   function (config) {
@@ -46,10 +48,11 @@ function App() {
       path: "/",
       element: <ProtectedRoutes />,
       children: [
-        // {
-        //   path: "/",
-        //   element: <MasterDashboard />,
-        // },
+        {
+          path: "/",
+          element: <Dashboard />,
+          // element: "",
+        },
         {
           path: "/masters",
           element: <Master />,

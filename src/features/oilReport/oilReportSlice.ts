@@ -18,20 +18,30 @@ const initialState: OilReportState = {
 
 export const fetchOilReportAsync = createAsyncThunk(
   "oilReport/getOilReport",
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const response = await axios.get(
         BASE_URL + "API/List/Oil/Filtration/Test/Report"
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error);
-      }
-      return rejectWithValue("An unknown error occurred");
+      return error;
     }
   }
 );
+// export const fetchOilReportAsync = createAsyncThunk(
+//   "oilReport/getOilReport",
+//   async (params: string) => {
+//     try {
+//       const response = await axios.get(
+//         BASE_URL + "API/List/Oil/Filtration/Test/Report/Filter/Search?" + params
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return error;
+//     }
+//   }
+// );
 
 export const oilReportSlice = createSlice({
   name: "oilReport",
