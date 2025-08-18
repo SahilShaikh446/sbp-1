@@ -1,3 +1,4 @@
+import { acbReportSlice } from "@/features/acbReport/acbReportSlice";
 import { adminSlice } from "@/features/admin/adminSlice";
 import { authSlice } from "@/features/authSlice/authSlice";
 import { clientSlice } from "@/features/client/clientSlice";
@@ -13,6 +14,7 @@ const appReducer = combineReducers({
   auth: authSlice.reducer,
   oilReport: oilReportSlice.reducer,
   contactUs: contactUsSlice.reducer,
+  acbReport: acbReportSlice.reducer,
 });
 
 // Root reducer that handles reset

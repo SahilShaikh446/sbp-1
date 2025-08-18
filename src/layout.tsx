@@ -1,5 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronRight,
@@ -46,8 +45,8 @@ const MasterAdminSidebar = [
     icon: <Droplet className="h-5 w-5 flex-shrink-0" />,
   },
   {
-    label: "ABC Report",
-    href: "/abc-report",
+    label: "ACB Report",
+    href: "/acb-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,
   },
   {
@@ -66,6 +65,11 @@ const clientAdminSidebar = [
   {
     label: "OIL Filteration Report",
     href: "/oil-report",
+    icon: <Droplet className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "ACB Report",
+    href: "/acb-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,
   },
 ];

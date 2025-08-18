@@ -3,24 +3,25 @@ import { BASE_URL } from "@/lib/constants";
 import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { ACBReportResponse } from "./type";
 
-interface OilReportState {
-  entity: ReportType[] | null;
+interface ACBReportState {
+  entity: ACBReportResponse[] | null;
   loading: boolean;
   error: boolean;
 }
 
-const initialState: OilReportState = {
+const initialState: ACBReportState = {
   entity: null,
   loading: true,
   error: false,
 };
 
-export const fetchOilReportAsync = createAsyncThunk(
-  "oilReport/getOilReport",
+export const fetchACBReportAsync = createAsyncThunk(
+  "acbReport/getACBReport",
   async () => {
     try {
-      const response = await axios.get(BASE_URL + "API/List/Oil/Filtration/Test/Report");
+      const response = await axios.get(BASE_URL + "API/List/ACB/Report");
       return response.data;
     } catch (error) {
       return error;
@@ -41,26 +42,26 @@ export const fetchOilReportAsync = createAsyncThunk(
 //   }
 // );
 
-export const oilReportSlice = createSlice({
-  name: "oilReport",
+export const acbReportSlice = createSlice({
+  name: "acbReport",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchOilReportAsync.fulfilled, (state, action) => {
+      .addCase(fetchACBReportAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload;
         state.error = false;
       })
-      .addCase(fetchOilReportAsync.rejected, (state, action) => {
+      .addCase(fetchACBReportAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = true;
       });
   },
 });
 
-export default oilReportSlice.reducer;
+export default acbReportSlice.reducer;
 
-export const selectOilReport = (state: RootState) => state.oilReport.entity;
-export const oilReportLoading = (state: RootState) => state.oilReport.loading;
-export const oilReportError = (state: RootState) => state.oilReport.error;
+export const selectACBdata = (state: RootState) => state.acbReport.entity;
+export const acbReportLoading = (state: RootState) => state.acbReport.loading;
+export const acbReportError = (state: RootState) => state.acbReport.error;

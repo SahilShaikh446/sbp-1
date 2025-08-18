@@ -64,6 +64,9 @@ import {
 } from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
 import { convertReportDate } from "@/features/oilReport/OilReportCreate";
+import { fetchACBReportAsync } from "./acbReportSlice";
+import { useParams } from "react-router-dom";
+import { PreLoader } from "@/components/ui/Preloader";
 
 export const acbReleaseTestingSchema = z.object({
   protection: z.string().min(1, "Protection type is required"),
@@ -76,14 +79,15 @@ export const acbReleaseTestingSchema = z.object({
 
 export const acbInspectionSchema = z.object({
   // Basic Information
-  report_date: z.string().min(1, "Report date is required"),
-  location: z.string().min(1, "Location is required"),
+  report_date: z.string(),
+  report_number: z.string(),
+  location: z.string(),
 
   // ACB Details
-  type_of_acb: z.string().min(1, "ACB type is required"),
-  acb_sr_no: z.string().min(1, "ACB serial number is required"),
+  type_of_acb: z.string(),
+  acb_sr_no: z.string(),
   feeder_designation: z.string().optional(),
-  current_rating: z.string().min(1, "Current rating is required"),
+  current_rating: z.string(),
 
   // Voltage & Release Settings
   closing_coil_voltage: z.string().optional(),
@@ -139,22 +143,20 @@ export type ACBInspectionForm = z.infer<typeof acbInspectionSchema>;
 
 const conditionOptions = [
   { value: "OK", label: "OK" },
-  { value: "fair", label: "Fair" },
-  { value: "poor", label: "Poor" },
-  { value: "needs_replacement", label: "Needs Replacement" },
+  { value: "N/A", label: "N/A" },
 ];
 
 const resultOptions = [
   { value: "OK", label: "OK" },
-  { value: "fail", label: "Fail" },
-  { value: "na", label: "N/A" },
+  { value: "N/A", label: "N/A" },
 ];
 
-function ABCReport() {
+function ACBReportUpdate() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -202,6 +204,7 @@ function ABCReport() {
     resolver: zodResolver(acbInspectionSchema),
     defaultValues: {
       report_date: "",
+      report_number: "",
       location: "",
       type_of_acb: "",
       acb_sr_no: "",
@@ -239,11 +242,36 @@ function ABCReport() {
       client_repres: "",
       service_repres: "",
       company_id: "",
-      acb_release_testing: [],
+      acb_release_testing: [
+        {
+          protection: "LT",
+          setting_1: "",
+          characteristics: "",
+          tms_as_per_relay_setting: "",
+          actual_tms: "",
+          result: "",
+        },
+        {
+          protection: "ST",
+          setting_1: "",
+          characteristics: "",
+          tms_as_per_relay_setting: "",
+          actual_tms: "",
+          result: "",
+        },
+        {
+          protection: "GF",
+          setting_1: "",
+          characteristics: "",
+          tms_as_per_relay_setting: "",
+          actual_tms: "",
+          result: "",
+        },
+      ],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "acb_release_testing",
   });
@@ -255,17 +283,131 @@ function ABCReport() {
     !company && dispatch(fetchCompanyAsync());
   }, [company]);
 
+  const { id } = useParams();
+
+  const fetchReport = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${BASE_URL}API/GetById/ACB/Report`, {
+        id: id,
+      });
+      if (res.status === 200) {
+        form.setValue("report_date", res.data.report_date);
+        form.setValue("report_number", res.data.report_number);
+        form.setValue("location", res.data.location);
+        form.setValue("type_of_acb", res.data.type_of_acb);
+        form.setValue("acb_sr_no", res.data.acb_sr_no);
+        form.setValue("feeder_designation", res.data.feeder_designation);
+        form.setValue("current_rating", res.data.current_rating);
+        form.setValue("closing_coil_voltage", res.data.closing_coil_voltage);
+        form.setValue("motor_voltage", res.data.motor_voltage);
+        form.setValue("shunt_release", res.data.shunt_release);
+        form.setValue("u_v_release", res.data.u_v_release);
+        form.setValue("type_of_release", res.data.type_of_release);
+        form.setValue("setting", res.data.setting);
+        form.setValue(
+          "on_off_operations_manual",
+          res.data.on_off_operations_manual
+        );
+        form.setValue("electrical", res.data.electrical);
+        form.setValue(
+          "condition_of_main_contacts_fixed",
+          res.data.condition_of_main_contacts_fixed
+        );
+        form.setValue(
+          "condition_of_main_contacts_moving",
+          res.data.condition_of_main_contacts_moving
+        );
+        form.setValue(
+          "condition_of_arcing_contacts_fixed",
+          res.data.condition_of_arcing_contacts_fixed
+        );
+        form.setValue(
+          "condition_of_arcing_contacts_moving",
+          res.data.condition_of_arcing_contacts_moving
+        );
+        form.setValue(
+          "condition_of_sic_fixed",
+          res.data.condition_of_sic_fixed
+        );
+        form.setValue(
+          "condition_of_sic_moving",
+          res.data.condition_of_sic_moving
+        );
+        form.setValue(
+          "condition_of_jaw_contact",
+          res.data.condition_of_jaw_contact
+        );
+        form.setValue(
+          "condition_of_cradle_terminals",
+          res.data.condition_of_cradle_terminals
+        );
+        form.setValue(
+          "condition_of_earthing_terminals",
+          res.data.condition_of_earthing_terminals
+        );
+        form.setValue("arcing_contact_gap", res.data.arcing_contact_gap);
+        form.setValue(
+          "condition_of_arc_chute",
+          res.data.condition_of_arc_chute
+        );
+        form.setValue("dusty_housing", res.data.dusty_housing);
+        form.setValue("broken_housing", res.data.broken_housing);
+        form.setValue("clean", res.data.clean);
+        form.setValue(
+          "operation_of_auxiliary_contacts",
+          res.data.operation_of_auxiliary_contacts
+        );
+        form.setValue(
+          "condition_of_current_transformers",
+          res.data.condition_of_current_transformers
+        );
+        form.setValue(
+          "check_control_wiring_of_acb_for_proper_connections",
+          res.data.check_control_wiring_of_acb_for_proper_connections
+        );
+        form.setValue(
+          "greasing_of_moving_parts_in_pole_assembly",
+          res.data.greasing_of_moving_parts_in_pole_assembly
+        );
+        form.setValue(
+          "greasing_of_moving_parts_of_mechanism_and_rails",
+          res.data.greasing_of_moving_parts_of_mechanism_and_rails
+        );
+        form.setValue(
+          "recommended_spares_for_replacement",
+          res.data.recommended_spares_for_replacement
+        );
+        form.setValue("remarks", res.data.remarks);
+        form.setValue("client_repres", res.data.client_repres);
+        form.setValue("service_repres", res.data.service_repres);
+        form.setValue("company_id", `${res.data.company_id}`);
+        replace(res.data.acb_testing_list);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch report data. Please try again.");
+      console.error("Error fetching report:", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchReport(id);
+    }
+  }, [id]);
+
   async function onSubmit(data: ACBInspectionForm) {
     try {
-      const res = await axios.post(BASE_URL + "Add/ACB/Report", {
+      const res = await axios.post(BASE_URL + "API/Update/ACB/Report", {
         ...data,
         image_data: { x: position.x },
+        name_of_client: "",
       });
-      console.log(data);
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
-        dispatch(fetchOilReportAsync());
+        dispatch(fetchACBReportAsync());
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
@@ -274,9 +416,9 @@ function ABCReport() {
     // You can also make an API POST request here
   }
 
-  useEffect(() => {
-    !company && dispatch(fetchCompanyAsync());
-  }, [company]);
+  if (loading) {
+    return <PreLoader messages={["Loading", "Just there"]} dotCount={3} />;
+  }
 
   return (
     <div className="grid grid-cols-2 gap-3 overflow-auto p-3">
@@ -300,13 +442,13 @@ function ABCReport() {
                     General details about the inspection
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <FormField
                     control={form.control}
                     name="report_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Report Date *</FormLabel>
+                        <FormLabel>Report Date </FormLabel>
                         <Popover modal={true}>
                           <PopoverTrigger>
                             <FormControl>
@@ -323,6 +465,7 @@ function ABCReport() {
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
+
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
@@ -335,7 +478,7 @@ function ABCReport() {
                               }
                               onSelect={(date) =>
                                 field.onChange(
-                                  date?.toISOString().split("T")[0] || ""
+                                  date ? format(date, "yyyy-MM-dd") : ""
                                 )
                               }
                               disabled={(date) =>
@@ -346,6 +489,23 @@ function ABCReport() {
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="report_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Report Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Enter report number"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -424,7 +584,7 @@ function ABCReport() {
                     name="location"
                     render={({ field }) => (
                       <FormItem className="col-span-full">
-                        <FormLabel>Location *</FormLabel>
+                        <FormLabel>Location</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter location" {...field} />
                         </FormControl>
@@ -438,7 +598,7 @@ function ABCReport() {
                     name="type_of_acb"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Type of ACB *</FormLabel>
+                        <FormLabel>Type of ACB</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter ACB type" {...field} />
                         </FormControl>
@@ -466,7 +626,7 @@ function ABCReport() {
                     name="acb_sr_no"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ACB Serial Number *</FormLabel>
+                        <FormLabel>ACB Serial Number</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter serial number" {...field} />
                         </FormControl>
@@ -530,7 +690,7 @@ function ABCReport() {
                     name="current_rating"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Current Rating *</FormLabel>
+                        <FormLabel>Current Rating</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter current rating (A)"
@@ -794,9 +954,8 @@ function ABCReport() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="yes">Yes</SelectItem>
-                              <SelectItem value="no">No</SelectItem>
-                              <SelectItem value="na">N/A</SelectItem>
+                              <SelectItem value="OK">OK</SelectItem>
+                              <SelectItem value="N/A">N/A</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -970,7 +1129,7 @@ function ABCReport() {
                                   defaultValue={field.value as string}
                                 >
                                   <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                       <SelectValue placeholder="Select result" />
                                     </SelectTrigger>
                                   </FormControl>
@@ -1153,7 +1312,7 @@ function ABCReport() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Test Report No. 12/25-26
+                        Test Report No. {form.watch("report_number") || "--"}
                       </td>
                       <td className="font-bold  text-left">
                         Date:-{" "}
@@ -1476,22 +1635,22 @@ function ABCReport() {
                       {form.watch("acb_release_testing").map((item, index) => (
                         <tr key={index}>
                           <td className="text-center border border-r-black border-b-black px-2 py-1">
-                            {item.protection}
+                            {item?.protection}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item.setting_1}
+                            {item?.setting_1}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item.characteristics}
+                            {item?.characteristics}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item.tms_as_per_relay_setting}
+                            {item?.tms_as_per_relay_setting}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item.actual_tms}
+                            {item?.actual_tms}
                           </td>
                           <td className="text-center border border-l-black border-b-black px-2 py-1">
-                            {item.result}
+                            {item?.result}
                           </td>
                         </tr>
                       ))}
@@ -1582,4 +1741,4 @@ function ABCReport() {
   );
 }
 
-export default ABCReport;
+export default ACBReportUpdate;

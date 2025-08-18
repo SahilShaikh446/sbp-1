@@ -190,7 +190,7 @@ const OilReport = ({
           <View style={[styles.section, { position: "relative" }]}>
             <View style={styles.row}>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Report No.: 01/25-26
+                Report No.: {reportData.report_number || "--"}
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
                 Date: {reportData.report_date || ""}
@@ -326,7 +326,7 @@ const OilReport = ({
                 objectFit: "contain",
                 bottom: 10,
                 left: 0,
-                transform: `translateX(${imageConstraints}px)`,
+                transform: `translateX(${reportData?.image_date?.x}px)`,
                 width: 110, // 150px * 0.75
                 height: 110, // 150px * 0.75
               }}

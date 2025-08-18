@@ -6,10 +6,12 @@ import Login from "./pages/Login";
 import Master from "./pages/masterAdmin/Master";
 import OilReportTabs from "./pages/OilReportTabs";
 import OilReportUpdate from "./features/oilReport/OilReportUpdate";
-import ABCReport from "./pages/ACBReport";
+import ABCReport from "./features/acbReport/ACBReportCreate";
 import ContactUs from "./pages/ContactUs";
 import MasterDashboard from "./pages/masterAdmin/MasterDashboard";
 import { Dashboard } from "./pages/dashboard";
+import ACBReportTabs from "./pages/ACBReportTabs";
+import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
 
 axios.interceptors.request.use(
   function (config) {
@@ -66,8 +68,12 @@ function App() {
           element: <OilReportUpdate />,
         },
         {
-          path: "/abc-report",
-          element: <ABCReport />,
+          path: "/acb-report",
+          element: <ACBReportTabs />,
+        },
+        {
+          path: "/acb-report/:id",
+          element: <ACBReportUpdate />,
         },
         {
           path: "/contact-us",

@@ -54,6 +54,7 @@ import {
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
+  report_number: z.string(),
   report_description: z.string().min(1, {
     message: "Description is required",
   }),
@@ -72,7 +73,6 @@ export const reportFormSchema = z.object({
   clients_representative: z.string(),
   tested_by: z.string(),
   company_id: z.string(),
-  date_of_filtration: z.string(),
   manufacturing_year: z.string(),
 });
 
@@ -101,7 +101,6 @@ export default function OilReportUpdate() {
   const imgRef = useRef<HTMLImageElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
-
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
 
@@ -148,6 +147,7 @@ export default function OilReportUpdate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_date: "",
+      report_number: "",
       report_description: "",
       kva: "",
       voltage: "",
@@ -164,7 +164,6 @@ export default function OilReportUpdate() {
       clients_representative: "",
       tested_by: "",
       company_id: "",
-      date_of_filtration: "",
       manufacturing_year: "",
     },
   });
@@ -176,13 +175,14 @@ export default function OilReportUpdate() {
   useEffect(() => {
     !company && dispatch(fetchCompanyAsync());
   }, [company]);
-
+  console.log("Company Data:", position.x);
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
     try {
       const res = await axios.post(
         BASE_URL + "API/Update/Oil/Filtration/Test/Report",
-        { ...data, id }
+        { ...data, id, image_data: { x: position.x } }
       );
+      console.log("Response:", position.x);
       if (res.status === 200) {
         toast.success("Report updated successfully!");
         form.reset();
@@ -208,6 +208,7 @@ export default function OilReportUpdate() {
       );
       if (res.status === 200) {
         form.setValue("report_date", res.data.report_date);
+        form.setValue("report_number", res.data.report_number);
         form.setValue("report_description", res.data.report_description);
         form.setValue("kva", res.data.kva);
         form.setValue("voltage", res.data.voltage);
@@ -240,7 +241,6 @@ export default function OilReportUpdate() {
         );
         form.setValue("tested_by", res.data.tested_by);
         form.setValue("company_id", `${res.data.company_id}`);
-        form.setValue("date_of_filtration", res.data.date_of_filtration);
       }
     } catch (error) {
       toast.error("Failed to fetch report data. Please try again.");
@@ -258,7 +258,7 @@ export default function OilReportUpdate() {
   if (loading) {
     return <PreLoader messages={["Loading", "Just there"]} dotCount={3} />;
   }
-
+  console.log(form.formState.errors);
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
@@ -278,7 +278,7 @@ export default function OilReportUpdate() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="report_date"
@@ -287,6 +287,23 @@ export default function OilReportUpdate() {
                         <FormLabel>Report Date</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="report_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Report Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Enter report number"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -451,6 +468,7 @@ export default function OilReportUpdate() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="transformer_oil_quantity"
@@ -472,7 +490,7 @@ export default function OilReportUpdate() {
                     name="transformer_before_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Transformer Before Filtration</FormLabel>
+                        <FormLabel>BDV Before Filtration</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., 36 KV" {...field} />
                         </FormControl>
@@ -485,7 +503,7 @@ export default function OilReportUpdate() {
                     name="transformer_after_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Transformer After Filtration</FormLabel>
+                        <FormLabel>BDV After Filtration</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
@@ -532,7 +550,7 @@ export default function OilReportUpdate() {
                     name="oltc_before_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OLTC Before Filtration</FormLabel>
+                        <FormLabel>BDV Before Filtration</FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., 40 KV" {...field} />
                         </FormControl>
@@ -545,7 +563,7 @@ export default function OilReportUpdate() {
                     name="oltc_after_filtration"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OLTC After Filtration</FormLabel>
+                        <FormLabel>BDV After Filtration</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
@@ -576,14 +594,49 @@ export default function OilReportUpdate() {
                   )}
                 />
 
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="clients_representative"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>For Client</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Mr. Sakharam Parab"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="tested_by"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>For Ok Agencies</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., M/s. OK AGENCIES"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
                       <Loader className="animate-spin" />
-                      <span>Updating... Report</span>
+                      <span>Submitting... Report</span>
                     </div>
                   ) : (
-                    "Update Report"
+                    "Submit Report"
                   )}
                 </Button>
               </form>
@@ -621,7 +674,7 @@ export default function OilReportUpdate() {
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
                         <span className="text-md font-bold">Report No.:</span>{" "}
-                        01/25-26
+                        {form.watch("report_number") || "--"}
                       </div>
                       <div className="text-md font-bold">
                         <span className="font-bold">Date:</span>{" "}

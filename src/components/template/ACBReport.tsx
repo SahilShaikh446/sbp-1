@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { ACBInspectionForm } from "@/pages/ACBReport";
+import { ACBInspectionForm } from "@/features/acbReport/ACBReportCreate";
 import { companyType } from "@/features/company/companySlice"; // Adjust import path
 
 // Register Tinos fonts (regular and bold)
@@ -265,7 +265,7 @@ const ACBReport = ({
                   flexWrap: "nowrap",
                 }}
               >
-                Date: {reportData.report_date || "N/A"}
+                Date: {reportData.report_date || "--"}
               </Text>
             </View>
 
@@ -287,25 +287,25 @@ const ACBReport = ({
             <View style={styles.table}>
               <View style={styles.tableRow}>
                 <Text
-                  style={{ fontWeight: "bold", paddingLeft: 4, width: "66%" }}
+                  style={{ fontWeight: "bold", paddingLeft: 4, width: "38%" }}
                 >
                   Location:{" "}
                 </Text>
                 <Text style={{ fontWeight: "bold" }}>
-                  {reportData.location || "N/A"}
+                  {reportData.location || "--"}
                 </Text>
               </View>
               <View style={styles.tableRowSplit}>
                 <View style={styles.tableLabel}>
                   <Text style={[styles.label]}>Type of ACB: </Text>
                   <Text style={{ paddingRight: 32, fontWeight: "normal" }}>
-                    {reportData.type_of_acb || "N/A"}
+                    {reportData.type_of_acb || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Closing Coil Voltage: </Text>
                   <Text style={styles.value}>
-                    {reportData.closing_coil_voltage || "N/A"}
+                    {reportData.closing_coil_voltage || "--"}
                   </Text>
                 </View>
               </View>
@@ -313,13 +313,13 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>ACB Sr. No.: </Text>
                   <Text style={styles.value}>
-                    {reportData.acb_sr_no || "N/A"}
+                    {reportData.acb_sr_no || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Shunt Release: </Text>
                   <Text style={styles.value}>
-                    {reportData.shunt_release || "N/A"}
+                    {reportData.shunt_release || "--"}
                   </Text>
                 </View>
               </View>
@@ -327,13 +327,13 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>Feeder Designation: </Text>
                   <Text style={styles.value}>
-                    {reportData.feeder_designation || "N/A"}
+                    {reportData.feeder_designation || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Motor Voltage: </Text>
                   <Text style={styles.value}>
-                    {reportData.motor_voltage || "N/A"}
+                    {reportData.motor_voltage || "--"}
                   </Text>
                 </View>
               </View>
@@ -341,13 +341,13 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>Current Rating: </Text>
                   <Text style={styles.value}>
-                    {reportData.current_rating || "N/A"}
+                    {reportData.current_rating || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>U/V Release: </Text>
                   <Text style={styles.value}>
-                    {reportData.u_v_release || "N/A"}
+                    {reportData.u_v_release || "--"}
                   </Text>
                 </View>
               </View>
@@ -355,14 +355,12 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>Type of Release: </Text>
                   <Text style={styles.value}>
-                    {reportData.type_of_release || "N/A"}
+                    {reportData.type_of_release || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Setting: </Text>
-                  <Text style={styles.value}>
-                    {reportData.setting || "N/A"}
-                  </Text>
+                  <Text style={styles.value}>{reportData.setting || "--"}</Text>
                 </View>
               </View>
             </View>
@@ -373,13 +371,13 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>ON/OFF Operations Manual: </Text>
                   <Text style={styles.value}>
-                    {reportData.on_off_operations_manual || "N/A"}
+                    {reportData.on_off_operations_manual || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Moving: </Text>
                   <Text style={styles.value}>
-                    {reportData.electrical || "N/A"}
+                    {reportData.electrical || "--"}
                   </Text>
                 </View>
               </View>
@@ -389,13 +387,13 @@ const ACBReport = ({
                     Condition of Arcing Contacts (Fixed):{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_arcing_contacts_fixed || "N/A"}
+                    {reportData.condition_of_arcing_contacts_fixed || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Moving: </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_arcing_contacts_moving || "N/A"}
+                    {reportData.condition_of_arcing_contacts_moving || "--"}
                   </Text>
                 </View>
               </View>
@@ -405,13 +403,13 @@ const ACBReport = ({
                     Condition of Main Contacts (Fixed):{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_main_contacts_fixed || "N/A"}
+                    {reportData.condition_of_main_contacts_fixed || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Moving: </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_main_contacts_moving || "N/A"}
+                    {reportData.condition_of_main_contacts_moving || "--"}
                   </Text>
                 </View>
               </View>
@@ -419,13 +417,13 @@ const ACBReport = ({
                 <View style={styles.tableLabel}>
                   <Text style={styles.label}>Condition of SIC (Fixed): </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_sic_fixed || "N/A"}
+                    {reportData.condition_of_sic_fixed || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
                   <Text style={styles.label}>Moving: </Text>
                   <Text style={styles.value}>
-                    {reportData.condition_of_sic_moving || "N/A"}
+                    {reportData.condition_of_sic_moving || "--"}
                   </Text>
                 </View>
               </View>
@@ -440,7 +438,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.condition_of_jaw_contact || "N/A"}
+                    {reportData.condition_of_jaw_contact || "--"}
                   </Text>
                 </View>
               </View>
@@ -452,7 +450,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.condition_of_cradle_terminals || "N/A"}
+                    {reportData.condition_of_cradle_terminals || "--"}
                   </Text>
                 </View>
               </View>
@@ -464,7 +462,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.condition_of_earthing_terminals || "N/A"}
+                    {reportData.condition_of_earthing_terminals || "--"}
                   </Text>
                 </View>
               </View>
@@ -474,7 +472,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.arcing_contact_gap || "N/A"}
+                    {reportData.arcing_contact_gap || "--"}
                   </Text>
                 </View>
               </View>
@@ -484,7 +482,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.condition_of_arc_chute || "N/A"}
+                    {reportData.condition_of_arc_chute || "--"}
                   </Text>
                 </View>
               </View>
@@ -498,18 +496,18 @@ const ACBReport = ({
                 >
                   <Text style={{ paddingRight: 8 }}>a) Dusty Housing: </Text>
                   <Text style={styles.value}>
-                    {reportData.dusty_housing || "N/A"}
+                    {reportData.dusty_housing || "--"}
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row", width: "30%" }}>
                   <Text style={{ paddingRight: 8 }}>b) Broken Housing: </Text>
                   <Text style={styles.value}>
-                    {reportData.broken_housing || "N/A"}
+                    {reportData.broken_housing || "--"}
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row", width: "30%" }}>
                   <Text style={{ paddingRight: 8 }}>c) Clean: </Text>
-                  <Text style={styles.value}>{reportData.clean || "N/A"}</Text>
+                  <Text style={styles.value}>{reportData.clean || "--"}</Text>
                 </View>
               </View>
               <View style={styles.tableRow}>
@@ -520,7 +518,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.operation_of_auxiliary_contacts || "N/A"}
+                    {reportData.operation_of_auxiliary_contacts || "--"}
                   </Text>
                 </View>
               </View>
@@ -532,7 +530,7 @@ const ACBReport = ({
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
-                    {reportData.condition_of_current_transformers || "N/A"}
+                    {reportData.condition_of_current_transformers || "--"}
                   </Text>
                 </View>
               </View>
@@ -552,7 +550,7 @@ const ACBReport = ({
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
                     {reportData.check_control_wiring_of_acb_for_proper_connections ||
-                      "N/A"}
+                      "--"}
                   </Text>
                 </View>
               </View>
@@ -575,7 +573,7 @@ const ACBReport = ({
                   </Text>
                   <Text style={styles.value}>
                     {reportData.greasing_of_moving_parts_in_pole_assembly ||
-                      "N/A"}
+                      "--"}
                   </Text>
                 </View>
               </View>
@@ -594,7 +592,7 @@ const ACBReport = ({
                   </Text>
                   <Text style={styles.value}>
                     {reportData.greasing_of_moving_parts_of_mechanism_and_rails ||
-                      "N/A"}
+                      "--"}
                   </Text>
                 </View>
               </View>
@@ -684,25 +682,25 @@ const ACBReport = ({
                   <Text>Actual TMS (Sec.)</Text>
                 </View>
               </View>
-              {reportData.acb_release_testing.map((test, id) => (
+              {reportData.acb_testing_list?.map((test, id) => (
                 <View style={styles.tableRow} key={id}>
                   <Text style={[styles.tableCell, { width: "16.67%" }]}>
                     {test.protection}
                   </Text>
                   <Text style={[styles.tableCell, { width: "16.67%" }]}>
-                    {test.setting_1 || "N/A"}
+                    {test.setting || "--"}
                   </Text>
                   <Text style={[styles.tableCell, { width: "16.67%" }]}>
-                    {test.characteristics || "N/A"}
+                    {test.characteristics || "--"}
                   </Text>
                   <Text style={[styles.tableCell, { width: "16.67%" }]}>
-                    {test.tms_as_per_relay_setting || "N/A"}
+                    {test.tms_as_per_relay_setting || "--"}
                   </Text>
                   <Text style={[styles.tableCell, { width: "16.67%" }]}>
-                    {test.actual_tms || "N/A"}
+                    {test.actual_tms || "--"}
                   </Text>
                   <Text style={[styles.tableCellLast, { width: "16.67%" }]}>
-                    {test.result || "N/A"}
+                    {test.result || "--"}
                   </Text>
                 </View>
               ))}
@@ -717,7 +715,7 @@ const ACBReport = ({
                     Recommended Spares for Replacement:{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.recommended_spares_for_replacement || "N/A"}
+                    {reportData.recommended_spares_for_replacement || "--"}
                   </Text>
                 </Text>
               </View>
@@ -728,20 +726,16 @@ const ACBReport = ({
                   >
                     Remarks:{" "}
                   </Text>
-                  <Text style={styles.value}>
-                    {reportData.remarks || "N/A"}
-                  </Text>
+                  <Text style={styles.value}>{reportData.remarks || "--"}</Text>
                 </Text>
               </View>
               <View style={styles.row}>
                 <Text>
-                  <Text
-                    style={[styles.label, { fontSize: 12, paddingLeft: 5 }]}
-                  >
+                  <Text style={[styles.label, { fontSize: 12 }]}>
                     Client's Repres.:{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.client_repres || "N/A"}
+                    {reportData.client_repres || "--"}
                   </Text>
                 </Text>
                 <Text>
@@ -749,7 +743,7 @@ const ACBReport = ({
                     Service Repres.:{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.service_repres || "N/A"}
+                    {reportData.service_repres || "--"}
                   </Text>
                 </Text>
               </View>

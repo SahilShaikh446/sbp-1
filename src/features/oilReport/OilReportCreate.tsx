@@ -70,6 +70,7 @@ export const reportFormSchema = z.object({
   company_id: z.string(),
   date_of_filtration: z.string(),
   manufacturing_year: z.string(),
+  report_number: z.string(),
   id: z.string(),
 });
 
@@ -137,6 +138,7 @@ export default function OilReportCreate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_date: "",
+      report_number: "",
       report_description:
         "We have the pleasure in informing you that we have carried out transformer oil filtration at site & tested the sample of transformer oil for dielectric strength in accordance with 1866:2017 and the results are as under.",
       kva: "",
@@ -171,7 +173,7 @@ export default function OilReportCreate() {
     try {
       const res = await axios.post(
         BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        { ...data, image_data: { x: position.x } }
+        { ...data, image_date: { x: position.x } }
       );
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
@@ -204,7 +206,7 @@ export default function OilReportCreate() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="report_date"
@@ -213,6 +215,23 @@ export default function OilReportCreate() {
                         <FormLabel>Report Date</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="report_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Report Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Enter report number"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -583,7 +602,7 @@ export default function OilReportCreate() {
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
                         <span className="text-md font-bold">Report No.:</span>{" "}
-                        01/25-26
+                        {form.watch("report_number") || "--"}
                       </div>
                       <div className="text-md font-bold">
                         <span className="font-bold">Date:</span>{" "}

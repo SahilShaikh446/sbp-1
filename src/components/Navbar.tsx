@@ -130,11 +130,6 @@ export default function Navbar({ onMenuClick }: EnhancedNavbarProps) {
                 <p className="font-medium text-gray-900">{username}</p>
                 <p className="text-sm text-gray-500">{email}</p>
               </div>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                Profile Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                 Sign Out
               </DropdownMenuItem>
