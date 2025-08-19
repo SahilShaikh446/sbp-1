@@ -78,6 +78,7 @@ export const acbReleaseTestingSchema = z.object({
 export const acbInspectionSchema = z.object({
   // Basic Information
   report_date: z.string(),
+  report_number: z.string(),
   location: z.string(),
 
   // ACB Details
@@ -200,6 +201,7 @@ function ABCReportCreate() {
     resolver: zodResolver(acbInspectionSchema),
     defaultValues: {
       report_date: "",
+      report_number: "",
       location: "",
       type_of_acb: "",
       acb_sr_no: "",
@@ -323,7 +325,7 @@ function ABCReportCreate() {
                     General details about the inspection
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <FormField
                     control={form.control}
                     name="report_date"
@@ -370,6 +372,23 @@ function ABCReportCreate() {
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="report_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Report Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Enter report number"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -1137,9 +1156,11 @@ function ABCReportCreate() {
           </Form>
           {/* <PDFViewer width="100%" height="600px" className="w-full">
             <ACBReport
-              reportData={form.getValues()}
+              reportData={{
+                ...form.getValues(),
+                image_data: { x: position.x },
+              }}
               companyData={company || []}
-              imageConstraints={position.x}
             />
           </PDFViewer> */}
         </CardContent>
@@ -1176,7 +1197,7 @@ function ABCReportCreate() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Test Report No. 12/25-26
+                        Test Report No. {form.watch("report_number") || "--"}
                       </td>
                       <td className="font-bold  text-left">
                         Date:-{" "}
@@ -1518,27 +1539,6 @@ function ABCReportCreate() {
                           </td>
                         </tr>
                       ))}
-
-                      <tr>
-                        <td className="text-center border border-r-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-l-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                      </tr>
                     </tbody>
                   </table>
 
@@ -1556,11 +1556,11 @@ function ABCReportCreate() {
                   </tr>
                   <tr className="flex justify-between">
                     <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">Client's Repres.:</span>{" "}
+                      <span className="font-bold">For Client:</span>{" "}
                       {form.watch("client_repres") || "--"}
                     </td>
                     <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">Service Repres.:-</span> M/s.
+                      <span className="font-bold">For Ok Agencies.:-</span> M/s.
                       {form.watch("service_repres") || "--"}
                     </td>
                   </tr>

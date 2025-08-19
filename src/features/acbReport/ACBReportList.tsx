@@ -28,6 +28,7 @@ const ACBReportList = () => {
       columns={COLUMNS}
       loading={loading}
       error={error}
+      hideExcel={true}
     />
   );
 };

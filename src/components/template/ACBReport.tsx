@@ -214,16 +214,19 @@ const styles = StyleSheet.create({
 });
 
 interface ACBReportProps {
-  reportData: ACBInspectionForm;
+  reportData: ACBInspectionForm & {
+    image_data: { x: number };
+  };
   companyData: companyType[];
-  imageConstraints?: number;
 }
 
-const ACBReport = ({
-  reportData,
-  companyData,
-  imageConstraints,
-}: ACBReportProps) => {
+const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
+  const PAGE_WIDTH = 510; // A4 width in points
+  const STAMP_SIZE = 110;
+  const safeX = Math.min(
+    Math.max(reportData?.image_data?.x || 0, 0), // never less than 0
+    PAGE_WIDTH - STAMP_SIZE // never beyond page
+  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -732,7 +735,7 @@ const ACBReport = ({
               <View style={styles.row}>
                 <Text>
                   <Text style={[styles.label, { fontSize: 12 }]}>
-                    Client's Repres.:{" "}
+                    For Client .:{" "}
                   </Text>
                   <Text style={styles.value}>
                     {reportData.client_repres || "--"}
@@ -740,7 +743,7 @@ const ACBReport = ({
                 </Text>
                 <Text>
                   <Text style={[styles.label, { fontSize: 12 }]}>
-                    Service Repres.:{" "}
+                    For Ok Agencies:{" "}
                   </Text>
                   <Text style={styles.value}>
                     {reportData.service_repres || "--"}
@@ -749,18 +752,19 @@ const ACBReport = ({
               </View>
             </View>
           </View>
-          <Image
-            src="/stamp.jpg"
-            style={{
-              objectFit: "contain",
-              bottom: 10,
-              left: 0,
-              transform: `translateX(${imageConstraints || 0}px)`,
-              width: 110,
-              height: 110,
-              maxWidth: "90%",
-            }}
-          />
+          <View style={{ maxWidth: "90%" }}>
+            <Image
+              src="/stamp.jpg"
+              style={{
+                objectFit: "contain",
+                bottom: 10,
+                left: safeX,
+                width: 110, // 150px * 0.75
+                height: 110, // 150px * 0.75
+                marginLeft: 25,
+              }}
+            />
+          </View>
         </View>
 
         {/* Footer */}

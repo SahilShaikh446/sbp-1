@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { parseISO, format } from "date-fns";
+import { parseISO, format, set } from "date-fns";
 import { format as formatWithOrdinal } from "date-fns";
 import { enUS } from "date-fns/locale";
 import axios from "axios";
@@ -241,6 +241,7 @@ export default function OilReportUpdate() {
         );
         form.setValue("tested_by", res.data.tested_by);
         form.setValue("company_id", `${res.data.company_id}`);
+        setPosition({ x: res.data.image_data.x, y: 0 });
       }
     } catch (error) {
       toast.error("Failed to fetch report data. Please try again.");

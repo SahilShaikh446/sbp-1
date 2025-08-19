@@ -43,8 +43,22 @@ function OilReportList() {
       data={data}
       columns={COLUMNS}
       loading={loading}
+      api={true}
+      hideExcel={true}
       error={error}
     />
+    // <ShadcnTable
+    //   name="Oil Filteration Report"
+    //   data={data.content}
+    //   columns={COLUMNS}
+    //   loading={loading}
+    //   api={true}
+    //   currentPage={data ? data.pageable.pageNumber : 0}
+    //   totalPages={data ? data.totalPages : 10}
+    //   totalelement={data ? data.totalElements : 0}
+    //   hideGlobalSearch={true}
+    //   error={error}
+    // />
   );
 }
 

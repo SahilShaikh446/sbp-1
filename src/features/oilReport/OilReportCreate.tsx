@@ -49,6 +49,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { PDFViewer } from "@react-pdf/renderer";
+import OilReport from "@/components/template/OilReport";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
@@ -173,7 +175,7 @@ export default function OilReportCreate() {
     try {
       const res = await axios.post(
         BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        { ...data, image_date: { x: position.x } }
+        { ...data, image_data: { x: position.x } }
       );
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
@@ -569,6 +571,15 @@ export default function OilReportCreate() {
                 </Button>
               </form>
             </Form>
+            {/* <PDFViewer width="100%" height="600px" className="w-full">
+              <OilReport
+                reportData={{
+                  ...form.getValues(),
+                  image_data: { x: position.x },
+                }}
+                companyData={company || []}
+              />
+            </PDFViewer> */}
           </CardContent>
         </Card>
 

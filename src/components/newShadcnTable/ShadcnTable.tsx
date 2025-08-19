@@ -62,6 +62,8 @@ import { MixerVerticalIcon } from "@radix-ui/react-icons";
 import { BsThreeDots } from "react-icons/bs";
 
 import TableSkeleton from "./TableSkeleton";
+import { FaFileExcel } from "react-icons/fa";
+import { exportToExcel } from "./xlsx";
 import { TableError } from "./TableError";
 import { TableNoData } from "./TableNoData";
 
@@ -86,13 +88,13 @@ type ComponentProps<T extends object = any> = {
   columns: CustomColumnDef<any>[];
   currentPage?: number;
   totalPages?: number;
-  pageSize?: number;
   totalelement?: number;
   api?: boolean;
   name: string;
   children?: React.ReactNode;
   hideGlobalSearch?: boolean;
   loading: boolean;
+  hideExcel?: boolean;
   error: boolean | string | Error;
   onRowSelectionChange?: (selectedData: T[]) => void;
 };
@@ -108,9 +110,9 @@ const ShadcnTable: React.FC<ComponentProps> = ({
   error,
   currentPage,
   totalPages,
-  pageSize,
-  api,
   totalelement,
+  hideExcel,
+  api,
   name,
   children,
   hideGlobalSearch,
@@ -122,6 +124,8 @@ const ShadcnTable: React.FC<ComponentProps> = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [isChildOpen, setIsChildOpen] = useState(false);
+  const [loader, setLoader] = useState(true);
+  const [isdataLoaded, setisdataLoaded] = useState(false);
   const navigate = useNavigate();
   const paramSort = useLocation().search;
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -191,17 +195,26 @@ const ShadcnTable: React.FC<ComponentProps> = ({
   }, [globalFilter]);
 
   useEffect(() => {
+    setLoader(true);
+    setisdataLoaded(false);
+    const timer = setTimeout(() => {
+      setLoader(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [data, columns]);
+
+  useEffect(() => {
     const page = searchParams.get("page");
 
-    if (page && table) {
+    if (page && table && isdataLoaded) {
       const pageNumber = Number(page);
       if (!isNaN(pageNumber)) {
         table.setPageIndex(pageNumber);
       }
     }
-  }, [loading, searchParams, table]);
+  }, [isdataLoaded]);
 
-  if (loading) {
+  if (loader || loading) {
     return <TableSkeleton />;
   }
 
@@ -209,7 +222,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* Name & Description */}
+          {/* Title & Description */}
           <div className="flex flex-col">
             <h1 className="text-xl md:text-2xl font-semibold flex items-center">
               <span>{name + " List" || "Heading"}</span>
@@ -221,6 +234,36 @@ const ShadcnTable: React.FC<ComponentProps> = ({
           <div className="hidden lg:block">{children}</div>
           {/* Right-side actions */}
           <div className="flex flex-wrap md:flex-nowrap items-center justify-start gap-4">
+            {/* Export Button */}
+            {hideExcel && hideExcel ? (
+              ""
+            ) : (
+              <Button
+                variant="outline"
+                className="p-2"
+                onClick={() => {
+                  const visibleRows = table
+                    .getSortedRowModel()
+                    .rows.map((row) => row.original);
+                  const columns = table
+                    .getAllColumns()
+                    .filter((col) => col.id !== "expander")
+                    .filter((col) => col.id !== "select")
+                    .filter((col) => col.getIsVisible())
+                    .map((col) => ({
+                      label: col.columnDef.header,
+                      value: col.id,
+                    }));
+                  exportToExcel(columns, visibleRows, "dataSheet");
+                }}
+              >
+                <FaFileExcel
+                  size={24}
+                  className="text-[#00b400] dark:text-[#00ff00] cursor-pointer transition duration-75 ease-in hover:text-[#4bbd4b]"
+                />
+              </Button>
+            )}
+
             {/* Column Toggle Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -243,6 +286,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                     .getAllColumns()
                     ?.filter((column) => column.getCanHide())
                     ?.filter((column) => column.id !== "expander")
+                    ?.filter((column) => column.id !== "select")
                     ?.map((column) => (
                       <DropdownMenuCheckboxItem
                         key={column.id}
@@ -296,7 +340,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="">
         {error ? (
           <TableError></TableError>
         ) : loading ? (
@@ -313,6 +357,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                       isPinned === "left" && column.getIsLastColumn("left");
                     const isFirstRightPinned =
                       isPinned === "right" && column.getIsFirstColumn("right");
+                    isdataLoaded == false && setisdataLoaded(true);
                     return (
                       <TableHead
                         key={header.id}
@@ -499,25 +544,6 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                                       />
                                       Stick to right
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="w-full sm:w-auto"
-                                    >
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setIsChildOpen(!isChildOpen);
-                                        }}
-                                        className="flex items-center justify-between w-auto  text-sm sm:text-base"
-                                      >
-                                        <Search
-                                          size={16}
-                                          strokeWidth={2}
-                                          className="mr-2"
-                                        />
-                                        <span>Search</span>
-                                      </button>
-                                    </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               ))}
@@ -553,6 +579,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                 table.getRowModel().rows?.map((row) => (
                   <Fragment key={row.id}>
                     <TableRow
+                      key={row.id}
                       data-state={row.getIsSelected() && "selected"}
                       className="h-[55px]"
                     >
@@ -624,7 +651,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
               : table.getState().pagination.pageIndex *
                   table.getState().pagination.pageSize +
                 1}{" "}
-            from{" "}
+            to{" "}
             {api
               ? totalPages && totalPages - 1
               : Math.min(
@@ -632,8 +659,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                     table.getState().pagination.pageSize,
                   table.getFilteredRowModel().rows.length
                 )}{" "}
-            page. Total:{" "}
-            {api ? totalelement : table.getFilteredRowModel().rows.length}{" "}
+            of {api ? totalelement : table.getFilteredRowModel().rows.length}{" "}
             entries
           </div>
 
@@ -659,7 +685,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                   }
                 }}
               >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
+                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                   <option key={pageSize} value={pageSize}>
                     {pageSize}
                   </option>
@@ -680,7 +706,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                     navigate(`?${params.toString()}`);
                   } else {
                     table.setPageIndex(0);
-                    setSearchParams({ page: "1" });
+                    setSearchParams({ page: "0" });
                   }
                 }}
                 disabled={api ? currentPage === 0 : !table.getCanPreviousPage()}
@@ -716,15 +742,13 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                 className="w-8  h-8 sm:w-10 sm:h-10 disabled:opacity-50"
                 onClick={() => {
                   if (api) {
-                    currentPage != null &&
-                      params.set("page", String(currentPage + 1));
+                    currentPage && params.set("page", String(currentPage + 1));
                     navigate(`?${params.toString()}`);
                   } else {
                     table.nextPage();
                     const currentPage = searchParams.get("page");
-                    const nextPage =
-                      currentPage != null ? Number(currentPage) + 1 : 1;
-                    setSearchParams({ page: `${nextPage}` });
+                    const nextPage = currentPage ? Number(currentPage) + 1 : 1;
+                    setSearchParams({ page: nextPage.toString() });
                   }
                 }}
                 disabled={

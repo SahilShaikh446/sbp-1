@@ -383,6 +383,7 @@ function ACBReportUpdate() {
         form.setValue("service_repres", res.data.service_repres);
         form.setValue("company_id", `${res.data.company_id}`);
         replace(res.data.acb_testing_list);
+        setPosition({ x: res.data.image_data.x, y: 0 });
       }
     } catch (error) {
       toast.error("Failed to fetch report data. Please try again.");
@@ -1273,9 +1274,11 @@ function ACBReportUpdate() {
           </Form>
           {/* <PDFViewer width="100%" height="600px" className="w-full">
             <ACBReport
-              reportData={form.getValues()}
+              reportData={{
+                ...form.getValues(),
+                image_data: { x: position.x },
+              }}
               companyData={company || []}
-              imageConstraints={position.x}
             />
           </PDFViewer> */}
         </CardContent>
@@ -1692,11 +1695,11 @@ function ACBReportUpdate() {
                   </tr>
                   <tr className="flex justify-between">
                     <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">Client's Repres.:</span>{" "}
+                      <span className="font-bold">For Client.:</span>{" "}
                       {form.watch("client_repres") || "--"}
                     </td>
                     <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">Service Repres.:-</span> M/s.
+                      <span className="font-bold">For Ok Agencies.:-</span> M/s.
                       {form.watch("service_repres") || "--"}
                     </td>
                   </tr>

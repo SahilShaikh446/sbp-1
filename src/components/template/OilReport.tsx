@@ -152,20 +152,22 @@ const styles = StyleSheet.create({
   },
 });
 
-interface ImageConstraints {
-  left: string | number;
-  top: string | number;
-}
-
+type ReportData = z.infer<typeof reportFormSchema> & {
+  image_data: { x: number };
+};
 const OilReport = ({
   reportData,
   companyData,
-  imageConstraints,
 }: {
-  reportData: z.infer<typeof reportFormSchema>;
+  reportData: ReportData;
   companyData: companyType[];
-  imageConstraints?: number; // Optional prop for image constraints
 }) => {
+  const PAGE_WIDTH = 510; // A4 width in points
+  const STAMP_SIZE = 110;
+  const safeX = Math.min(
+    Math.max(reportData?.image_data?.x || 0, 0), // never less than 0
+    PAGE_WIDTH - STAMP_SIZE // never beyond page
+  );
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -325,8 +327,7 @@ const OilReport = ({
               style={{
                 objectFit: "contain",
                 bottom: 10,
-                left: 0,
-                transform: `translateX(${reportData?.image_date?.x}px)`,
+                left: safeX,
                 width: 110, // 150px * 0.75
                 height: 110, // 150px * 0.75
               }}
