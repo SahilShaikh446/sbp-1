@@ -12,6 +12,7 @@ import MasterDashboard from "./pages/masterAdmin/MasterDashboard";
 import { Dashboard } from "./pages/dashboard";
 import ACBReportTabs from "./pages/ACBReportTabs";
 import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
+import HTBreakerReportCreate from "./features/HTBreakerReport/HTBreakerReportCreate";
 
 axios.interceptors.request.use(
   function (config) {
@@ -74,6 +75,10 @@ function App() {
         {
           path: "/acb-report/:id",
           element: <ACBReportUpdate />,
+        },
+        {
+          path: "/ht-breaker-report",
+          element: <HTBreakerReportCreate />,
         },
         {
           path: "/contact-us",

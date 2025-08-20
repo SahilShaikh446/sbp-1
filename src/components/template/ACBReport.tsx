@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
 interface ACBReportProps {
   reportData: ACBInspectionForm & {
     image_data: { x: number };
+    acb_testing_list: any[];
   };
   companyData: companyType[];
 }
