@@ -5,6 +5,7 @@ import {
   selectCompany,
 } from "@/features/company/companySlice";
 import { reportFormSchema } from "@/features/oilReport/OilReportCreate";
+import { Report } from "@/features/oilReport/type";
 import {
   Document,
   Page,
@@ -152,14 +153,11 @@ const styles = StyleSheet.create({
   },
 });
 
-type ReportData = z.infer<typeof reportFormSchema> & {
-  image_data: { x: number };
-};
 const OilReport = ({
   reportData,
   companyData,
 }: {
-  reportData: ReportData;
+  reportData: Report;
   companyData: companyType[];
 }) => {
   const PAGE_WIDTH = 510; // A4 width in points

@@ -4,6 +4,7 @@ import { authSlice } from "@/features/authSlice/authSlice";
 import { clientSlice } from "@/features/client/clientSlice";
 import companySlice from "@/features/company/companySlice";
 import { contactUsSlice } from "@/features/contactus/contactUsSlice";
+import { HTBreakerReportSlice } from "@/features/HTBreakerReport/htBreakerReportSlice";
 import { oilReportSlice } from "@/features/oilReport/oilReportSlice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
@@ -15,6 +16,7 @@ const appReducer = combineReducers({
   oilReport: oilReportSlice.reducer,
   contactUs: contactUsSlice.reducer,
   acbReport: acbReportSlice.reducer,
+  HTBreakerReport: HTBreakerReportSlice.reducer,
 });
 
 // Root reducer that handles reset

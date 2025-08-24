@@ -2,6 +2,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronRight,
+  CircuitBoard,
   Droplet,
   FileText,
   LayoutDashboard,
@@ -48,6 +49,11 @@ const MasterAdminSidebar = [
     label: "ACB Report",
     href: "/acb-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "HT Breaker Report",
+    href: "/ht-breaker-report",
+    icon: <CircuitBoard className="h-5 w-5 flex-shrink-0" />,
   },
   {
     label: "Contact Us",

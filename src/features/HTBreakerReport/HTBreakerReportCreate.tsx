@@ -1,18 +1,14 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import React, { useEffect, useRef, useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
@@ -27,12 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { parseISO, format } from "date-fns";
-import { format as formatWithOrdinal } from "date-fns";
-import { enUS } from "date-fns/locale";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { toast } from "sonner";
-import { fetchOilReportAsync } from "@/features/oilReport/oilReportSlice";
 import { CheckIcon, ChevronDownIcon, Loader } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -49,31 +42,70 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { PDFViewer } from "@react-pdf/renderer";
-import OilReport from "@/components/template/OilReport";
+import HTBreakerReport from "@/components/template/HTBreakerReport";
 
+// Zod schema (unchanged)
 export const reportFormSchema = z.object({
-  report_date: z.string(),
-  report_description: z.string(),
-  kva: z.string(),
-  voltage: z.string(),
-  make: z.string(),
-  sr_no: z.string(),
-  transformer_oil_quantity: z.string(),
-  transformer_before_filtration: z.string(),
-  transformer_after_filtration: z.string(),
-  oltc_make_type: z.string(),
-  oltc_oil_quantity: z.string(),
-  oltc_before_filtration: z.string(),
-  oltc_after_filtration: z.string(),
-  remark: z.string(),
-  clients_representative: z.string(),
-  tested_by: z.string(),
-  company_id: z.string(),
-  date_of_filtration: z.string(),
-  manufacturing_year: z.string(),
   report_number: z.string(),
-  id: z.string(),
+  report_date: z.string(),
+  location: z.string(),
+  for_client: z.string(),
+  for_ok_agencies: z.string(),
+  panel_no_feeder_name_plate: z.string(),
+  cb_type: z.string(),
+  voltage_amps_ka: z.string(),
+  vcb_sr_no_year: z.string(),
+  spring_charge_motor_volts: z.string(),
+  closing_coil_voltage: z.string(),
+  trip_coil_voltage: z.string(),
+  counter_reading: z.string(),
+  visual_inspection_for_damaged: z.string(),
+  replacement: z.string(),
+  through_cleaning: z.string(),
+  lubricant_oil_moving_parts: z.string(),
+  torque: z.string(),
+  on_off_operation_elect_manual: z.string(),
+  sp6_checking: z.string(),
+  rack_in_out_checking: z.string(),
+  shutter_movement_checking: z.string(),
+  drive_mechanism_checkin: z.string(),
+  checking_cb_door_interlock: z.string(),
+  contact_resistance: z.string(),
+  repair: z.string(),
+  remark: z.string(),
+  serviced_by: z.string(),
+  company_id: z.string(),
+  insulation_resistance_check_using_5kv_insulation_tester: z.object({
+    subrows: z.array(
+      z.object({
+        description: z.string(),
+        r: z.string(),
+        y: z.string(),
+        b: z.string(),
+      })
+    ),
+  }),
+  checking_cb_timing: z.object({
+    subrows: z.array(
+      z.object({
+        description: z.string(),
+        r: z.string(),
+        y: z.string(),
+        b: z.string(),
+      })
+    ),
+  }),
 });
 
 export type ReportType = z.infer<typeof reportFormSchema>;
@@ -88,86 +120,127 @@ export function convertReportDate(dateStr: string): string {
   }
 }
 
+// Updated inspectionData with fieldName mappings
 const inspectionData = [
   {
     srNo: 1,
     description: "PANEL NO/FEEDER NAME PLATE",
+    fieldName: "panel_no_feeder_name_plate",
     observationReport: "01 / 100s FTL II",
   },
   {
     srNo: 2,
-    description: "CB TYPE ",
+    description: "CB TYPE",
+    fieldName: "cb_type",
     observationReport: "HPA 24 / 1225C ( SF6)",
   },
   {
     srNo: 3,
     description: "VOLTAGE/AMPS/KA",
+    fieldName: "voltage_amps_ka",
     observationReport: "24KV / 1250A / 26.3KA",
   },
   {
     srNo: 4,
     description: "VCB SERIAL NO.",
+    fieldName: "vcb_sr_no_year",
     observationReport: "1VYN020411001007 / 2011",
   },
   {
     srNo: 5,
     description: "SPRING CHARGE MOTOR VOLTS",
+    fieldName: "spring_charge_motor_volts",
     observationReport: "220V AC/DC",
   },
   {
     srNo: 6,
     description: "CLOSING COIL VOLTAGE",
+    fieldName: "closing_coil_voltage",
     observationReport: "110V DC",
   },
-  { srNo: 7, description: "TRIP COIL VOLTAGE", observationReport: "110V DC" },
-  { srNo: 8, description: "COUNTER READING", observationReport: "0382" },
+  {
+    srNo: 7,
+    description: "TRIP COIL VOLTAGE",
+    fieldName: "trip_coil_voltage",
+    observationReport: "110V DC",
+  },
+  {
+    srNo: 8,
+    description: "COUNTER READING",
+    fieldName: "counter_reading",
+    observationReport: "0382",
+  },
   {
     srNo: 9,
     description: "VISUAL INSPECTION FOR DAMAGED",
+    fieldName: "visual_inspection_for_damaged",
     observationReport: "OK",
   },
-  { srNo: 10, description: "REPLACEMENT", observationReport: "NIL" },
+  {
+    srNo: 10,
+    description: "REPLACEMENT",
+    fieldName: "replacement",
+    observationReport: "NIL",
+  },
   {
     srNo: 11,
     description: "THOROUGH CLEANING",
+    fieldName: "through_cleaning",
     observationReport: "YES DONE CRC SPRAY / SCOTCH BRITE",
   },
   {
     srNo: 12,
     description: "LUBRICATION OF MOVING PARTS",
+    fieldName: "lubricant_oil_moving_parts",
     observationReport: "Done to all moving parts",
   },
-  { srNo: 13, description: "TORQUE", observationReport: "NA" },
+  {
+    srNo: 13,
+    description: "TORQUE",
+    fieldName: "torque",
+    observationReport: "NA",
+  },
   {
     srNo: 14,
     description: "ON/OFF OPERATION ELECT/MANUAL",
+    fieldName: "on_off_operation_elect_manual",
     observationReport: "Manual and Electrical Operation checked OK",
   },
   {
     srNo: 15,
     description: "SF6 CHECKING",
+    fieldName: "sp6_checking",
     observationReport:
       "Checked megger meter for healthiness and megger taken since each pole.",
   },
-  { srNo: 16, description: "RACK IN/OUT CHECKING", observationReport: "OK" },
+  {
+    srNo: 16,
+    description: "RACK IN/OUT CHECKING",
+    fieldName: "rack_in_out_checking",
+    observationReport: "OK",
+  },
   {
     srNo: 17,
     description: "SHUTTER MOVEMENT CHECKING",
+    fieldName: "shutter_movement_checking",
     observationReport: "OK",
   },
   {
     srNo: 18,
     description: "DRIVE MECHANISM CHECKING",
+    fieldName: "drive_mechanism_checkin",
     observationReport: "OK",
   },
   {
     srNo: 19,
     description: "CHECKING CB/DOOR INTERLOCK",
+    fieldName: "checking_cb_door_interlock",
     observationReport: "OK",
   },
   {
     srNo: 20,
     description: "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )",
+    fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
     observationReport: "special",
     subRows: [
       {
@@ -183,6 +256,7 @@ const inspectionData = [
   {
     srNo: 21,
     description: "CHECKING CB TIMING",
+    fieldName: "checking_cb_timing",
     observationReport: "special",
     subRows: [
       { description: "CLOSE (ms)", r: "60", y: "59", b: "62" },
@@ -192,16 +266,22 @@ const inspectionData = [
   {
     srNo: 22,
     description: "CONTACT RESISTANCE ( MICRO OHM )",
+    fieldName: "contact_resistance",
     observationReport: "special",
     rValue: "36.4 μΩ",
     yValue: "33.9 μΩ",
     bValue: "37.5 μΩ",
   },
-
-  { srNo: 23, description: "OTHERS", observationReport: "NIL" },
+  {
+    srNo: 23,
+    description: "REPAIR",
+    fieldName: "repair",
+    observationReport: "NIL",
+  },
   {
     srNo: 24,
     description: "REMARK",
+    fieldName: "remark",
     observationReport: "Breaker found working satisfactory.",
   },
 ];
@@ -214,7 +294,6 @@ export default function HTBreakerReportCreate() {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-
     const startX = e.clientX;
     const startY = e.clientY;
     const initialX = position.x;
@@ -224,32 +303,22 @@ export default function HTBreakerReportCreate() {
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const imgRect = imgRef.current.getBoundingClientRect();
-
-      // Get size of image without translation effect
       const imgWidth = imgRect.width;
       const imgHeight = imgRect.height;
-
-      // Calculate the delta
       let newX = initialX + (moveEvent.clientX - startX);
       let newY = initialY + (moveEvent.clientY - startY);
-
-      // Clamp so it stays inside container
       const minX = 0;
       const minY = 0;
       const maxX = containerRect.width - imgWidth - 100;
       const maxY = containerRect.height - imgHeight;
-
       newX = Math.min(Math.max(newX, minX), maxX);
       newY = Math.min(Math.max(newY, minY), maxY);
-
       setPosition({ x: newX, y: newY });
     };
-
     const onMouseUp = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
-
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
@@ -257,29 +326,62 @@ export default function HTBreakerReportCreate() {
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
-      report_date: "",
       report_number: "",
-      report_description:
-        "We have the pleasure in informing you that we have carried out transformer oil filtration at site & tested the sample of transformer oil for dielectric strength in accordance with 1866:2017 and the results are as under.",
-      kva: "",
-      voltage: "",
-      make: "",
-      sr_no: "",
-      transformer_oil_quantity: "",
-      transformer_before_filtration: "",
-      transformer_after_filtration: "",
-      oltc_make_type: "",
-      oltc_oil_quantity: "",
-      oltc_before_filtration: "",
-      oltc_after_filtration: "",
+      location: "",
+      repair: "",
+      report_date: "",
+      panel_no_feeder_name_plate: "",
+      cb_type: "",
+      voltage_amps_ka: "",
+      vcb_sr_no_year: "",
+      spring_charge_motor_volts: "",
+      closing_coil_voltage: "",
+      trip_coil_voltage: "",
+      counter_reading: "",
+      visual_inspection_for_damaged: "",
+      replacement: "",
+      through_cleaning: "",
+      lubricant_oil_moving_parts: "",
+      torque: "",
+      on_off_operation_elect_manual: "",
+      sp6_checking: "",
+      rack_in_out_checking: "",
+      shutter_movement_checking: "",
+      drive_mechanism_checkin: "",
+      checking_cb_door_interlock: "",
+      contact_resistance: "",
       remark: "",
-      clients_representative: "",
-      tested_by: "",
+      serviced_by: "",
       company_id: "",
-      date_of_filtration: "",
-      manufacturing_year: "",
-      id: "0",
+      insulation_resistance_check_using_5kv_insulation_tester: {
+        subrows: [
+          {
+            description: "BETWEEN UPPER AND LOWER CONTACT",
+            r: "",
+            y: "",
+            b: "",
+          },
+          { description: "PHASE TO EARTH", r: "", y: "", b: "" },
+          { description: "PHASE TO PHASE", r: "", y: "", b: "" },
+        ],
+      },
+      checking_cb_timing: {
+        subrows: [
+          { description: "CLOSE (ms)", r: "", y: "", b: "" },
+          { description: "OPEN (ms)", r: "", y: "", b: "" },
+        ],
+      },
     },
+  });
+
+  const fieldArray = useFieldArray({
+    control: form.control,
+    name: "insulation_resistance_check_using_5kv_insulation_tester.subrows",
+  });
+
+  const checkingCBTimingFieldArray = useFieldArray({
+    control: form.control,
+    name: "checking_cb_timing.subrows",
   });
 
   const company = useAppSelector(selectCompany);
@@ -287,24 +389,22 @@ export default function HTBreakerReportCreate() {
 
   useEffect(() => {
     !company && dispatch(fetchCompanyAsync());
-  }, [company]);
-
+  }, [company, dispatch]);
+  console.log(form.formState.errors);
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
     try {
-      const res = await axios.post(
-        BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        { ...data, image_data: { x: position.x } }
-      );
+      const res = await axios.post(BASE_URL + "API/Add/Service/Report", {
+        ...data,
+        image_data: { x: position.x },
+      });
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
-        dispatch(fetchOilReportAsync());
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
       console.error("Error submitting report:", error);
     }
-    // You can also make an API POST request here
   }
 
   return (
@@ -365,7 +465,7 @@ export default function HTBreakerReportCreate() {
                           type="button"
                           variant="outline"
                           role="combobox"
-                          className={`bg-background hover:bg-background border-input w-full justify-between px-2 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
                             form.formState.errors.company_id
                               ? "border-red-500"
                               : ""
@@ -391,7 +491,6 @@ export default function HTBreakerReportCreate() {
                           />
                         </Button>
                       </PopoverTrigger>
-
                       <PopoverContent
                         className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
                         align="start"
@@ -404,7 +503,7 @@ export default function HTBreakerReportCreate() {
                               {company?.map((c) => (
                                 <CommandItem
                                   key={c.id}
-                                  value={c.name} // search works by name
+                                  value={c.name}
                                   onSelect={() => {
                                     form.setValue("company_id", `${c.id}`, {
                                       shouldValidate: true,
@@ -427,30 +526,29 @@ export default function HTBreakerReportCreate() {
                 </div>
                 <FormField
                   control={form.control}
-                  name="report_description"
+                  name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Report Description</FormLabel>
+                      <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Brief description of the report"
-                          {...field}
-                        />
+                        <Input placeholder="Location" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="kva"
+                    name="panel_no_feeder_name_plate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>KVA</FormLabel>
+                        <FormLabel>Panel No./Feeder Name Plate</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., 1250 KVA" {...field} />
+                          <Input
+                            placeholder="Enter panel no./feeder name plate"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -458,28 +556,30 @@ export default function HTBreakerReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="voltage"
+                    name="cb_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Voltage</FormLabel>
+                        <FormLabel>CB Type</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., 22000V / 433V" {...field} />
+                          <Input placeholder="Enter CB type" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="make"
+                    name="voltage_amps_ka"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Make</FormLabel>
+                        <FormLabel>Voltage / Amps / KA</FormLabel>
                         <FormControl>
-                          <Input placeholder="Transformer make" {...field} />
+                          <Input
+                            placeholder="Enter voltage / amps / KA"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -487,13 +587,13 @@ export default function HTBreakerReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="sr_no"
+                    name="vcb_sr_no_year"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Serial Number</FormLabel>
+                        <FormLabel>VCB SR No. / Year</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g., 41083/1 Year - 2011"
+                            placeholder="Enter VCB SR No. / Year"
                             {...field}
                           />
                         </FormControl>
@@ -505,56 +605,29 @@ export default function HTBreakerReportCreate() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="manufacturing_year"
+                    name="spring_charge_motor_volts"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Manufacturing Year</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 2011" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="transformer_oil_quantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Transformer Oil Quantity</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 1500 LITERS" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="transformer_before_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>BDV Before Filtration</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 36 KV" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="transformer_after_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>BDV After Filtration</FormLabel>
+                        <FormLabel>Spring Charge Motor Volts</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
+                            placeholder="Enter spring charge motor volts"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="closing_coil_voltage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Closing Coil Voltage</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter closing coil voltage"
                             {...field}
                           />
                         </FormControl>
@@ -566,55 +639,29 @@ export default function HTBreakerReportCreate() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="oltc_make_type"
+                    name="trip_coil_voltage"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>OLTC Make/Type</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 240 LITERS" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="oltc_oil_quantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>OLTC Oil Quantity</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 240 LITERS" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="oltc_before_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>BDV Before Filtration</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 40 KV" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="oltc_after_filtration"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>BDV After Filtration</FormLabel>
+                        <FormLabel>Trip Coil Voltage</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g., Sample withdrawn at 80 KV for 1 minute"
+                            placeholder="Enter trip coil voltage"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="counter_reading"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Counter Reading</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter counter reading"
                             {...field}
                           />
                         </FormControl>
@@ -623,7 +670,387 @@ export default function HTBreakerReportCreate() {
                     )}
                   />
                 </div>
-
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="visual_inspection_for_damaged"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Visual Inspection for Damaged</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter visual inspection details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="replacement"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Replacement</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter replacement details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="through_cleaning"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Through Cleaning</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter through cleaning details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lubricant_oil_moving_parts"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lubricant Oil for Moving Parts</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter lubricant oil details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="torque"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Torque</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter torque details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="on_off_operation_elect_manual"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>On/Off Operation (Elect. Manual)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter on/off operation details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="sp6_checking"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>SF6 Checking</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter SF6 checking" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="rack_in_out_checking"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Rack In/Out Checking</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter rack in/out checking"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shutter_movement_checking"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Shutter Movement Checking</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter shutter movement checking"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="drive_mechanism_checkin"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Drive Mechanism Checking</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter drive mechanism checking"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="checking_cb_door_interlock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Checking CB Door Interlock</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter checking CB door interlock"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contact_resistance"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Resistance</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter contact resistance"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="repair"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Repair</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter repair details"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Insulation Resistance Check</CardTitle>
+                    <CardDescription>
+                      Enter details for each insulation resistance check
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {fieldArray.fields.map((field, index) => (
+                        <div
+                          key={field.id}
+                          className="border rounded-lg p-4 space-y-4"
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`insulation_resistance_check_using_5kv_insulation_tester.subrows.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem className="col-span-full">
+                                  <FormLabel>Description</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="e.g., LT, ST, GF"
+                                      {...field}
+                                      readOnly
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`insulation_resistance_check_using_5kv_insulation_tester.subrows.${index}.r`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>R</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter R value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`insulation_resistance_check_using_5kv_insulation_tester.subrows.${index}.y`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Y</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter Y value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`insulation_resistance_check_using_5kv_insulation_tester.subrows.${index}.b`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>B</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter B value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Check CB Timing</CardTitle>
+                    <CardDescription>
+                      Enter details for each circuit breaker timing check
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {checkingCBTimingFieldArray.fields.map((field, index) => (
+                        <div
+                          key={field.id}
+                          className="border rounded-lg p-4 space-y-4"
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`checking_cb_timing.subrows.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem className="col-span-full">
+                                  <FormLabel>Description</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="e.g., LT, ST, GF"
+                                      {...field}
+                                      readOnly
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`checking_cb_timing.subrows.${index}.r`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>R</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter R value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`checking_cb_timing.subrows.${index}.y`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Y</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter Y value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`checking_cb_timing.subrows.${index}.b`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>B</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter B value"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
                 <FormField
                   control={form.control}
                   name="remark"
@@ -641,11 +1068,10 @@ export default function HTBreakerReportCreate() {
                     </FormItem>
                   )}
                 />
-
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="clients_representative"
+                    name="for_client"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Client</FormLabel>
@@ -661,7 +1087,7 @@ export default function HTBreakerReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="tested_by"
+                    name="for_ok_agencies"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Ok Agencies</FormLabel>
@@ -676,7 +1102,6 @@ export default function HTBreakerReportCreate() {
                     )}
                   />
                 </div>
-
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
@@ -690,7 +1115,7 @@ export default function HTBreakerReportCreate() {
               </form>
             </Form>
             {/* <PDFViewer width="100%" height="600px" className="w-full">
-              <OilReport
+              <HTBreakerReport
                 reportData={{
                   ...form.getValues(),
                   image_data: { x: position.x },
@@ -700,10 +1125,9 @@ export default function HTBreakerReportCreate() {
             </PDFViewer> */}
           </CardContent>
         </Card>
-
         {/* Preview Section */}
         <Card className="h-auto overflow-auto">
-          <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto  flex flex-col">
+          <div className="max-w-[2480px] max-h-[3508px] px-8 mx-auto flex flex-col">
             {/* Header */}
             <div className="border border-gray-300">
               <div className="p-2">
@@ -724,16 +1148,41 @@ export default function HTBreakerReportCreate() {
               <div className="px-6 py-1">
                 <div className="flex flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
                   <div>
-                    Client:- M/s Dr. Acharya Laboratories Pvt. Ltd,
-                    Ambernath(E).{" "}
+                    Client:-{" "}
+                    {form.watch("company_id") ? (
+                      <>
+                        <span>
+                          {
+                            company?.find(
+                              (i) => `${i.id}` == `${form.watch("company_id")}`
+                            )?.name
+                          }
+                        </span>
+                        <span>
+                          {
+                            company?.find(
+                              (i) => `${i.id}` == `${form.watch("company_id")}`
+                            )?.address
+                          }
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span>-</span>
+                        <span>-</span>
+                      </>
+                    )}
                   </div>
-                  <div>Date:- 02/04/2025</div>
-                  <div>Location:- Main HT Room.</div>
+                  <div>
+                    Date:-{" "}
+                    {convertReportDate(form.watch("report_date")) ||
+                      "--/--/----"}
+                  </div>
+                  <div>Location:- {form.watch("location") || "--"}</div>
                 </div>
                 <table className="w-full border-collapse border border-black">
-                  {/* Header */}
                   <thead>
-                    <tr className="">
+                    <tr>
                       <th className="border border-black px-3 py-1 text-left font-semibold text-sm text-nowrap">
                         Sr No.
                       </th>
@@ -749,119 +1198,165 @@ export default function HTBreakerReportCreate() {
                     {inspectionData.map((item, index) => (
                       <React.Fragment key={index}>
                         <tr>
-                          <td className="border border-black px-3  text-sm text-center align-center">
+                          <td className="border border-black px-3 text-sm text-center align-center">
                             {item.srNo}
                           </td>
-                          <td className="border border-black px-3  text-sm font-medium align-center">
+                          <td className="border border-black px-3 text-sm font-medium align-center">
                             {item.description}
                           </td>
-                          <td className="border border-black px-0 py-0 text-sm align-center text-center ">
+                          <td className="border border-black px-0 py-0 text-sm align-center text-center">
                             {item.observationReport === "special" ? (
                               <div className="flex h-full">
                                 <div
                                   className={`flex-1 px-2 ${
-                                    item.description ==
+                                    item.description ===
                                     "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
                                       ? "py-[10px] px-3"
-                                      : item.description == "CHECKING CB TIMING"
+                                      : item.description ===
+                                        "CHECKING CB TIMING"
                                       ? "py-[2px] px-4"
                                       : "py-0 px-2"
                                   } border-r border-black font-semibold text-center`}
                                 >
-                                  {item.description ==
+                                  {item.description ===
                                   "CONTACT RESISTANCE ( MICRO OHM )"
-                                    ? item.rValue
+                                    ? "R"
                                     : "R"}
                                 </div>
                                 <div
                                   className={`flex-1 px-2 ${
-                                    item.description ==
+                                    item.description ===
                                     "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
                                       ? "py-[10px] px-3"
-                                      : item.description == "CHECKING CB TIMING"
+                                      : item.description ===
+                                        "CHECKING CB TIMING"
                                       ? "py-[2px] px-4"
                                       : "py-0"
                                   } border-r border-black font-semibold text-center`}
                                 >
-                                  {item.description ==
+                                  {item.description ===
                                   "CONTACT RESISTANCE ( MICRO OHM )"
-                                    ? item.rValue
+                                    ? "Y"
                                     : "Y"}
                                 </div>
                                 <div
                                   className={`flex-1 px-2 ${
-                                    item.description ==
+                                    item.description ===
                                     "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
                                       ? "py-[10px] px-3"
-                                      : item.description == "CHECKING CB TIMING"
+                                      : item.description ===
+                                        "CHECKING CB TIMING"
                                       ? "py-[2px] px-4"
                                       : "py-0"
-                                  }  font-semibold text-center`}
+                                  } font-semibold text-center`}
                                 >
-                                  {item.description ==
+                                  {item.description ===
                                   "CONTACT RESISTANCE ( MICRO OHM )"
-                                    ? item.rValue
+                                    ? "B"
                                     : "B"}
                                 </div>
                               </div>
                             ) : (
-                              <div className="px-3 ">
-                                {item.observationReport}
+                              <div className="px-3">
+                                {(() => {
+                                  const value = form.watch(
+                                    item.fieldName as keyof ReportType
+                                  );
+                                  return typeof value === "string"
+                                    ? value || "--"
+                                    : "--";
+                                })()}
                               </div>
                             )}
                           </td>
                         </tr>
-
-                        {/* Sub-rows for items with detailed measurements */}
-                        {item.subRows &&
-                          item.subRows.map((subRow, subIndex) => (
-                            <tr>
-                              <td className="border border-black px-3  text-sm"></td>
-                              <td className="border border-black px-3  text-sm pl-6">
-                                {subRow.description}
-                              </td>
-                              <td className="border border-black px-0 py-0 text-sm">
-                                <div className="flex h-full">
-                                  <div
-                                    className={`flex-1 ${"px-3"}  border-r border-black text-center`}
-                                  >
-                                    {subRow.r}
+                        {/* Sub-rows for special items */}
+                        {item.fieldName ===
+                          "insulation_resistance_check_using_5kv_insulation_tester" &&
+                          form
+                            .watch(
+                              "insulation_resistance_check_using_5kv_insulation_tester.subrows"
+                            )
+                            ?.map((subRow, subIndex) => (
+                              <tr key={subIndex}>
+                                <td className="border border-black px-3 text-sm"></td>
+                                <td className="border border-black px-3 text-sm pl-6">
+                                  {subRow.description}
+                                </td>
+                                <td className="border border-black px-0 py-0 text-sm">
+                                  <div className="flex h-full">
+                                    <div className="flex-1 px-3 border-r border-black text-center">
+                                      {subRow.r || "--"}
+                                    </div>
+                                    <div className="flex-1 px-3 border-r border-black text-center">
+                                      {subRow.y || "--"}
+                                    </div>
+                                    <div className="flex-1 px-3 text-center">
+                                      {subRow.b || "--"}
+                                    </div>
                                   </div>
-                                  <div
-                                    className={`flex-1 ${"px-3"}  border-r border-black text-center`}
-                                  >
-                                    {subRow.y}
+                                </td>
+                              </tr>
+                            ))}
+                        {item.fieldName === "checking_cb_timing" &&
+                          form
+                            .watch("checking_cb_timing.subrows")
+                            ?.map((subRow, subIndex) => (
+                              <tr key={subIndex}>
+                                <td className="border border-black px-3 text-sm"></td>
+                                <td className="border border-black px-3 text-sm pl-6">
+                                  {subRow.description}
+                                </td>
+                                <td className="border border-black px-0 py-0 text-sm">
+                                  <div className="flex h-full">
+                                    <div className="flex-1 px-3 border-r border-black text-center">
+                                      {subRow.r || "--"}
+                                    </div>
+                                    <div className="flex-1 px-3 border-r border-black text-center">
+                                      {subRow.y || "--"}
+                                    </div>
+                                    <div className="flex-1 px-3 text-center">
+                                      {subRow.b || "--"}
+                                    </div>
                                   </div>
-                                  <div
-                                    className={`flex-1 ${"px-3"}  text-center`}
-                                  >
-                                    {subRow.b}
-                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                        {item.fieldName === "contact_resistance" && (
+                          <tr>
+                            <td className="border border-black px-3 text-sm"></td>
+                            <td className="border border-black px-3 text-sm pl-6">
+                              Contact Resistance Values
+                            </td>
+                            <td className="border border-black px-0 py-0 text-sm">
+                              <div className="flex h-full">
+                                <div className="flex-1 px-3 border-r border-black text-center">
+                                  {form.watch("contact_resistance") || "--"}
                                 </div>
-                              </td>
-                            </tr>
-                          ))}
-
-                        {/* Remove the special header row logic as it's now handled above */}
+                                <div className="flex-1 px-3 border-r border-black text-center">
+                                  {form.watch("contact_resistance") || "--"}
+                                </div>
+                                <div className="flex-1 px-3 text-center">
+                                  {form.watch("contact_resistance") || "--"}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                       </React.Fragment>
                     ))}
                   </tbody>
                 </table>
                 <div className="w-full flex justify-between items-center font-bold text-md px-3">
+                  <div className="flex flex-col"></div>
                   <div className="flex flex-col">
-                    <span className="">For Client :</span>
-                    <span>{form.watch("clients_representative") || "--"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="">For Ok Agencies :</span>
-                    <span>{form.watch("tested_by") || "--"}</span>
+                    <span>For Ok Agencies:</span>
+                    <span>{form.watch("for_ok_agencies") || "--"}</span>
                   </div>
                 </div>
               </div>
-
-              {/* Footer */}
               <div className="border-t-8 tinos-regular border-[#fcae08] text-center p-3 text-md mt-auto">
-                <p className="">
+                <p>
                   <span className="font-bold">Address for correspondence:</span>{" "}
                   101, Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
                 </p>

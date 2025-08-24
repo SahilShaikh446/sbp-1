@@ -84,7 +84,6 @@ export const COLUMNS: ColumnDef<ACBReportResponse>[] = [
                     <ACBReport
                       reportData={row.original as any}
                       companyData={company || []}
-                      imageConstraints={row.original?.image_date?.x}
                     />
                   </PDFViewer>
                 </DialogDescription>

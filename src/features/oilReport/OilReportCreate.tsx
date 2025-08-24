@@ -180,7 +180,7 @@ export default function OilReportCreate() {
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
-        dispatch(fetchOilReportAsync());
+        dispatch(fetchOilReportAsync("page=0"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");

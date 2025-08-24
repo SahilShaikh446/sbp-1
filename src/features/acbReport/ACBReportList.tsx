@@ -9,9 +9,11 @@ import {
   fetchACBReportAsync,
   selectACBdata,
 } from "./acbReportSlice";
+import { useLocation } from "react-router-dom";
 
 const ACBReportList = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const params = useLocation().search;
 
   const data = useSelector(selectACBdata);
   const loading = useSelector(acbReportLoading);
@@ -19,16 +21,16 @@ const ACBReportList = () => {
 
   useEffect(() => {
     !data && dispatch(fetchACBReportAsync());
-  }, [data, dispatch]);
+  }, [params]);
 
   return (
     <ShadcnTable
-      name="ACB Report"
-      data={data}
+      title="ACB Report"
+      desc="ACB Reports"
+      data={data || []}
       columns={COLUMNS}
       loading={loading}
       error={error}
-      hideExcel={true}
     />
   );
 };

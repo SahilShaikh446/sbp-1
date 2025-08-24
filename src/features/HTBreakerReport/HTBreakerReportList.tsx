@@ -1,32 +1,33 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useEffect } from "react";
-import {
-  fetchOilReportAsync,
-  oilReportError,
-  oilReportLoading,
-  selectOilReport,
-} from "./oilReportSlice";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
-import { COLUMNS } from "./column";
+// import { COLUMNS } from "./column";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  fetchHTBreakerReportAsync,
+  HTBreakerReportError,
+  HTBreakerReportLoading,
+  selectHTBreakerReport,
+} from "./htBreakerReportSlice";
+import { COLUMNS } from "./column";
 
-function OilReportList() {
+function HTBreakerReportList() {
   const params = useLocation().search;
 
-  const data = useAppSelector(selectOilReport);
-  const loading = useAppSelector(oilReportLoading);
-  const error = useAppSelector(oilReportError);
+  const data = useAppSelector(selectHTBreakerReport);
+  const loading = useAppSelector(HTBreakerReportLoading);
+  const error = useAppSelector(HTBreakerReportError);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchOilReportAsync(params));
+    dispatch(fetchHTBreakerReportAsync(params));
   }, [params]);
-  
+
   return (
     <ShadcnTable
-      title="Oil Filteration Report"
+      title="HT Breaker Report"
+      desc="HT Breaker Report"
       data={data?.content || []}
-      desc="Description of the Oil Filteration Report"
       columns={COLUMNS}
       loading={loading}
       api={true}
@@ -38,4 +39,4 @@ function OilReportList() {
   );
 }
 
-export default OilReportList;
+export default HTBreakerReportList;

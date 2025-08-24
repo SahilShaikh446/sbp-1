@@ -13,6 +13,7 @@ import { Dashboard } from "./pages/dashboard";
 import ACBReportTabs from "./pages/ACBReportTabs";
 import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
 import HTBreakerReportCreate from "./features/HTBreakerReport/HTBreakerReportCreate";
+import HTBreakerTabs from "./pages/HTBreakerTabs";
 
 axios.interceptors.request.use(
   function (config) {
@@ -78,7 +79,7 @@ function App() {
         },
         {
           path: "/ht-breaker-report",
-          element: <HTBreakerReportCreate />,
+          element: <HTBreakerTabs />,
         },
         {
           path: "/contact-us",

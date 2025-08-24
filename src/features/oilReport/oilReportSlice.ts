@@ -1,11 +1,11 @@
 import { RootState } from "@/app/store";
 import { BASE_URL } from "@/lib/constants";
-import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { ReportApiResponse } from "./type";
 
 interface OilReportState {
-  entity: ReportType[] | null;
+  entity: ReportApiResponse | null;
   loading: boolean;
   error: boolean;
 }
@@ -16,30 +16,30 @@ const initialState: OilReportState = {
   error: false,
 };
 
-export const fetchOilReportAsync = createAsyncThunk(
-  "oilReport/getOilReport",
-  async () => {
-    try {
-      const response = await axios.get(BASE_URL + "API/List/Oil/Filtration/Test/Report");
-      return response.data;
-    } catch (error) {
-      return error;
-    }
-  }
-);
 // export const fetchOilReportAsync = createAsyncThunk(
 //   "oilReport/getOilReport",
-//   async (params: string) => {
+//   async () => {
 //     try {
-//       const response = await axios.get(
-//         BASE_URL + "API/List/Oil/Filtration/Test/Report/Filter/Search?" + params
-//       );
+//       const response = await axios.get(BASE_URL + "API/List/Oil/Filtration/Test/Report");
 //       return response.data;
 //     } catch (error) {
 //       return error;
 //     }
 //   }
 // );
+export const fetchOilReportAsync = createAsyncThunk(
+  "oilReport/getOilReport",
+  async (params: string) => {
+    try {
+      const response = await axios.get(
+        BASE_URL + "API/List/Oil/Filtration/Test/Report/Filter/Search" + params
+      );
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+);
 
 export const oilReportSlice = createSlice({
   name: "oilReport",
@@ -52,7 +52,7 @@ export const oilReportSlice = createSlice({
         state.entity = action.payload;
         state.error = false;
       })
-      .addCase(fetchOilReportAsync.rejected, (state, action) => {
+      .addCase(fetchOilReportAsync.rejected, (state) => {
         state.loading = false;
         state.error = true;
       });

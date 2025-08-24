@@ -18,8 +18,11 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
 import { Report } from "./type";
+import ACBReport from "@/components/template/ACBReport";
+import HTBreakerReport from "@/components/template/HTBreakerReport";
 
-function addOneYear(dateString: string): string {
+function addOneYear(dateString: string | null): string {
+  if (!dateString) return "N/A";
   try {
     const parsed = parseISO(dateString); // safely parses YYYY-MM-DD
     const newDate = addYears(parsed, 1);
@@ -42,7 +45,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
   {
     header: "Next Date of Filtration",
     cell: ({ row }) => {
-      return <span>{addOneYear(row.original.report_date)}</span>;
+      return <span>{addOneYear(row.original?.report_date)}</span>;
     },
   },
   {
@@ -83,7 +86,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
               <DialogHeader>
                 <DialogDescription className="max-h-[80vh] overflow-auto ">
                   <PDFViewer width="100%" height="600px" className="w-full">
-                    <OilReport
+                    <HTBreakerReport
                       reportData={row.original}
                       companyData={company || []}
                     />

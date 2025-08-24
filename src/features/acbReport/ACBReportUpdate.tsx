@@ -65,7 +65,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 import { fetchACBReportAsync } from "./acbReportSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
 
 export const acbReleaseTestingSchema = z.object({
@@ -75,6 +75,7 @@ export const acbReleaseTestingSchema = z.object({
   tms_as_per_relay_setting: z.string().optional(),
   actual_tms: z.string().optional(),
   result: z.string().optional(),
+  id: z.number(),
 });
 
 export const acbInspectionSchema = z.object({
@@ -157,6 +158,7 @@ function ACBReportUpdate() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -250,6 +252,7 @@ function ACBReportUpdate() {
           tms_as_per_relay_setting: "",
           actual_tms: "",
           result: "",
+          id: 0,
         },
         {
           protection: "ST",
@@ -258,6 +261,7 @@ function ACBReportUpdate() {
           tms_as_per_relay_setting: "",
           actual_tms: "",
           result: "",
+          id: 0,
         },
         {
           protection: "GF",
@@ -266,6 +270,7 @@ function ACBReportUpdate() {
           tms_as_per_relay_setting: "",
           actual_tms: "",
           result: "",
+          id: 0,
         },
       ],
     },
@@ -382,7 +387,17 @@ function ACBReportUpdate() {
         form.setValue("client_repres", res.data.client_repres);
         form.setValue("service_repres", res.data.service_repres);
         form.setValue("company_id", `${res.data.company_id}`);
-        replace(res.data.acb_testing_list);
+        replace(
+          res.data.acb_testing_list?.map((test: any) => ({
+            protection: test.protection,
+            setting_1: test.setting,
+            characteristics: test.characteristics,
+            tms_as_per_relay_setting: test.tms_as_per_relay_setting,
+            actual_tms: test.actual_tms,
+            result: test.result,
+            id: test.id,
+          }))
+        );
         setPosition({ x: res.data.image_data.x, y: 0 });
       }
     } catch (error) {
@@ -391,22 +406,23 @@ function ACBReportUpdate() {
     }
     setLoading(false);
   };
-
+  console.log(form.formState.errors);
   useEffect(() => {
     if (id) {
       fetchReport(id);
     }
   }, [id]);
-
   async function onSubmit(data: ACBInspectionForm) {
     try {
       const res = await axios.post(BASE_URL + "API/Update/ACB/Report", {
         ...data,
         image_data: { x: position.x },
         name_of_client: "",
+        id: id ? parseInt(id) : 0,
       });
-      if (res.status === 201) {
+      if (res.status === 200) {
         toast.success("Report submitted successfully!");
+        navigate("/acb-report");
         form.reset();
         dispatch(fetchACBReportAsync());
       }
@@ -1164,6 +1180,7 @@ function ACBReportUpdate() {
                           tms_as_per_relay_setting: "",
                           actual_tms: "",
                           result: "",
+                          id: 0,
                         })
                       }
                       className="w-full"

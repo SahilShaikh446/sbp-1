@@ -187,7 +187,7 @@ export default function OilReportUpdate() {
         toast.success("Report updated successfully!");
         form.reset();
         navigate("/oil-report");
-        dispatch(fetchOilReportAsync());
+        dispatch(fetchOilReportAsync("page=0"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
