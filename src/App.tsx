@@ -14,6 +14,7 @@ import ACBReportTabs from "./pages/ACBReportTabs";
 import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
 import HTBreakerReportCreate from "./features/HTBreakerReport/HTBreakerReportCreate";
 import HTBreakerTabs from "./pages/HTBreakerTabs";
+import HTBreakerReportupdate from "./features/HTBreakerReport/HTBreakerUpdate";
 
 axios.interceptors.request.use(
   function (config) {
@@ -80,6 +81,10 @@ function App() {
         {
           path: "/ht-breaker-report",
           element: <HTBreakerTabs />,
+        },
+        {
+          path: "/ht-breaker-report/:id",
+          element: <HTBreakerReportupdate />,
         },
         {
           path: "/contact-us",

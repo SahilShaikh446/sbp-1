@@ -1,10 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import {
-  companyType,
-  fetchCompanyAsync,
-  selectCompany,
-} from "@/features/company/companySlice";
-import { reportFormSchema } from "@/features/oilReport/OilReportCreate";
+import { companyType } from "@/features/company/companySlice";
 import { Report } from "@/features/oilReport/type";
 import {
   Document,
@@ -15,8 +9,6 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { useEffect } from "react";
-import { z } from "zod";
 
 // Register Tinos fonts (regular and bold)
 Font.register({

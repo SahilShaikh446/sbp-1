@@ -84,7 +84,6 @@ export const reportFormSchema = z.object({
   contact_resistance: z.string(),
   repair: z.string(),
   remark: z.string(),
-  serviced_by: z.string(),
   company_id: z.string(),
   insulation_resistance_check_using_5kv_insulation_tester: z.object({
     subrows: z.array(
@@ -351,7 +350,6 @@ export default function HTBreakerReportCreate() {
       checking_cb_door_interlock: "",
       contact_resistance: "",
       remark: "",
-      serviced_by: "",
       company_id: "",
       insulation_resistance_check_using_5kv_insulation_tester: {
         subrows: [
@@ -414,7 +412,7 @@ export default function HTBreakerReportCreate() {
         <Card className="h-fit">
           <CardHeader>
             <h2 className="text-2xl font-bold text-gray-800">
-              Create Oil Filtration Test Report
+              Create HT Breaker Report
             </h2>
             <p className="text-gray-600">
               Fill in the details below to create a new report
@@ -1145,7 +1143,7 @@ export default function HTBreakerReportCreate() {
                 <div className="bg-[#fcae08] text-white text-center py-1 text-xs font-semibold"></div>
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
-              <div className="px-6 py-1">
+              <div className="px-6 py-1" ref={containerRef}>
                 <div className="flex flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
                   <div>
                     Client:-{" "}
@@ -1354,6 +1352,16 @@ export default function HTBreakerReportCreate() {
                     <span>{form.watch("for_ok_agencies") || "--"}</span>
                   </div>
                 </div>
+                <img
+                  ref={imgRef}
+                  className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab"
+                  src="/stamp.jpg"
+                  onMouseDown={handleMouseDown}
+                  style={{
+                    transform: `translateX(${position.x}px)`,
+                  }}
+                  alt="Stamp"
+                />
               </div>
               <div className="border-t-8 tinos-regular border-[#fcae08] text-center p-3 text-md mt-auto">
                 <p>

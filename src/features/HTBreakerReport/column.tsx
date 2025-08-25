@@ -1,24 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp, Edit, Eye } from "lucide-react";
+import { Edit, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PDFViewer } from "@react-pdf/renderer";
-import OilReport from "@/components/template/OilReport";
 import { JSX, useEffect } from "react";
 import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
 import { Report } from "./type";
-import ACBReport from "@/components/template/ACBReport";
 import HTBreakerReport from "@/components/template/HTBreakerReport";
 
 function addOneYear(dateString: string | null): string {
@@ -101,7 +97,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
               variant="outline"
               size="sm"
               className="flex items-center gap-1 bg-transparent w-full sm:w-auto"
-              onClick={() => navigate(`/oil-report/${row.original.id}`)}
+              onClick={() => navigate(`/ht-breaker-report/${row.original.id}`)}
             >
               <Edit className="h-4 w-4" />
               Edit

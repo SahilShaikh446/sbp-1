@@ -19,16 +19,7 @@ import {
   fetchCompanyAsync,
   selectCompany,
 } from "@/features/company/companySlice";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { parseISO, format } from "date-fns";
-import { format as formatWithOrdinal } from "date-fns";
-import { enUS } from "date-fns/locale";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { toast } from "sonner";
@@ -49,8 +40,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { PDFViewer } from "@react-pdf/renderer";
-import OilReport from "@/components/template/OilReport";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),

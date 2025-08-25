@@ -67,11 +67,12 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   headerContainer: {
-    flexDirection: "row",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto",
     justifyContent: "space-between",
-    marginBottom: 10,
-    width: "90%",
-    marginHorizontal: "auto",
+    paddingHorizontal: 4,
   },
   headerText: {
     fontSize: 10,
@@ -344,28 +345,38 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
 
           <View style={styles.container}>
             <View style={styles.headerContainer}>
-              <Text style={styles.headerText}>
-                Client:{" "}
-                <View style={{ flexDirection: "column" }}>
-                  <Text>
-                    {
-                      companyData?.find(
-                        (i) => `${i.id}` == `${reportData.company_id}`
-                      )?.name
-                    }
-                  </Text>
-                  <Text>
-                    {
-                      companyData?.find(
-                        (i) => `${i.id}` == `${reportData.company_id}`
-                      )?.address
-                    }
-                  </Text>
-                </View>
-              </Text>
-              <Text style={styles.headerText}>
-                Date: {convertReportDate(reportData?.report_date)}
-              </Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  margin: "auto",
+                  width: "100%",
+                }}
+              >
+                <Text style={styles.headerText}>
+                  Client:{" "}
+                  <View style={{ flexDirection: "column" }}>
+                    <Text>
+                      {
+                        companyData?.find(
+                          (i) => `${i.id}` == `${reportData.company_id}`
+                        )?.name
+                      }
+                    </Text>
+                    <Text>
+                      {
+                        companyData?.find(
+                          (i) => `${i.id}` == `${reportData.company_id}`
+                        )?.address
+                      }
+                    </Text>
+                  </View>
+                </Text>
+                <Text style={styles.headerText}>
+                  Date: {convertReportDate(reportData?.report_date)}
+                </Text>
+              </View>
               <Text style={styles.headerText}>
                 Location: {reportData?.location || "--"}
               </Text>
@@ -548,9 +559,9 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
               <View style={styles.footerColumn}>
                 <Text>For Client: {reportData.for_client || "--"}</Text>
               </View>
-              <View style={styles.footerColumn}>
+              {/* <View style={styles.footerColumn}>
                 <Text>For Ok Agencies: {reportData.for_ok_agency || "--"}</Text>
-              </View>
+              </View> */}
             </View>
           </View>
           <View style={{ maxWidth: "90%" }}>

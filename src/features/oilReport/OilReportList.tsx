@@ -21,12 +21,12 @@ function OilReportList() {
   useEffect(() => {
     dispatch(fetchOilReportAsync(params));
   }, [params]);
-  
+
   return (
     <ShadcnTable
       title="Oil Filteration Report"
       data={data?.content || []}
-      desc="Description of the Oil Filteration Report"
+      desc=" Oil Filteration Report"
       columns={COLUMNS}
       loading={loading}
       api={true}
