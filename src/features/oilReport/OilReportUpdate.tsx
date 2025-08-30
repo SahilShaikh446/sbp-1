@@ -175,7 +175,7 @@ export default function OilReportUpdate() {
   useEffect(() => {
     !company && dispatch(fetchCompanyAsync());
   }, [company]);
-  console.log("Company Data:", position.x);
+
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
     try {
       const res = await axios.post(
@@ -254,12 +254,12 @@ export default function OilReportUpdate() {
     if (id) {
       fetchReport(id);
     }
-  }, [id]);
+  }, []);
 
   if (loading) {
     return <PreLoader messages={["Loading", "Just there"]} dotCount={3} />;
   }
- 
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">

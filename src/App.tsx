@@ -6,15 +6,14 @@ import Login from "./pages/Login";
 import Master from "./pages/masterAdmin/Master";
 import OilReportTabs from "./pages/OilReportTabs";
 import OilReportUpdate from "./features/oilReport/OilReportUpdate";
-import ABCReport from "./features/acbReport/ACBReportCreate";
 import ContactUs from "./pages/ContactUs";
-import MasterDashboard from "./pages/masterAdmin/MasterDashboard";
-import { Dashboard } from "./pages/dashboard";
 import ACBReportTabs from "./pages/ACBReportTabs";
 import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
-import HTBreakerReportCreate from "./features/HTBreakerReport/HTBreakerReportCreate";
 import HTBreakerTabs from "./pages/HTBreakerTabs";
 import HTBreakerReportupdate from "./features/HTBreakerReport/HTBreakerUpdate";
+import Dashboard from "./pages/dashboard";
+import EarthReportCreate from "./features/earthReport/EarthReportCreate";
+import EarthReportTabs from "./pages/EarthReportTabs";
 
 axios.interceptors.request.use(
   function (config) {
@@ -85,6 +84,10 @@ function App() {
         {
           path: "/ht-breaker-report/:id",
           element: <HTBreakerReportupdate />,
+        },
+        {
+          path: "/earth-pit",
+          element: <EarthReportTabs />,
         },
         {
           path: "/contact-us",

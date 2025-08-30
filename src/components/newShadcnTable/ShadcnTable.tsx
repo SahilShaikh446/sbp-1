@@ -99,15 +99,13 @@ type ColumnMetaType = {
 const ShadcnTable: React.FC<ComponentProps> = ({
   data,
   columns,
-  currentPage,
-  totalPages,
-  pageSize,
+  currentPage = 0,
+  totalPages = 0,
   api,
   totalelement,
   title,
   desc,
   children,
-  hideGlobalSearch,
   loading,
   error,
 }) => {
@@ -591,7 +589,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                 className="h-8 w-[70px] rounded-md border border-input bg-transparent px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&_option]:bg-background"
                 value={
                   api
-                    ? searchParams.get("size")
+                    ? searchParams.get("size") || "10"
                     : table.getState().pagination.pageSize
                 }
                 onChange={(e) => {
