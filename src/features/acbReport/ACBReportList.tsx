@@ -20,16 +20,20 @@ const ACBReportList = () => {
   const error = useSelector(acbReportError);
 
   useEffect(() => {
-    !data && dispatch(fetchACBReportAsync());
+    dispatch(fetchACBReportAsync(params));
   }, [params]);
 
   return (
     <ShadcnTable
       title="ACB Report"
-      desc="ACB Reports"
-      data={data || []}
+      desc=" ACB Report"
+      data={data?.content || []}
       columns={COLUMNS}
       loading={loading}
+      api={true}
+      currentPage={data ? data.pageable?.pageNumber : 0}
+      totalPages={data ? data.totalPages : 10}
+      totalelement={data ? data.totalElements : 0}
       error={error}
     />
   );

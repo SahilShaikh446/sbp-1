@@ -14,7 +14,7 @@ import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
-import { ACBReportResponse } from "./type";
+import { ApiResponse, Report } from "./type";
 import ACBReport from "@/components/template/ACBReport";
 
 function addOneYear(dateString: string): string {
@@ -28,7 +28,7 @@ function addOneYear(dateString: string): string {
   }
 }
 
-export const COLUMNS: ColumnDef<ACBReportResponse>[] = [
+export const COLUMNS: ColumnDef<Report>[] = [
   {
     header: "Company Name",
     accessorKey: "company_name",

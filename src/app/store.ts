@@ -2,6 +2,7 @@ import { acbReportSlice } from "@/features/acbReport/acbReportSlice";
 import { adminSlice } from "@/features/admin/adminSlice";
 import { authSlice } from "@/features/authSlice/authSlice";
 import { clientSlice } from "@/features/client/clientSlice";
+import { allCompanySlice } from "@/features/company/paginateCompanySlice";
 import companySlice from "@/features/company/companySlice";
 import { contactUsSlice } from "@/features/contactus/contactUsSlice";
 import { HTBreakerReportSlice } from "@/features/HTBreakerReport/htBreakerReportSlice";
@@ -17,6 +18,7 @@ const appReducer = combineReducers({
   contactUs: contactUsSlice.reducer,
   acbReport: acbReportSlice.reducer,
   HTBreakerReport: HTBreakerReportSlice.reducer,
+  allCompany: allCompanySlice.reducer,
 });
 
 // Root reducer that handles reset

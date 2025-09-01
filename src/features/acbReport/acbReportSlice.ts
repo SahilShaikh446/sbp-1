@@ -3,10 +3,10 @@ import { BASE_URL } from "@/lib/constants";
 import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ACBReportResponse } from "./type";
+import { ApiResponse } from "./type";
 
 interface ACBReportState {
-  entity: ACBReportResponse[] | null;
+  entity: ApiResponse | null;
   loading: boolean;
   error: boolean;
 }
@@ -17,30 +17,30 @@ const initialState: ACBReportState = {
   error: false,
 };
 
-export const fetchACBReportAsync = createAsyncThunk(
-  "acbReport/getACBReport",
-  async () => {
-    try {
-      const response = await axios.get(BASE_URL + "API/List/ACB/Report");
-      return response.data;
-    } catch (error) {
-      return error;
-    }
-  }
-);
 // export const fetchACBReportAsync = createAsyncThunk(
 //   "acbReport/getACBReport",
-//   async (params: string) => {
+//   async () => {
 //     try {
-//       const response = await axios.get(
-//         BASE_URL + "API/List/ACB/Report/Filter" + params
-//       );
+//       const response = await axios.get(BASE_URL + "API/List/ACB/Report");
 //       return response.data;
 //     } catch (error) {
 //       return error;
 //     }
 //   }
 // );
+export const fetchACBReportAsync = createAsyncThunk(
+  "acbReport/getACBReport",
+  async (params: string) => {
+    try {
+      const response = await axios.get(
+        BASE_URL + "API/List/ACB/Report/Filter/Search" + params
+      );
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  }
+);
 
 export const acbReportSlice = createSlice({
   name: "acbReport",

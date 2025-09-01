@@ -27,14 +27,6 @@ import {
   fetchClientAsync,
 } from "./clientSlice";
 import { useAppSelector } from "@/app/hooks";
-import { selectCompany } from "../company/companySlice";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { BASE_URL } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
 import {
@@ -51,6 +43,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
+import { fetchAllCompanyAsync } from "../company/paginateCompanySlice";
+import { useLocation } from "react-router-dom";
 
 export const schema = z.object({
   first_name: z.string().min(1, "First Name is required"),
@@ -63,6 +58,8 @@ export const schema = z.object({
 
 const Client = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const params = useLocation().search;
+
   const [open, setOpen] = useState(false);
 
   const data = useAppSelector(selectClient);
@@ -70,10 +67,12 @@ const Client = () => {
   const error = useAppSelector(clientError);
 
   const company = useAppSelector(selectCompany);
+  console.log(company);
 
   useEffect(() => {
-    !data && dispatch(fetchClientAsync());
-  }, [data, dispatch]);
+    !company && dispatch(fetchCompanyAsync());
+    dispatch(fetchClientAsync(params));
+  }, [params, company]);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -93,7 +92,7 @@ const Client = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Client added Successfully");
-        await dispatch(fetchClientAsync()).unwrap();
+        await dispatch(fetchClientAsync("page=0&size=10")).unwrap();
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Client");
@@ -291,11 +290,16 @@ const Client = () => {
         </CardContent>
       </Card>
       <ShadcnTable
-        name="Client"
-        data={data}
+        title="Client"
+        desc=" Clients"
+        data={data?.content || []}
         columns={COLUMNS}
         loading={loading}
         error={error}
+        api={true}
+        currentPage={data ? data.pageable?.pageNumber : 0}
+        totalPages={data ? data.totalPages : 10}
+        totalelement={data ? data.totalElements : 0}
       />
     </div>
   );

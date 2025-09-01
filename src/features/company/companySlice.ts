@@ -22,7 +22,7 @@ const initialState: CompanyState = {
 };
 
 export const fetchCompanyAsync = createAsyncThunk(
-  "company/getCompany",
+  "allcompany/getallCompany",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(BASE_URL + "API/List/Company");

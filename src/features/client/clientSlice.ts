@@ -3,19 +3,53 @@ import { BASE_URL } from "@/lib/constants";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export interface clientType {
-  id: string;
+type User = {
+  id: number;
   first_name: string;
   last_name: string;
   email: string;
-  company_id: number;
-  phone: string;
+  mobile_number: string;
   designation: string;
+  password: string | null;
+  authority_id: number;
+  company_id: number;
   company_name: string;
+  lock_status: number;
+};
+
+type Pageable = {
+  sort: {
+    sorted: boolean;
+    unsorted: boolean;
+    empty: boolean;
+  };
+  pageNumber: number;
+  pageSize: number;
+  offset: number;
+  unpaged: boolean;
+  paged: boolean;
+};
+
+export interface clientType {
+  content: User[];
+  pageable: Pageable;
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  sort: {
+    sorted: boolean;
+    unsorted: boolean;
+    empty: boolean;
+  };
+  size: number;
+  number: number;
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
 }
 
 interface ClientState {
-  entity: clientType[] | null;
+  entity: clientType | null;
   loading: boolean;
   error: boolean;
 }
@@ -28,15 +62,14 @@ const initialState: ClientState = {
 
 export const fetchClientAsync = createAsyncThunk(
   "client/getClient",
-  async (_, { rejectWithValue }) => {
+  async (params: string) => {
     try {
-      const response = await axios.get(BASE_URL + "API/List/Client");
+      const response = await axios.get(
+        BASE_URL + "/API/List/Client/Filter/Search" + params
+      );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error);
-      }
-      return rejectWithValue("An unknown error occurred");
+      return error;
     }
   }
 );

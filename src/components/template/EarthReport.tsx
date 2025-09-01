@@ -1,199 +1,83 @@
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
-import { ACBInspectionForm } from "@/features/acbReport/ACBReportCreate";
-import { companyType } from "@/features/company/companySlice"; // Adjust import path
+import { Document, Page, Text, View, Image, Font } from "@react-pdf/renderer";
+import { createTw } from "react-pdf-tailwind";
 import { reportFormSchema } from "@/features/earthReport/EarthReportCreate";
+import { companyType } from "@/features/company/companySlice";
 import { z } from "zod";
 
-// Register Tinos fonts (regular and bold)
-Font.register({
-  family: "Tinos",
-  fonts: [
-    { src: "/fonts/Tinos-Regular.ttf", fontWeight: "normal" },
-    { src: "/fonts/Tinos-Bold.ttf", fontWeight: "bold" },
-  ],
-});
-
-const styles = StyleSheet.create({
-  page: {
-    padding: 8, // Matches px-8
-    fontSize: 10,
-    fontFamily: "Tinos",
-    backgroundColor: "#ffffff",
-  },
-  contentWrapper: {
-    flexGrow: 1,
-    flexDirection: "column",
-  },
-  header: {
-    padding: 2, // Matches p-2
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 2,
-  },
-  logo: {
-    width: "100%",
-    height: 40,
-    objectFit: "contain",
-  },
-  logoRight: {
-    width: "40%",
-    textAlign: "right",
-  },
-  logoRightText: {
-    fontSize: 10, // Matches text-xs
-    color: "#2563eb", // Matches text-blue-600
-    fontWeight: "bold",
-  },
-  headerBarYellow: {
-    backgroundColor: "#fcae08",
-    height: 4, // Matches py-1
-  },
-  headerBarBlue: {
-    backgroundColor: "#084f88",
-    height: 4, // Matches py-1
-    marginBottom: 8,
-  },
-  headerContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 14, // text-xl (~18px, adjusted for PDF)
-    marginBottom: 16,
-  },
-  headerText: {
-    fontWeight: "bold",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 16, // text-2xl (~24px, adjusted)
-    fontWeight: "bold",
-    textDecoration: "underline",
-    marginBottom: 16,
-  },
-  clientInfo: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 16,
-  },
-  clientLabel: {
-    fontWeight: "bold",
-    marginRight: 8,
-  },
-  clientDetails: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  textSection: {
-    marginBottom: 8,
-    fontSize: 12,
-  },
-  flexRow: {
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: 4,
-  },
-  labelWidth: {
-    width: 100, // w-40 (40 * 2.5 = 100px, approximate)
-    flexShrink: 0,
-  },
-  table: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#000",
-    borderStyle: "solid",
-    marginTop: 16,
-  },
-  tableHeader: {
-    borderWidth: 1,
-    borderColor: "#000000",
-    padding: 4,
-    fontWeight: "bold",
-    fontSize: 14, // text-xl
-    textAlign: "center",
-    textDecoration: "underline",
-  },
-  tableSubHeader: {
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 4,
-    fontSize: 10, // text-sm
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  tableSubHeaderSmall: {
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 4,
-    fontSize: 8, // text-xs
-    textAlign: "center",
-  },
-  tableRow: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  tableCell: {
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 4,
-    fontSize: 10, // text-sm
-    textAlign: "center",
-    flex: 1,
-  },
-  tableCellLeft: {
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 4,
-    fontSize: 10,
-    textAlign: "left",
-    flex: 1,
-  },
-  tableCellNoData: {
-    borderWidth: 1,
-    borderColor: "#000",
-    padding: 16,
-    textAlign: "center",
-    color: "#6B7280", // text-gray-500
-    fontSize: 12,
-  },
-  footerRow: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 12,
-  },
-  footerText: {
-    fontSize: 10,
-  },
-  footerLabel: {
-    fontWeight: "bold",
-  },
-
-  footer: {
-    borderTopWidth: 8, // Matches border-t-8
-    borderColor: "#fcae08",
-    paddingTop: 12, // Matches p-3
-    paddingHorizontal: 9,
-    fontSize: 12, // Matches text-md
-    lineHeight: 1.3,
-    textAlign: "center",
-  },
-  blueText: {
-    color: "#1e3a8a", // Matches text-blue-900
-    fontWeight: "bold",
+const tw = createTw({
+  theme: {
+    extend: {
+      colors: {
+        custom: "cornflowerblue",
+        brandYellow: "#fcae08",
+        brandBlue: "#084f88",
+        blue600: "#2563eb",
+        blue900: "#1e3a8a",
+        gray500: "#6B7280",
+      },
+    },
   },
 });
+
+try {
+  Font.register({
+    family: "Tinos",
+    fonts: [
+      { src: "/fonts/Tinos-Regular.ttf", fontWeight: "normal" },
+      { src: "/fonts/Tinos-Bold.ttf", fontWeight: "bold" },
+    ],
+  });
+} catch (error) {
+  console.error("Failed to register Tinos fonts:", error);
+}
+
+function groupByLocation(data: Array<any>) {
+  const groups: Record<string, Array<any>> = {};
+  data?.forEach((item) => {
+    const key = item.location || "NO_LOCATION";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  });
+
+  interface EarthPitItem {
+    location?: string;
+    srNo?: string | number;
+    description: string;
+    remark?: string;
+    earth_resistance?: {
+      open_pit: string | number;
+      Connected: string | number;
+    };
+    [key: string]: any;
+  }
+
+  interface GroupedEarthPitItem extends EarthPitItem {
+    isFirstInGroup: boolean;
+    isMiddleInGroup: boolean;
+    groupSize: number;
+    groupLocation: string;
+    openPit?: string | number;
+    connected?: string | number;
+  }
+
+  const flattenedData: GroupedEarthPitItem[] = [];
+  Object.entries(groups).forEach(([location, rows]) => {
+    rows.forEach((item, index) => {
+      flattenedData.push({
+        ...item,
+        srNo: item.srNo || index + 1,
+        openPit: item.earth_resistance?.open_pit || "",
+        connected: item.earth_resistance?.Connected || "",
+        isFirstInGroup: index === 0,
+        isMiddleInGroup: index === Math.floor(rows.length / 2),
+        groupSize: rows.length,
+        groupLocation: location === "NO_LOCATION" ? "" : location,
+      });
+    });
+  });
+
+  return flattenedData;
+}
 
 interface EarthReportProps {
   reportData: z.infer<typeof reportFormSchema> & {
@@ -203,229 +87,352 @@ interface EarthReportProps {
 }
 
 const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
-  const PAGE_WIDTH = 510; // A4 width in points
+  const PAGE_WIDTH = 510;
   const STAMP_SIZE = 110;
   const safeX = Math.min(
-    Math.max(reportData?.image_data?.x || 0, 0), // never less than 0
-    PAGE_WIDTH - STAMP_SIZE // never beyond page
+    Math.max(reportData?.image_data?.x || 0, 0),
+    PAGE_WIDTH - STAMP_SIZE
   );
 
-  const groupedData = reportData?.earth_pit_list?.reduce((acc, item) => {
-    if (!acc[item.location]) {
-      acc[item.location] = [];
-    }
-    acc[item.location].push(item);
-    return acc;
-  }, {} as Record<string, typeof reportData.earth_pit_list>);
+  const processedData = groupByLocation(reportData?.earth_pit_list || []);
+
+  // Define row limits
+  const firstPageRowLimit = 20;
+  const subsequentPageRowLimit = 37;
+
+  // Split data into pages
+  const pages = [];
+  let remainingData = [...processedData];
+  let currentPage = 1;
+
+  while (remainingData.length > 0) {
+    const rowLimit =
+      currentPage === 1 ? firstPageRowLimit : subsequentPageRowLimit;
+    const pageData = remainingData.splice(0, rowLimit);
+    pages.push(pageData);
+    currentPage++;
+  }
+
   return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Main Content */}
-        <View style={styles.contentWrapper}>
-          <View style={styles.header}>
-            <View style={styles.headerRow}>
-              <View style={{ width: "40%" }}>
-                <Image src="/oka.png" style={styles.logo} />
-              </View>
-              <View style={styles.logoRight}>
-                <Image src="/l&k.jpeg" style={styles.logo} />
-                <Text style={styles.logoRightText}>
-                  L&K AUTHORIZED SERVICE CENTER
-                </Text>
-              </View>
-            </View>
-            <View style={styles.headerBarYellow} />
-            <View style={styles.headerBarBlue} />
-          </View>
-          <View style={{ paddingHorizontal: 18 }}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.headerText}>
-                Report No.: {reportData?.report_number || "--"}
-              </Text>
-              <Text style={styles.headerText}>
-                Date: {reportData?.report_date || "--/--/----"}
-              </Text>
-            </View>
-
-            <Text style={styles.title}>EARTH TEST REPORT</Text>
-
-            <View style={styles.clientInfo}>
-              <Text style={styles.clientLabel}>Client Name:</Text>
-              <View style={styles.clientDetails}>
-                <Text style={styles.headerText}>
-                  {companyData?.find(
-                    (i) => `${i.id}` === `${reportData?.company_id}`
-                  )?.name || ""}
-                </Text>
-                <Text>
-                  {companyData?.find(
-                    (i) => `${i.id}` === `${reportData?.company_id}`
-                  )?.address || ""}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.textSection}>
-              We certify that we have carried out the Earth Resistance Test at
-              site and the results are as under:
-            </Text>
-
-            <View style={styles.textSection}>
-              <View style={styles.flexRow}>
-                <Text style={styles.labelWidth}>Weather Condition</Text>
-                <Text style={{ marginHorizontal: 16 }}>:</Text>
-                <Text>{reportData?.weather_condition || "--"}</Text>
-              </View>
-              <View style={styles.flexRow}>
-                <Text style={styles.labelWidth}>Soil</Text>
-                <Text style={{ marginHorizontal: 16 }}>:</Text>
-                <Text>{reportData?.soil || "--"}</Text>
-              </View>
-            </View>
-
-            <Text style={styles.textSection}>
-              The test was carried out on 3 pin method spacing the probes at
-              approximately 15 to 30 meters from test electrodes.
-            </Text>
-
-            <View style={styles.table}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableHeader, { flex: 6 }]}>
-                  Earth Pit List
-                </Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableSubHeader, { flex: 1 }]}>
-                  Sr. No.
-                </Text>
-                <Text style={[styles.tableSubHeader, { flex: 2 }]}>
-                  Description
-                </Text>
-                <Text style={[styles.tableSubHeader, { flex: 2 }]}>
-                  Location
-                </Text>
-                <Text style={[styles.tableSubHeader, { flex: 1 }]}>
-                  Earth Resistance 2025
-                </Text>
-                <Text style={[styles.tableSubHeader, { flex: 1 }]}></Text>
-                <Text style={[styles.tableSubHeader, { flex: 1 }]}>Remark</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableSubHeaderSmall, { flex: 3 }]}></Text>
-                <Text style={[styles.tableSubHeaderSmall, { flex: 1 }]}>
-                  Open Pit
-                </Text>
-                <Text style={[styles.tableSubHeaderSmall, { flex: 1 }]}>
-                  Connected
-                </Text>
-                <Text style={[styles.tableSubHeaderSmall, { flex: 1 }]}></Text>
-              </View>
-
-              {reportData?.earth_pit_list?.length > 0 ? (
-                Object.entries(groupedData).map(
-                  ([location, items], groupIndex) =>
-                    items.map((item, itemIndex) => {
-                      const isFirstInGroup = itemIndex === 0;
-                      return (
-                        <View
-                          style={styles.tableRow}
-                          key={`${groupIndex}-${itemIndex}`}
-                        >
-                          <Text style={[styles.tableCell, { flex: 1 }]}>
-                            {groupIndex * items.length + itemIndex + 1}
-                          </Text>
-                          <Text style={[styles.tableCellLeft, { flex: 2 }]}>
-                            {item.description}
-                          </Text>
-                          {isFirstInGroup ? (
-                            <Text
-                              style={[
-                                styles.tableCellLeft,
-                                { flex: 2, fontWeight: "bold" },
-                              ]}
-                            >
-                              {location === "No Location" ? "" : location}
-                            </Text>
-                          ) : (
-                            // Empty View to maintain table structure for non-first items
-                            <View style={[styles.tableCell, { flex: 2 }]} />
-                          )}
-                          <Text style={[styles.tableCell, { flex: 1 }]}>
-                            {item.earth_resistance.open_pit}
-                          </Text>
-                          <Text style={[styles.tableCell, { flex: 1 }]}>
-                            {item.earth_resistance.Connected}
-                          </Text>
-                          <Text style={[styles.tableCell, { flex: 1 }]}>
-                            {item.remark}
-                          </Text>
-                        </View>
-                      );
-                    })
-                )
-              ) : (
-                <View style={styles.tableRow}>
-                  <Text style={[styles.tableCellNoData, { flex: 6 }]}>
-                    No earth pits added yet
-                  </Text>
+    <Document style={{ fontFamily: "Tinos" }}>
+      {pages.map((pageData, pageIndex) => (
+        <Page key={pageIndex} size="A4" style={tw("flex flex-col gap-4 p-2")}>
+          {/* Render header and initial content only on the first page */}
+          {pageIndex === 0 && (
+            <View style={tw("w-full")}>
+              <View style={tw("")}>
+                <View
+                  style={tw("flex flex-row justify-between items-center mb-2")}
+                >
+                  <View style={tw("w-[40%]")}>
+                    <Image
+                      src="/oka.png"
+                      style={tw("w-full h-[40pt] object-contain")}
+                    />
+                  </View>
+                  <View style={tw("w-[40%] text-right")}>
+                    <Image
+                      src="/l&k.jpeg"
+                      style={tw("w-full h-[40pt] object-contain")}
+                    />
+                    <Text style={tw("text-xs text-blue-600 font-bold")}>
+                      L&K AUTHORIZED SERVICE CENTER
+                    </Text>
+                  </View>
                 </View>
+                <View style={tw("bg-[#fcae08] h-[4pt] py-1")} />
+                <View style={tw("bg-[#084f88] h-[4pt] py-1 mb-2")} />
+              </View>
+            </View>
+          )}
+
+          <View style={tw("max-w-[90%] mx-auto w-full")}>
+            <View style={tw("px-4")}>
+              {/* Render report details only on the first page */}
+              {pageIndex === 0 && (
+                <>
+                  <View style={tw("flex flex-row justify-between text-lg")}>
+                    <Text style={tw("font-bold")}>
+                      Report No.: {reportData?.report_number || "--"}
+                    </Text>
+                    <Text style={tw("font-bold")}>
+                      Date: {reportData?.report_date || "--/--/----"}
+                    </Text>
+                  </View>
+
+                  <Text style={tw("text-center text-xl font-bold underline")}>
+                    EARTH TEST REPORT
+                  </Text>
+
+                  <View style={tw("flex flex-row items-start mb-4")}>
+                    <Text style={tw("font-bold text-xl mr-2")}>
+                      Client Name:
+                    </Text>
+                    <View style={tw("flex flex-col")}>
+                      <Text style={tw("font-bold")}>
+                        {companyData?.find(
+                          (i) => `${i.id}` === `${reportData?.company_id}`
+                        )?.name || "--"}
+                      </Text>
+                      <Text>
+                        {companyData?.find(
+                          (i) => `${i.id}` === `${reportData?.company_id}`
+                        )?.address || "--"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={tw("text-base")}>
+                    We certify that we have carried out the Earth Resistance
+                    Test at site and the results are as under:
+                  </Text>
+
+                  <View style={tw("text-base")}>
+                    <View style={tw("flex flex-row mb-1")}>
+                      <Text style={tw("w-[100pt] flex-shrink-0")}>
+                        Weather Condition
+                      </Text>
+                      <Text style={tw("mx-4")}>:</Text>
+                      <Text>{reportData?.weather_condition || "--"}</Text>
+                    </View>
+                    <View style={tw("flex flex-row")}>
+                      <Text style={tw("w-[100pt] flex-shrink-0")}>Soil</Text>
+                      <Text style={tw("mx-4")}>:</Text>
+                      <Text>{reportData?.soil || "--"}</Text>
+                    </View>
+                  </View>
+
+                  <Text style={tw("text-base mb-1")}>
+                    The test was carried out on 3 pin method spacing the probes
+                    at approximately 15 to 30 meters from test electrodes.
+                  </Text>
+                </>
               )}
 
-              <View style={styles.tableRow}>
-                <View style={[styles.footerRow, { flex: 6 }]}>
-                  <View>
-                    <Text style={styles.footerText}>
-                      <Text style={styles.footerLabel}>For Client:</Text>{" "}
-                      {reportData?.clients_representative || "--"}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text style={styles.footerText}>
-                      <Text style={styles.footerLabel}>For Ok Agencies.:-</Text>{" "}
-                      M/s.
-                      {reportData?.tested_by || "--"}
-                    </Text>
-                  </View>
+              {/* Table starts on the first page and continues on subsequent pages */}
+              <View style={tw("w-full")}>
+                <View style={tw("border border-black")}>
+                  {/* Table Header (only on the first page) */}
+                  {pageIndex === 0 && (
+                    <>
+                      <View
+                        style={tw(
+                          "border-b border-black flex flex-row justify-center items-center -py-2"
+                        )}
+                      >
+                        <Text
+                          style={tw(
+                            "text-xl mt-2 font-bold text-center underline"
+                          )}
+                        >
+                          Earth Pit List
+                        </Text>
+                      </View>
+                      <View style={tw("flex flex-row")}>
+                        <View
+                          style={tw(
+                            "border-r border-black px-2 py-1 w-[60pt] flex flex-col justify-center"
+                          )}
+                        >
+                          <Text style={tw("text-sm font-semibold text-center")}>
+                            Sr. No.
+                          </Text>
+                        </View>
+                        <View
+                          style={tw(
+                            "border-r border-black px-2 py-1 flex-1 flex flex-col justify-center"
+                          )}
+                        >
+                          <Text style={tw("text-sm font-semibold text-center")}>
+                            Description
+                          </Text>
+                        </View>
+                        <View
+                          style={tw(
+                            "border-r border-black px-2 py-1 w-[120pt] flex flex-col justify-center"
+                          )}
+                        >
+                          <Text style={tw("text-sm font-semibold text-center")}>
+                            Location
+                          </Text>
+                        </View>
+                        <View style={tw("border-r border-black w-[152pt]")}>
+                          <Text
+                            style={tw("text-sm font-semibold text-center py-1")}
+                          >
+                            Earth Resistance 2025
+                          </Text>
+                          <View style={tw("flex flex-row")}>
+                            <View
+                              style={tw(
+                                "border-t border-r border-black py-1 flex-1"
+                              )}
+                            >
+                              <Text style={tw("text-xs text-center")}>
+                                Open Pit
+                              </Text>
+                            </View>
+                            <View
+                              style={tw("border-t border-black py-1 flex-1")}
+                            >
+                              <Text style={tw("text-xs text-center")}>
+                                Connected
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={tw(
+                            "px-2 py-1 w-[59pt] flex flex-col justify-center"
+                          )}
+                        >
+                          <Text style={tw("text-sm font-semibold text-center")}>
+                            Remark
+                          </Text>
+                        </View>
+                      </View>
+                    </>
+                  )}
+
+                  {/* Body (continued on subsequent pages without header) */}
+                  {pageData.map((item, index) => {
+                    const showLocationText = item.isMiddleInGroup;
+
+                    const prevItem = index > 0 ? pageData[index - 1] : null;
+                    const nextItem =
+                      index < pageData.length - 1 ? pageData[index + 1] : null;
+                    const isNewGroup =
+                      !prevItem ||
+                      prevItem.groupLocation !== item.groupLocation;
+                    const isLastInGroup =
+                      !nextItem ||
+                      nextItem.groupLocation !== item.groupLocation;
+
+                    return (
+                      <View key={item.srNo} style={tw("flex flex-row")}>
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 w-[60pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.srNo}
+                          </Text>
+                        </View>
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 flex-1"
+                          )}
+                        >
+                          <Text style={tw("text-sm")}>{item.description}</Text>
+                        </View>
+                        <View
+                          style={tw(
+                            `border-r border-black px-2 w-[120pt] flex justify-center items-center ${
+                              isNewGroup ? "border-t" : "-py-2"
+                            } ${isLastInGroup ? "border-b-0" : ""}`
+                          )}
+                        >
+                          {showLocationText && (
+                            <Text style={tw("text-sm font-medium text-center")}>
+                              {item.groupLocation}
+                            </Text>
+                          )}
+                        </View>
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 w-[76pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.openPit}
+                          </Text>
+                        </View>
+                        <View
+                          style={tw("border-t border-black px-2 py-1 w-[75pt]")}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.connected}
+                          </Text>
+                        </View>
+                        <View
+                          style={tw(
+                            "border-l border-t border-black px-2 py-1 w-[59pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.remark || "--"}
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                  {pageIndex === pages.length - 1 && (
+                    <View style={tw("border-t border-black px-3 py-2")}>
+                      <View style={tw("flex flex-row justify-between")}>
+                        <Text style={tw("text-sm")}>
+                          <Text style={tw("font-bold")}>For Client: </Text>
+                          {reportData?.clients_representative || "--"}
+                        </Text>
+                        <Text style={tw("text-sm")}>
+                          <Text style={tw("font-bold")}>
+                            For Ok Agencies.:-{" "}
+                          </Text>
+                          M/s. {reportData?.tested_by || "--"}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
                 </View>
               </View>
+
+              {/* Footer and stamp only on the last page */}
+              <>
+                {pageIndex === pages.length - 1 && (
+                  <View style={tw("max-w-[90%]")}>
+                    <Image
+                      src="/stamp.jpg"
+                      style={{
+                        objectFit: "contain",
+                        bottom: 10,
+                        left: safeX,
+                        width: 110,
+                        height: 110,
+                      }}
+                    />
+                  </View>
+                )}
+              </>
             </View>
           </View>
-
-          <View style={{ maxWidth: "90%" }}>
-            <Image
-              src="/stamp.jpg"
-              style={{
-                objectFit: "contain",
-                bottom: 10,
-                left: safeX,
-                width: 110, // 150px * 0.75
-                height: 110, // 150px * 0.75
-                marginLeft: 25,
-              }}
-            />
+          <View
+            style={tw(
+              "border-t-8 border-[#fcae08] text-center p-3 text-md mt-auto text-sm"
+            )}
+            fixed
+          >
+            <Text>
+              <Text style={tw("font-bold")}>Address for correspondence:</Text>{" "}
+              101, Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
+            </Text>
+            <Text>
+              Mumbai-400081, <Text style={tw("font-bold")}>Contact:</Text>{" "}
+              9619866401, <Text style={tw("font-bold")}>Email:</Text>{" "}
+              <Text style={tw("text-blue-900 font-bold")}>
+                ok_agencies@yahoo.com
+              </Text>
+              ,
+            </Text>
+            <Text>
+              <Text style={tw("font-bold")}>Website:</Text>{" "}
+              <Text style={tw("text-blue-900 font-bold")}>
+                www.okagencies.in
+              </Text>
+              ; <Text style={tw("font-bold")}>GST NO.: 27ABDPJ0462B1Z9</Text>
+            </Text>
           </View>
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text>
-            <Text style={{ fontWeight: "bold" }}>
-              Address for correspondence:
-            </Text>{" "}
-            101, Nimesh Industrial Premises, Bhoir Nagar, Mulund(E),
-          </Text>
-          <Text>
-            Mumbai-400081, <Text style={{ fontWeight: "bold" }}>Contact:</Text>{" "}
-            9619866401, <Text style={{ fontWeight: "bold" }}>Email:</Text>{" "}
-            <Text style={styles.blueText}>ok_agencies@yahoo.com</Text>,
-          </Text>
-          <Text>
-            <Text style={{ fontWeight: "bold" }}>Website:</Text>{" "}
-            <Text style={styles.blueText}>www.okagencies.in</Text>;{" "}
-            <Text style={{ fontWeight: "bold" }}>GST NO.: 27ABDPJ0462B1Z9</Text>
-          </Text>
-        </View>
-      </Page>
+        </Page>
+      ))}
     </Document>
   );
 };

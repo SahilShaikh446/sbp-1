@@ -19,14 +19,15 @@ import axios from "axios";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { COLUMNS } from "./column";
-import {
-  companyError,
-  companyLoading,
-  fetchCompanyAsync,
-  selectCompany,
-} from "./companySlice";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
 import { BASE_URL } from "@/lib/constants";
+import { useLocation } from "react-router-dom";
+import {
+  allCompanyError,
+  allCompanyLoading,
+  fetchAllCompanyAsync,
+  selectAllCompany,
+} from "./paginateCompanySlice";
 
 export const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -35,14 +36,15 @@ export const schema = z.object({
 
 const Company = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const params = useLocation().search;
 
-  const data = useSelector(selectCompany);
-  const loading = useSelector(companyLoading);
-  const error = useSelector(companyError);
+  const data = useSelector(selectAllCompany);
+  const loading = useSelector(allCompanyLoading);
+  const error = useSelector(allCompanyError);
 
   useEffect(() => {
-    !data && dispatch(fetchCompanyAsync());
-  }, [data, dispatch]);
+    dispatch(fetchAllCompanyAsync(params));
+  }, [params]);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -58,7 +60,7 @@ const Company = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Company added Successfully");
-        await dispatch(fetchCompanyAsync()).unwrap();
+        await dispatch(fetchAllCompanyAsync("page=0&size=10")).unwrap();
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Company");
@@ -123,11 +125,16 @@ const Company = () => {
         </CardContent>
       </Card>
       <ShadcnTable
-        name="Company"
-        data={data}
+        title="Company"
+        desc=" Companies"
+        data={data?.content || []}
         columns={COLUMNS}
         loading={loading}
         error={error}
+        api={true}
+        currentPage={data ? data.pageable?.pageNumber : 0}
+        totalPages={data ? data.totalPages : 10}
+        totalelement={data ? data.totalElements : 0}
       />
     </div>
   );

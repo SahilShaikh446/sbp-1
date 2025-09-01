@@ -32,7 +32,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -138,10 +138,291 @@ export default function EarthReportCreate() {
     window.addEventListener("mouseup", onMouseUp);
   };
 
+  const reportData = {
+    earth_pit_list: [
+      {
+        srNo: 1,
+        description: "Earth pit no. 1",
+        location: "",
+        remark: "Good",
+        earth_resistance: { open_pit: "2.5", Connected: "0.5" },
+      },
+      {
+        srNo: 2,
+        description: "Earth pit no. 2",
+        location: "Process Plant (Near Brine plant)",
+        remark: "Good",
+        earth_resistance: { open_pit: "2.9", Connected: "0.6" },
+      },
+    ],
+    // Other fields...
+  };
+
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       earth_pit_list: [
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
+        {
+          description: "",
+          location: "",
+          remark: "",
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+          },
+        },
         {
           description: "",
           location: "",
@@ -1114,13 +1395,15 @@ export default function EarthReportCreate() {
   });
 
   // group by location
-  const groupedData = fields.reduce((acc, item) => {
-    if (!acc[item.location]) {
-      acc[item.location] = [];
-    }
-    acc[item.location].push(item);
-    return acc;
-  }, {} as Record<string, typeof fields>);
+  const groupedData = useMemo(() => {
+    return fields.reduce((acc, item, index) => {
+      const location =
+        form.watch(`earth_pit_list.${index}.location`) || "No Location";
+      if (!acc[location]) acc[location] = [];
+      acc[location].push({ ...item, originalIndex: index });
+      return acc;
+    }, {} as Record<string, { description: string; location: string; remark: string; earth_resistance: { open_pit: string; Connected: string }; originalIndex: number }[]>);
+  }, [fields, form.watch("earth_pit_list")]);
 
   const company = useAppSelector(selectCompany);
   const dispatch = useAppDispatch();
@@ -1216,10 +1499,6 @@ export default function EarthReportCreate() {
                                   field.onChange(
                                     date ? format(date, "yyyy-MM-dd") : ""
                                   )
-                                }
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
                                 }
                                 captionLayout="dropdown"
                               />
@@ -1319,23 +1598,6 @@ export default function EarthReportCreate() {
                       </Popover>
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="test_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Test Date</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              placeholder="Enter report number"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                     <FormField
                       control={form.control}
                       name="weather_condition"
@@ -1469,27 +1731,27 @@ export default function EarthReportCreate() {
                               )}
                             />
                           </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() =>
-                              append({
-                                description: "",
-                                location: "",
-                                earth_resistance: {
-                                  open_pit: "",
-                                  Connected: "",
-                                },
-                                remark: "",
-                              })
-                            }
-                            className="w-full"
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Test
-                          </Button>
                         </div>
                       ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                          append({
+                            description: "",
+                            location: "",
+                            earth_resistance: {
+                              open_pit: "",
+                              Connected: "",
+                            },
+                            remark: "",
+                          })
+                        }
+                        className="w-full"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Test
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -1509,7 +1771,7 @@ export default function EarthReportCreate() {
             <PDFViewer width="100%" height="600px" className="w-full">
               <EarthReport
                 reportData={{
-                  ...form.getValues(),
+                  ...form.watch(),
                   image_data: { x: position.x },
                 }}
                 companyData={company || []}
@@ -1660,42 +1922,59 @@ export default function EarthReportCreate() {
                     <tbody>
                       {fields.length > 0 && (
                         <>
-                          {Object.entries(groupedData).map(
+                          {Object.entries(groupedData).flatMap(
                             ([location, items], groupIndex) =>
                               items.map((item, itemIndex) => {
                                 const isFirstInGroup = itemIndex === 0;
                                 const rowSpan = isFirstInGroup
                                   ? items.length
                                   : 0;
-                                return (
-                                  <tr key={`${itemIndex}`}>
-                                    <td className="border border-black px-2  text-center text-sm">
-                                      {itemIndex +
-                                        1 +
-                                        groupIndex * items.length}
-                                    </td>
-                                    <td className="border border-black px-2  text-sm">
-                                      {item.description}
-                                    </td>
+                                const globalIndex =
+                                  Object.values(groupedData)
+                                    .flat()
+                                    .findIndex(
+                                      (i) =>
+                                        i.originalIndex === item.originalIndex
+                                    ) + 1;
+                                const currentLocation =
+                                  form.watch(
+                                    `earth_pit_list.${item.originalIndex}.location`
+                                  ) || "No Location";
 
+                                return (
+                                  <tr key={item.originalIndex}>
+                                    <td className="border border-black px-2 text-center text-sm">
+                                      {globalIndex}
+                                    </td>
+                                    <td className="border border-black px-2 text-sm">
+                                      {form.watch(
+                                        `earth_pit_list.${item.originalIndex}.description`
+                                      ) || "--"}
+                                    </td>
                                     {isFirstInGroup && (
                                       <td
-                                        className="border border-black px-2  text-sm font-medium "
+                                        className="border border-black px-2 text-sm font-medium"
                                         rowSpan={rowSpan}
                                       >
-                                        {location === "No Location"
+                                        {currentLocation === "No Location"
                                           ? ""
-                                          : location}
+                                          : currentLocation || "--"}
                                       </td>
                                     )}
-                                    <td className="border border-black px-2  text-center text-sm">
-                                      {item.earth_resistance.open_pit}
+                                    <td className="border border-black px-2 text-center text-sm">
+                                      {form.watch(
+                                        `earth_pit_list.${item.originalIndex}.earth_resistance.open_pit`
+                                      ) || "--"}
                                     </td>
-                                    <td className="border border-black px-2  text-center text-sm">
-                                      {item.earth_resistance.Connected}
+                                    <td className="border border-black px-2 text-center text-sm">
+                                      {form.watch(
+                                        `earth_pit_list.${item.originalIndex}.earth_resistance.Connected`
+                                      ) || "--"}
                                     </td>
-                                    <td className="border border-black px-2  text-center text-sm">
-                                      {item.remark}
+                                    <td className="border border-black px-2 text-center text-sm">
+                                      {form.watch(
+                                        `earth_pit_list.${item.originalIndex}.remark`
+                                      ) || "--"}
                                     </td>
                                   </tr>
                                 );
