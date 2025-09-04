@@ -1,25 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp, Edit, Eye } from "lucide-react";
+import { Edit, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PDFViewer } from "@react-pdf/renderer";
 import OilReport from "@/components/template/OilReport";
-import { JSX, useEffect } from "react";
+import { useEffect } from "react";
 import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
 import { Report } from "./type";
 
-function addOneYear(dateString: string): string {
+export function addOneYear(dateString: string): string {
   try {
     const parsed = parseISO(dateString); // safely parses YYYY-MM-DD
     const newDate = addYears(parsed, 1);
@@ -41,9 +39,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
   },
   {
     header: "Next Date of Filtration",
-    cell: ({ row }) => {
-      return <span>{addOneYear(row.original.report_date)}</span>;
-    },
+    accessorKey: "next_date_of_filtriation",
   },
   {
     header: "Company Name",

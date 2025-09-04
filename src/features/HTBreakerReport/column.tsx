@@ -9,25 +9,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PDFViewer } from "@react-pdf/renderer";
-import { JSX, useEffect } from "react";
+import { useEffect } from "react";
 import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
-import { addYears, format, parseISO } from "date-fns";
 import { Report } from "./type";
 import HTBreakerReport from "@/components/template/HTBreakerReport";
-
-function addOneYear(dateString: string | null): string {
-  if (!dateString) return "N/A";
-  try {
-    const parsed = parseISO(dateString); // safely parses YYYY-MM-DD
-    const newDate = addYears(parsed, 1);
-    return format(newDate, "yyyy-MM-dd");
-  } catch (e) {
-    console.error("Error parsing date:", dateString);
-    return "date error";
-  }
-}
 
 export const COLUMNS: ColumnDef<Report>[] = [
   {
@@ -40,9 +27,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
   },
   {
     header: "Next Date of Filtration",
-    cell: ({ row }) => {
-      return <span>{addOneYear(row.original?.report_date)}</span>;
-    },
+    accessorKey: "next_date_of_filtriation",
   },
   {
     header: "Company Name",

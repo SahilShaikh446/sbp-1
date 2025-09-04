@@ -5,6 +5,7 @@ type ImageData = {
 export type Report = {
   id: number;
   report_date: string;
+  next_date_of_filtriation: string;
   report_number: string;
   company_name: string;
   company_address: string;
@@ -20,8 +21,8 @@ export type Report = {
   oltc_before_filtration: string;
   oltc_after_filtration: string;
   remark: string;
-  clients_representative: string;
-  tested_by: string;
+  for_client: string;
+  for_ok_agency: string;
   manufacturing_year: string;
   oltc_make_type: string;
   company_id: number;

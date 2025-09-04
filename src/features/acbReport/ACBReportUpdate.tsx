@@ -67,6 +67,7 @@ import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 import { fetchACBReportAsync } from "./acbReportSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
+import { addOneYear } from "../oilReport/column";
 
 export const acbReleaseTestingSchema = z.object({
   protection: z.string().min(1, "Protection type is required"),
@@ -80,6 +81,7 @@ export const acbReleaseTestingSchema = z.object({
 
 export const acbInspectionSchema = z.object({
   // Basic Information
+  next_date_of_filtriation: z.string().optional(),
   report_date: z.string(),
   report_number: z.string(),
   location: z.string(),
@@ -130,8 +132,8 @@ export const acbInspectionSchema = z.object({
   // Final Details
   recommended_spares_for_replacement: z.string().optional(),
   remarks: z.string().optional(),
-  client_repres: z.string().optional(),
-  service_repres: z.string().optional(),
+  for_client: z.string().optional(),
+  for_ok_agency: z.string().optional(),
   company_id: z.string().min(1, "Company is Required"),
 
   // ACB Release Testing Array
@@ -205,6 +207,7 @@ function ACBReportUpdate() {
   const form = useForm<ACBInspectionForm>({
     resolver: zodResolver(acbInspectionSchema),
     defaultValues: {
+      next_date_of_filtriation: "",
       report_date: "",
       report_number: "",
       location: "",
@@ -241,8 +244,8 @@ function ACBReportUpdate() {
       greasing_of_moving_parts_of_mechanism_and_rails: "",
       recommended_spares_for_replacement: "",
       remarks: "",
-      client_repres: "",
-      service_repres: "",
+      for_client: "",
+      for_ok_agency: "",
       company_id: "",
       acb_release_testing: [
         {
@@ -384,8 +387,8 @@ function ACBReportUpdate() {
           res.data.recommended_spares_for_replacement
         );
         form.setValue("remarks", res.data.remarks);
-        form.setValue("client_repres", res.data.client_repres);
-        form.setValue("service_repres", res.data.service_repres);
+        form.setValue("for_client", res.data.for_client);
+        form.setValue("for_ok_agency", res.data.for_ok_agency);
         form.setValue("company_id", `${res.data.company_id}`);
         replace(
           res.data.acb_testing_list?.map((test: any) => ({
@@ -419,12 +422,13 @@ function ACBReportUpdate() {
         image_data: { x: position.x },
         name_of_client: "",
         id: id ? parseInt(id) : 0,
+        next_date_of_filtriation: addOneYear(data.report_date),
       });
       if (res.status === 200) {
         toast.success("Report submitted successfully!");
         navigate("/acb-report");
         form.reset();
-        dispatch(fetchACBReportAsync());
+        dispatch(fetchACBReportAsync("page=1"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
@@ -497,10 +501,6 @@ function ACBReportUpdate() {
                                 field.onChange(
                                   date ? format(date, "yyyy-MM-dd") : ""
                                 )
-                              }
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
                               }
                               captionLayout="dropdown"
                             />
@@ -1238,7 +1238,7 @@ function ACBReportUpdate() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
-                      name="client_repres"
+                      name="for_client"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Client Representative</FormLabel>
@@ -1255,7 +1255,7 @@ function ACBReportUpdate() {
 
                     <FormField
                       control={form.control}
-                      name="service_repres"
+                      name="for_ok_agency"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Service Representative</FormLabel>
@@ -1713,11 +1713,11 @@ function ACBReportUpdate() {
                   <tr className="flex justify-between">
                     <td className=" pl-4 pr-8 text-left align-middle">
                       <span className="font-bold">For Client.:</span>{" "}
-                      {form.watch("client_repres") || "--"}
+                      {form.watch("for_client") || "--"}
                     </td>
                     <td className=" pl-4 pr-8 text-left align-middle">
                       <span className="font-bold">For Ok Agencies.:-</span> M/s.
-                      {form.watch("service_repres") || "--"}
+                      {form.watch("for_ok_agency") || "--"}
                     </td>
                   </tr>
                 </table>

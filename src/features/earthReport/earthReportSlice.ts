@@ -3,9 +3,9 @@ import { BASE_URL } from "@/lib/constants";
 import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ReportsResponse } from "./type";
+// import { ReportsResponse } from "./type";
 
-interface HTBreakerReportState {
+interface EarthReportState {
   entity: ReportsResponse | null;
   loading: boolean;
   error: boolean;
@@ -17,23 +17,12 @@ const initialState: HTBreakerReportState = {
   error: false,
 };
 
-// export const fetchOilReportAsync = createAsyncThunk(
-//   "oilReport/getOilReport",
-//   async () => {
-//     try {
-//       const response = await axios.get(BASE_URL + "API/List/Oil/Filtration/Test/Report");
-//       return response.data;
-//     } catch (error) {
-//       return error;
-//     }
-//   }
-// );
-export const fetchHTBreakerReportAsync = createAsyncThunk(
-  "HTBreakerReport/getHTBreakerReport",
+export const fetchEarthReportAsync = createAsyncThunk(
+  "earthReport/getEarthReport",
   async (params: string) => {
     try {
       const response = await axios.get(
-        BASE_URL + "API/List/Service/Report/Filter/Search" + params
+        BASE_URL + "API/List/Earth/Test/Report/Filter/Search" + params
       );
       return response.data;
     } catch (error) {
@@ -42,29 +31,27 @@ export const fetchHTBreakerReportAsync = createAsyncThunk(
   }
 );
 
-export const HTBreakerReportSlice = createSlice({
-  name: "HTBreakerReport",
+export const earthReportSlice = createSlice({
+  name: "earthReport",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchHTBreakerReportAsync.fulfilled, (state, action) => {
+      .addCase(fetchEarthReportAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload;
         state.error = false;
       })
-      .addCase(fetchHTBreakerReportAsync.rejected, (state, action) => {
+      .addCase(fetchEarthReportAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = true;
       });
   },
 });
 
-export default HTBreakerReportSlice.reducer;
+export default earthReportSlice.reducer;
 
-export const selectHTBreakerReport = (state: RootState) =>
-  state.HTBreakerReport.entity;
-export const HTBreakerReportLoading = (state: RootState) =>
-  state.HTBreakerReport.loading;
-export const HTBreakerReportError = (state: RootState) =>
-  state.HTBreakerReport.error;
+export const selectEarthReport = (state: RootState) => state.earthReport.entity;
+export const earthReportLoading = (state: RootState) =>
+  state.earthReport.loading;
+export const earthReportError = (state: RootState) => state.earthReport.error;

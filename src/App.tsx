@@ -11,9 +11,8 @@ import ACBReportTabs from "./pages/ACBReportTabs";
 import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
 import HTBreakerTabs from "./pages/HTBreakerTabs";
 import HTBreakerReportupdate from "./features/HTBreakerReport/HTBreakerUpdate";
-import Dashboard from "./pages/dashboard";
-import EarthReportCreate from "./features/earthReport/EarthReportCreate";
 import EarthReportTabs from "./pages/EarthReportTabs";
+import Dashboard from "./pages/dashboard";
 
 axios.interceptors.request.use(
   function (config) {

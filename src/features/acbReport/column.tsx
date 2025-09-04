@@ -43,9 +43,7 @@ export const COLUMNS: ColumnDef<Report>[] = [
   },
   {
     header: "Next Date of Filtration",
-    cell: ({ row }) => {
-      return <span>{addOneYear(row.original.report_date)}</span>;
-    },
+    accessorKey: "next_date_of_filtriation",
   },
   {
     header: "Company Name",

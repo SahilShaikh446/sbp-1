@@ -65,6 +65,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 import { fetchACBReportAsync } from "./acbReportSlice";
+import { addOneYear } from "../oilReport/column";
 
 export const acbReleaseTestingSchema = z.object({
   protection: z.string().min(1, "Protection type is required"),
@@ -78,6 +79,7 @@ export const acbReleaseTestingSchema = z.object({
 export const acbInspectionSchema = z.object({
   // Basic Information
   report_date: z.string(),
+  next_date_of_filtriation: z.string().optional(),
   report_number: z.string(),
   location: z.string(),
 
@@ -127,8 +129,8 @@ export const acbInspectionSchema = z.object({
   // Final Details
   recommended_spares_for_replacement: z.string().optional(),
   remarks: z.string().optional(),
-  client_repres: z.string().optional(),
-  service_repres: z.string().optional(),
+  for_client: z.string().optional(),
+  for_ok_agency: z.string().optional(),
   company_id: z.string().min(1, "Company is Required"),
 
   // ACB Release Testing Array
@@ -201,6 +203,7 @@ function ABCReportCreate() {
     resolver: zodResolver(acbInspectionSchema),
     defaultValues: {
       report_date: "",
+      next_date_of_filtriation: "",
       report_number: "",
       location: "",
       type_of_acb: "",
@@ -236,8 +239,8 @@ function ABCReportCreate() {
       greasing_of_moving_parts_of_mechanism_and_rails: "",
       recommended_spares_for_replacement: "",
       remarks: "",
-      client_repres: "",
-      service_repres: "",
+      for_client: "",
+      for_ok_agency: "",
       company_id: "",
       acb_release_testing: [
         {
@@ -285,12 +288,13 @@ function ABCReportCreate() {
       const res = await axios.post(BASE_URL + "API/Add/ACB/Report", {
         ...data,
         image_data: { x: position.x },
+        next_date_of_filtriation: addOneYear(data.report_date),
         name_of_client: "",
       });
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
-        dispatch(fetchACBReportAsync());
+        dispatch(fetchACBReportAsync("page=0"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
@@ -339,7 +343,7 @@ function ABCReportCreate() {
                                 type="button"
                                 variant="outline"
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "w-full pl-3 text-left ",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -363,10 +367,6 @@ function ABCReportCreate() {
                                 field.onChange(
                                   date ? format(date, "yyyy-MM-dd") : ""
                                 )
-                              }
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
                               }
                               captionLayout="dropdown"
                             />
@@ -1103,7 +1103,7 @@ function ABCReportCreate() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
-                      name="client_repres"
+                      name="for_client"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Client Representative</FormLabel>
@@ -1120,7 +1120,7 @@ function ABCReportCreate() {
 
                     <FormField
                       control={form.control}
-                      name="service_repres"
+                      name="for_ok_agency"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Service Representative</FormLabel>
@@ -1557,11 +1557,11 @@ function ABCReportCreate() {
                   <tr className="flex justify-between">
                     <td className=" pl-4 pr-8 text-left align-middle">
                       <span className="font-bold">For Client:</span>{" "}
-                      {form.watch("client_repres") || "--"}
+                      {form.watch("for_client") || "--"}
                     </td>
                     <td className=" pl-4 pr-8 text-left align-middle">
                       <span className="font-bold">For Ok Agencies.:-</span> M/s.
-                      {form.watch("service_repres") || "--"}
+                      {form.watch("for_ok_agency") || "--"}
                     </td>
                   </tr>
                 </table>

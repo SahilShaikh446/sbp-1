@@ -40,6 +40,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { addOneYear } from "./column";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
@@ -56,10 +57,10 @@ export const reportFormSchema = z.object({
   oltc_before_filtration: z.string(),
   oltc_after_filtration: z.string(),
   remark: z.string(),
-  clients_representative: z.string(),
-  tested_by: z.string(),
+  for_client: z.string(),
+  for_ok_agency: z.string(),
   company_id: z.string(),
-  date_of_filtration: z.string(),
+  next_date_of_filtriation: z.string().optional(),
   manufacturing_year: z.string(),
   report_number: z.string(),
   id: z.string(),
@@ -144,10 +145,10 @@ export default function OilReportCreate() {
       oltc_before_filtration: "",
       oltc_after_filtration: "",
       remark: "",
-      clients_representative: "",
-      tested_by: "",
+      for_client: "",
+      for_ok_agency: "",
       company_id: "",
-      date_of_filtration: "",
+      next_date_of_filtriation: "",
       manufacturing_year: "",
       id: "0",
     },
@@ -161,10 +162,19 @@ export default function OilReportCreate() {
   }, [company]);
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
+    console.log({
+      ...data,
+      image_data: { x: position.x },
+      next_date_of_filtriation: addOneYear(data.report_date),
+    });
     try {
       const res = await axios.post(
         BASE_URL + "API/Add/Oil/Filtration/Test/Report",
-        { ...data, image_data: { x: position.x } }
+        {
+          ...data,
+          image_data: { x: position.x },
+          next_date_of_filtriation: addOneYear(data.report_date),
+        }
       );
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
@@ -175,7 +185,6 @@ export default function OilReportCreate() {
       toast.error("Failed to submit report. Please try again.");
       console.error("Error submitting report:", error);
     }
-    // You can also make an API POST request here
   }
 
   return (
@@ -516,7 +525,7 @@ export default function OilReportCreate() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="clients_representative"
+                    name="for_client"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Client</FormLabel>
@@ -532,7 +541,7 @@ export default function OilReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="tested_by"
+                    name="for_ok_agency"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Ok Agencies</FormLabel>
@@ -813,13 +822,11 @@ export default function OilReportCreate() {
                   <div className="w-full flex justify-between items-center font-bold text-lg">
                     <div className="flex flex-col">
                       <span className="">For Client :</span>
-                      <span>
-                        {form.watch("clients_representative") || "--"}
-                      </span>
+                      <span>{form.watch("for_client") || "--"}</span>
                     </div>
                     <div className="flex flex-col">
                       <span className="">For Ok Agencies :</span>
-                      <span>{form.watch("tested_by") || "--"}</span>
+                      <span>{form.watch("for_ok_agency") || "--"}</span>
                     </div>
                   </div>
                 </div>

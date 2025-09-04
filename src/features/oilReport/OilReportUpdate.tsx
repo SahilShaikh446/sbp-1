@@ -51,9 +51,11 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { addOneYear } from "./column";
 
 export const reportFormSchema = z.object({
   report_date: z.string(),
+  next_date_of_filtriation: z.string().optional(),
   report_number: z.string(),
   report_description: z.string().min(1, {
     message: "Description is required",
@@ -70,8 +72,8 @@ export const reportFormSchema = z.object({
   oltc_before_filtration: z.string(),
   oltc_after_filtration: z.string(),
   remark: z.string(),
-  clients_representative: z.string(),
-  tested_by: z.string(),
+  for_client: z.string(),
+  for_ok_agency: z.string(),
   company_id: z.string(),
   manufacturing_year: z.string(),
 });
@@ -87,15 +89,6 @@ export function convertReportDate(dateStr: string): string {
     return "";
   }
 }
-function convertDOF(dateStr: string): string {
-  try {
-    const date = parseISO(dateStr); // accepts 'YYYY-MM-DD'
-    return formatWithOrdinal(date, "MMMM do, yyyy", { locale: enUS });
-  } catch {
-    return "";
-  }
-}
-
 export default function OilReportUpdate() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -147,6 +140,7 @@ export default function OilReportUpdate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_date: "",
+      next_date_of_filtriation: "",
       report_number: "",
       report_description: "",
       kva: "",
@@ -161,8 +155,8 @@ export default function OilReportUpdate() {
       oltc_before_filtration: "",
       oltc_after_filtration: "",
       remark: "",
-      clients_representative: "",
-      tested_by: "",
+      for_client: "",
+      for_ok_agency: "",
       company_id: "",
       manufacturing_year: "",
     },
@@ -180,7 +174,12 @@ export default function OilReportUpdate() {
     try {
       const res = await axios.post(
         BASE_URL + "API/Update/Oil/Filtration/Test/Report",
-        { ...data, id, image_data: { x: position.x } }
+        {
+          ...data,
+          id,
+          image_data: { x: position.x },
+          next_date_of_filtriation: addOneYear(data.report_date),
+        }
       );
       console.log("Response:", position.x);
       if (res.status === 200) {
@@ -235,11 +234,8 @@ export default function OilReportUpdate() {
         );
         form.setValue("oltc_after_filtration", res.data.oltc_after_filtration);
         form.setValue("remark", res.data.remark);
-        form.setValue(
-          "clients_representative",
-          res.data.clients_representative
-        );
-        form.setValue("tested_by", res.data.tested_by);
+        form.setValue("for_ok_agency", res.data.for_ok_agency);
+        form.setValue("for_client", res.data.for_client);
         form.setValue("company_id", `${res.data.company_id}`);
         setPosition({ x: res.data.image_data.x, y: 0 });
       }
@@ -598,7 +594,7 @@ export default function OilReportUpdate() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="clients_representative"
+                    name="for_client"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Client</FormLabel>
@@ -614,7 +610,7 @@ export default function OilReportUpdate() {
                   />
                   <FormField
                     control={form.control}
-                    name="tested_by"
+                    name="for_ok_agency"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Ok Agencies</FormLabel>
@@ -886,13 +882,11 @@ export default function OilReportUpdate() {
                   <div className="w-full flex justify-between items-center font-bold text-lg">
                     <div className="flex flex-col">
                       <span className="">For Client :</span>
-                      <span>
-                        {form.watch("clients_representative") || "--"}
-                      </span>
+                      <span>{form.watch("for_client") || "--"}</span>
                     </div>
                     <div className="flex flex-col">
                       <span className="">For Ok Agencies :</span>
-                      <span>{form.watch("tested_by") || "--"}</span>
+                      <span>{form.watch("for_ok_agency") || "--"}</span>
                     </div>
                   </div>
                 </div>

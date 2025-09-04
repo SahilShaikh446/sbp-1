@@ -52,17 +52,18 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PDFViewer } from "@react-pdf/renderer";
-import HTBreakerReport from "@/components/template/HTBreakerReport";
 import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
+import { addOneYear } from "../oilReport/column";
 
 // Zod schema (unchanged)
 export const reportFormSchema = z.object({
   report_number: z.string(),
   report_date: z.string(),
+  next_date_of_filtriation: z.string(),
   location: z.string(),
   for_client: z.string(),
+  for_ok_agency: z.string(),
   panel_no_feeder_name_plate: z.string(),
   cb_type: z.string(),
   voltage_amps_ka: z.string(),
@@ -330,6 +331,7 @@ export default function HTBreakerReportupdate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_number: "",
+      next_date_of_filtriation: "",
       location: "",
       repair: "",
       report_date: "",
@@ -399,6 +401,7 @@ export default function HTBreakerReportupdate() {
       const res = await axios.post(BASE_URL + "API/Update/Service/Report", {
         ...data,
         image_data: { x: position.x },
+        next_date_of_filtriation: addOneYear(data.report_date),
       });
       if (res.status === 200) {
         toast.success("Report updated successfully!");
@@ -477,6 +480,7 @@ export default function HTBreakerReportupdate() {
         );
         checkingCBTimingFieldArray.replace(res.data.checking_cb_timing.subrows);
         form.setValue("for_client", res.data.for_client);
+        form.setValue("for_ok_agency", res.data.for_ok_agency);
 
         setPosition({ x: res.data.image_data.x, y: 0 });
       }
@@ -486,7 +490,7 @@ export default function HTBreakerReportupdate() {
     }
     setLoading(false);
   };
-  console.log(form.formState.errors);
+  
   useEffect(() => {
     if (id) {
       fetchReport(id);
@@ -1175,9 +1179,9 @@ export default function HTBreakerReportupdate() {
                       </FormItem>
                     )}
                   />
-                  {/* <FormField
+                  <FormField
                     control={form.control}
-                    name="for_ok_agencies"
+                    name="for_ok_agency"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Ok Agencies</FormLabel>
@@ -1190,7 +1194,7 @@ export default function HTBreakerReportupdate() {
                         <FormMessage />
                       </FormItem>
                     )}
-                  /> */}
+                  />
                 </div>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (

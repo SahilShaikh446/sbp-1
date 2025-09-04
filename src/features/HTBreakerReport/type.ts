@@ -12,6 +12,7 @@ type Section = {
 export type Report = {
   id: number;
   report_date: string | null;
+  next_date_of_filtriation: string | null;
   report_number: string;
   company_name: string;
   company_address: string;

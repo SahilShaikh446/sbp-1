@@ -8,7 +8,7 @@ import {
 } from "./oilReportSlice";
 import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
 import { COLUMNS } from "./column";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function OilReportList() {
   const params = useLocation().search;

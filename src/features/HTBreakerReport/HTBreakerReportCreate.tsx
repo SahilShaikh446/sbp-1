@@ -52,16 +52,16 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PDFViewer } from "@react-pdf/renderer";
-import HTBreakerReport from "@/components/template/HTBreakerReport";
+import { addOneYear } from "../oilReport/column";
 
 // Zod schema (unchanged)
 export const reportFormSchema = z.object({
   report_number: z.string(),
   report_date: z.string(),
+  next_date_of_filtriation: z.string(),
   location: z.string(),
   for_client: z.string(),
-  for_ok_agencies: z.string(),
+  for_ok_agency: z.string(),
   panel_no_feeder_name_plate: z.string(),
   cb_type: z.string(),
   voltage_amps_ka: z.string(),
@@ -326,6 +326,9 @@ export default function HTBreakerReportCreate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_number: "",
+      next_date_of_filtriation: "",
+      for_client: "",
+      for_ok_agency: "",
       location: "",
       repair: "",
       report_date: "",
@@ -394,6 +397,7 @@ export default function HTBreakerReportCreate() {
       const res = await axios.post(BASE_URL + "API/Add/Service/Report", {
         ...data,
         image_data: { x: position.x },
+        next_date_of_filtriation: addOneYear(data.report_date),
       });
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
@@ -1085,7 +1089,7 @@ export default function HTBreakerReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="for_ok_agencies"
+                    name="for_ok_agency"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>For Ok Agencies</FormLabel>
@@ -1348,8 +1352,8 @@ export default function HTBreakerReportCreate() {
                 <div className="w-full flex justify-between items-center font-bold text-md px-3">
                   <div className="flex flex-col"></div>
                   <div className="flex flex-col">
-                    <span>For Ok Agencies:</span>
-                    <span>{form.watch("for_ok_agencies") || "--"}</span>
+                    <span>For Ok Agency:</span>
+                    <span>{form.watch("for_ok_agency") || "--"}</span>
                   </div>
                 </div>
                 <img
