@@ -248,14 +248,14 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
                         <View
                           style={tw(
-                            "border-r border-black px-2 py-1 w-[120pt] flex flex-col justify-center"
+                            "border-r border-black px-2 py-1 w-[120.5pt] flex flex-col justify-center"
                           )}
                         >
                           <Text style={tw("text-sm font-semibold text-center")}>
                             Location
                           </Text>
                         </View>
-                        <View style={tw("border-r border-black w-[152pt]")}>
+                        <View style={tw("border-r border-black w-[151.5pt]")}>
                           <Text
                             style={tw("text-sm font-semibold text-center py-1")}
                           >
@@ -282,7 +282,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
                         <View
                           style={tw(
-                            "px-2 py-1 w-[59pt] flex flex-col justify-center"
+                            "px-2 py-1 w-[58.5pt] flex flex-col justify-center"
                           )}
                         >
                           <Text style={tw("text-sm font-semibold text-center")}>

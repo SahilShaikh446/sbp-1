@@ -4,7 +4,7 @@ import ACBDashboard from "@/features/dashboard/ACBDashboard";
 import HTDashboard from "@/features/dashboard/HTDashboard";
 import EarthDashboard from "@/features/dashboard/EarthDashboard";
 
-function Dashboard() {
+function DashboardTab() {
   return (
     <>
       <Tabs defaultValue="oil" className="w-full">
@@ -31,4 +31,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardTab;

@@ -13,7 +13,7 @@ import HTBreakerTabs from "./pages/HTBreakerTabs";
 import HTBreakerReportupdate from "./features/HTBreakerReport/HTBreakerUpdate";
 import EarthReportTabs from "./pages/EarthReportTabs";
 import EarthReportUpdate from "./features/earthReport/EarthReportUpdate";
-import Dashboard from "./pages/Dashboard";
+import DashboardTab from "./pages/DashboardTab";
 
 axios.interceptors.request.use(
   function (config) {
@@ -54,7 +54,7 @@ function App() {
       children: [
         {
           path: "/",
-          element: <Dashboard />,
+          element: <DashboardTab />,
           // element: "",
         },
         {
