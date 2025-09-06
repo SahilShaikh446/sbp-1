@@ -1,81 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Filter, Users } from "lucide-react";
+import {
+  Filter,
+  Users,
+  CheckCircle,
+  Calendar,
+  AlertTriangle,
+} from "lucide-react";
 import React, { useEffect } from "react";
-import { CheckCircle, Calendar, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
 import { Report } from "../oilReport/type";
+import { ColumnDef } from "@tanstack/react-table";
+import ShadcnTable from "@/components/newShadcnTable/ShadcnTable";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const metrics = [
-  {
-    title: "Total Company",
-    value: "50",
-    icon: Users,
-    color: "text-blue-600",
-  },
-  {
-    title: "Total Filtrations Done",
-    value: "200",
-    icon: CheckCircle,
-    color: "text-green-600",
-  },
-  {
-    title: "Upcoming This Month",
-    value: "20",
-    icon: Calendar,
-    color: "text-blue-600",
-  },
-  {
-    title: "Overdue",
-    value: "5",
-    icon: AlertTriangle,
-    color: "text-destructive",
-  },
-];
-
-const filtrations = [
-  {
-    client: "M/s. Dr. Acharya Laboratories Ltd.",
-    lastFiltration: "2024-04-03",
-    nextDueDate: "2025-04-01",
-    daysLeft: 7,
-    status: "Upcoming",
-    statusColor: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-  },
-  {
-    client: "ABC Corp.",
-    lastFiltration: "2024-04-03",
-    nextDueDate: "2024-02-01",
-    daysLeft: 26,
-    status: "Due Soon",
-    statusColor: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
-  },
-  {
-    client: "XYZ Industries",
-    lastFiltration: "2024-02-03",
-    nextDueDate: "2024-02-10",
-    daysLeft: 23,
-    status: "Overdue",
-    statusColor: "bg-red-100 text-red-800 hover:bg-red-100",
-  },
-  {
-    client: "LMN Ltd.",
-    lastFiltration: "2024-04-13",
-    nextDueDate: "2024-01-15",
-    daysLeft: 10,
-    status: "Overdue",
-    statusColor: "bg-red-100 text-red-800 hover:bg-red-100",
-  },
-  {
-    client: "PQR Enterprises",
-    lastFiltration: "2024-04-13",
-    nextDueDate: "2024-02-10",
-    daysLeft: 24,
-    status: "Overdue",
-    statusColor: "bg-red-100 text-red-800 hover:bg-red-100",
-  },
-];
 interface CardData {
   overdue_count: number;
   total_company: number;
@@ -83,163 +29,273 @@ interface CardData {
   upcoming_count: number;
 }
 
-function EarthDashboard() {
+const metrics = [
+  {
+    title: "Total Company",
+    icon: Users,
+    color: "text-blue-600",
+  },
+  {
+    title: "Total Filtrations Done",
+    icon: CheckCircle,
+    color: "text-green-600",
+  },
+  {
+    title: "Upcoming This Month",
+    icon: Calendar,
+    color: "text-blue-600",
+  },
+  {
+    title: "Overdue",
+    icon: AlertTriangle,
+    color: "text-destructive",
+  },
+];
+
+const column: ColumnDef<Report>[] = [
+  {
+    header: "Client",
+    accessorKey: "company_name",
+  },
+  {
+    header: "Date of Filtration",
+    accessorKey: "report_date",
+  },
+  {
+    header: "Next Date Filteration",
+    accessorKey: "next_date_of_filtriation",
+  },
+  {
+    header: "Days Left",
+    accessorKey: "days_left",
+    cell: ({ row }) => {
+      const reportDate = new Date(row.original.report_date);
+      const nextDate = new Date(row.original.next_date_of_filtriation);
+      const diffTime = nextDate.getTime() - reportDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return <span>{diffDays}</span>;
+    },
+  },
+  {
+    header: "Status",
+    accessorKey: "status",
+    cell: () => (
+      <Badge
+        variant="secondary"
+        className="bg-red-100 text-red-800 hover:bg-red-100 text-xs px-2 py-0.5"
+      >
+        Overdue
+      </Badge>
+    ),
+  },
+];
+
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandItem,
+  CommandEmpty,
+  CommandGroup,
+} from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+function YearPicker({
+  year,
+  setYear,
+}: {
+  year: string;
+  setYear: (y: string) => void;
+}) {
+  const currentYear = new Date().getFullYear();
+
+  // Generate a long list of years (you can extend both sides)
+  const years = Array.from({ length: 201 }, (_, i) =>
+    String(currentYear - 100 + i)
+  );
+
+  return (
+    <Popover modal={true}>
+      <PopoverTrigger>
+        <Button
+          variant="outline"
+          role="combobox"
+          className="w-[140px] justify-between"
+        >
+          {year}
+          <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[180px] p-0">
+        <Command>
+          <CommandInput placeholder="Search year..." />
+          <CommandList className="max-h-60 overflow-y-auto">
+            <CommandEmpty>No year found.</CommandEmpty>
+            <CommandGroup>
+              {years.map((yr) => (
+                <CommandItem key={yr} value={yr} onSelect={() => setYear(yr)}>
+                  {yr}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function OilDashboard() {
   const [cardData, setCardData] = React.useState<CardData | null>(null);
   const [overdueData, setOverdueData] = React.useState<Report[]>([]);
   const [upcomingData, setUpcomingData] = React.useState<Report[]>([]);
 
-  const fetchCardData = async () => {
+  // Year picker
+  const currentYear = new Date().getFullYear();
+  const [year, setYear] = React.useState<string>(String(currentYear));
+
+  // Loading states
+  const [loadingCards, setLoadingCards] = React.useState(true);
+  const [loadingUpcoming, setLoadingUpcoming] = React.useState(true);
+  const [loadingOverdue, setLoadingOverdue] = React.useState(true);
+
+  const fetchCardData = async (selectedYear: string) => {
+    setLoadingCards(true);
     try {
       const res = await axios.get(
-        BASE_URL + "/API/Count/Dashboard/Details?report_id=4&year=2025"
+        `${BASE_URL}/API/Count/Dashboard/Details?report_id=4&year=${selectedYear}`
       );
       if (res.status === 200) {
         setCardData(res.data);
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setTimeout(() => setLoadingCards(false), 1000); // debounce
+    }
   };
 
-  const fetchOverdueData = async () => {
+  const fetchOverdueData = async (selectedYear: string) => {
+    setLoadingOverdue(true);
     try {
       const res = await axios.get(
-        BASE_URL +
-          "/API/List/Dashboard/Overdue/Report?page=0&size=1000&report_id=4&year=2025"
+        `${BASE_URL}/API/List/Dashboard/Overdue/Report?page=0&size=1000&report_id=4&year=${selectedYear}`
       );
       if (res.status === 200) {
         setOverdueData(res.data.content);
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setTimeout(() => setLoadingOverdue(false), 1000);
+    }
   };
-  const fetchUpcomingData = async () => {
+
+  const fetchUpcomingData = async (selectedYear: string) => {
+    setLoadingUpcoming(true);
     try {
       const res = await axios.get(
-        BASE_URL +
-          "/API/List/Dashboard/Upcoming/Report?page=0&size=1000&report_id=4&year=2025"
+        `${BASE_URL}/API/List/Dashboard/Report?report_id=4&year=${selectedYear}`
       );
       if (res.status === 200) {
         setUpcomingData(res.data.content);
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setTimeout(() => setLoadingUpcoming(false), 1000);
+    }
   };
 
   useEffect(() => {
-    fetchCardData();
-    fetchOverdueData();
-    fetchUpcomingData();
-  }, []);
+    fetchCardData(year);
+    fetchOverdueData(year);
+    fetchUpcomingData(year);
+  }, [year]); // refetch when year changes
+
+  // Create year options (last 5 years + next 1 year)
+  const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - 4 + i);
 
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="mx-auto max-w-7xl space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg">
-            <Filter className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg">
+              <Filter className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Earth Pit Dashboard
+            </h1>
           </div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">
-            ACB Report Dashboard
-          </h1>
+          <YearPicker year={year} setYear={setYear} />
         </div>
+
+        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metrics.map((metric) => (
-            <Card
-              key={metric.title}
-              className="border-border shadow-sm hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-1">
-                      {metric.title}
-                    </p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {cardData
-                        ? metric.title === "Total Company"
-                          ? cardData.total_company
-                          : metric.title === "Total Filtrations Done"
-                          ? cardData.total_status_done
-                          : metric.title === "Upcoming This Month"
-                          ? cardData.upcoming_count
-                          : metric.title === "Overdue"
-                          ? cardData.overdue_count
-                          : "N/A"
-                        : "Loading..."}
-                    </p>
-                  </div>
-                  <div className={`p-2 rounded-lg bg-muted ${metric.color}`}>
-                    <metric.icon className="w-5 h-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {loadingCards
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="p-4">
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-8 w-16" />
+                </Card>
+              ))
+            : metrics.map((metric) => (
+                <Card
+                  key={metric.title}
+                  className="border-border shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">
+                          {metric.title}
+                        </p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {metric.title === "Total Company"
+                            ? cardData?.total_company
+                            : metric.title === "Total Filtrations Done"
+                            ? cardData?.total_status_done
+                            : metric.title === "Upcoming This Month"
+                            ? cardData?.upcoming_count
+                            : metric.title === "Overdue"
+                            ? cardData?.overdue_count
+                            : "N/A"}
+                        </p>
+                      </div>
+                      <div
+                        className={`p-2 rounded-lg bg-muted ${metric.color}`}
+                      >
+                        <metric.icon className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
-            <Card className="border-border shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold text-foreground">
-                  Upcoming Filtrations
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-2 px-2 text-xs font-medium text-muted-foreground">
-                          Client
-                        </th>
-                        <th className="text-left py-2 px-2 text-xs font-medium text-muted-foreground">
-                          Last Filtration
-                        </th>
-                        <th className="text-left py-2 px-2 text-xs font-medium text-muted-foreground">
-                          Next Due Date
-                        </th>
-                        <th className="text-left py-2 px-2 text-xs font-medium text-muted-foreground">
-                          Days Left
-                        </th>
-                        <th className="text-left py-2 px-2 text-xs font-medium text-muted-foreground">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtrations.map((filtration, index) => (
-                        <tr
-                          key={index}
-                          className="border-b border-border hover:bg-muted/50 transition-colors"
-                        >
-                          <td
-                            className="py-2 px-2 text-xs font-medium text-foreground max-w-[200px] truncate"
-                            title={filtration.client}
-                          >
-                            {filtration.client}
-                          </td>
-                          <td className="py-2 px-2 text-xs text-muted-foreground">
-                            {filtration.lastFiltration}
-                          </td>
-                          <td className="py-2 px-2 text-xs text-muted-foreground">
-                            {filtration.nextDueDate}
-                          </td>
-                          <td className="py-2 px-2 text-xs text-muted-foreground">
-                            {filtration.daysLeft} days
-                          </td>
-                          <td className="py-2 px-2">
-                            <Badge
-                              variant="secondary"
-                              className={`${filtration.statusColor} text-xs px-2 py-0.5`}
-                            >
-                              {filtration.status}
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            {loadingUpcoming ? (
+              <Card className="p-4">
+                <Skeleton className="h-6 w-40 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+              </Card>
+            ) : (
+              <ShadcnTable
+                title="Upcoming Filtrations"
+                desc="Filtrations"
+                columns={column}
+                data={upcomingData}
+                loading={false}
+                error={false}
+              />
+            )}
           </div>
           <div className="space-y-4">
             <Card className="border-border shadow-sm">
@@ -250,21 +306,29 @@ function EarthDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {overdueData.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center p-3 bg-red-50 rounded-lg border border-red-200"
-                    >
-                      <span className="text-sm font-medium text-foreground">
-                        {item.company_name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.next_date_of_filtriation}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {loadingOverdue ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-10 w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {overdueData.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-3 bg-red-50 rounded-lg border border-red-200"
+                      >
+                        <span className="text-sm font-medium text-foreground">
+                          {item.company_name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {item.next_date_of_filtriation}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -274,4 +338,4 @@ function EarthDashboard() {
   );
 }
 
-export default EarthDashboard;
+export default OilDashboard;

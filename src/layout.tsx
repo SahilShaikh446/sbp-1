@@ -84,6 +84,16 @@ const clientAdminSidebar = [
     href: "/acb-report",
     icon: <FileText className="h-5 w-5 flex-shrink-0" />,
   },
+  {
+    label: "HT Breaker Report",
+    href: "/ht-breaker-report",
+    icon: <CircuitBoard className="h-5 w-5 flex-shrink-0" />,
+  },
+  {
+    label: "Earth Pit Report",
+    href: "/earth-pit",
+    icon: <Earth className="h-5 w-5 flex-shrink-0" />,
+  },
 ];
 
 const Layout = () => {
