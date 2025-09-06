@@ -221,7 +221,7 @@ function OilDashboard() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto max-w-7xl space-y-4">
+      <div className="mx-auto  space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg">
