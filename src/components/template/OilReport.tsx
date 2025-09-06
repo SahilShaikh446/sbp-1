@@ -305,11 +305,11 @@ const OilReport = ({
                 style={{ display: "flex", flexDirection: "column", gap: 5 }}
               >
                 <Text>For Client :</Text>
-                <Text>{reportData.clients_representative || "--"}</Text>
+                <Text>{reportData.for_client || "--"}</Text>
               </View>
               <View style={{ display: "flex", flexDirection: "column" }}>
                 <Text>For Ok Agencies :</Text>
-                <Text>{reportData.tested_by || "--"}</Text>
+                <Text>{reportData.for_ok_agency || "--"}</Text>
               </View>
             </View>
             <Image

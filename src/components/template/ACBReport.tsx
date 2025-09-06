@@ -739,7 +739,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                     For Client .:{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.client_repres || "--"}
+                    {reportData.for_client || "--"}
                   </Text>
                 </Text>
                 <Text>
@@ -747,7 +747,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                     For Ok Agencies:{" "}
                   </Text>
                   <Text style={styles.value}>
-                    {reportData.service_repres || "--"}
+                    {reportData.for_ok_agency || "--"}
                   </Text>
                 </Text>
               </View>
