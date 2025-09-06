@@ -3,15 +3,16 @@ import { BASE_URL } from "@/lib/constants";
 import { ReportType } from "@/features/oilReport/OilReportCreate";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { ApiResponse } from "./type";
 // import { ReportsResponse } from "./type";
 
 interface EarthReportState {
-  entity: ReportsResponse | null;
+  entity: ApiResponse | null;
   loading: boolean;
   error: boolean;
 }
 
-const initialState: HTBreakerReportState = {
+const initialState: EarthReportState = {
   entity: null,
   loading: true,
   error: false,

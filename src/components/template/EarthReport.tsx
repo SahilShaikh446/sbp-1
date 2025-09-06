@@ -3,6 +3,7 @@ import { createTw } from "react-pdf-tailwind";
 import { reportFormSchema } from "@/features/earthReport/EarthReportCreate";
 import { companyType } from "@/features/company/companySlice";
 import { z } from "zod";
+import { Report } from "@/features/earthReport/type";
 
 const tw = createTw({
   theme: {
@@ -80,9 +81,7 @@ function groupByLocation(data: Array<any>) {
 }
 
 interface EarthReportProps {
-  reportData: z.infer<typeof reportFormSchema> & {
-    image_data: { x: number };
-  };
+  reportData: Report;
   companyData: companyType[];
 }
 
@@ -372,13 +371,13 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       <View style={tw("flex flex-row justify-between")}>
                         <Text style={tw("text-sm")}>
                           <Text style={tw("font-bold")}>For Client: </Text>
-                          {reportData?.clients_representative || "--"}
+                          {reportData?.for_client || "--"}
                         </Text>
                         <Text style={tw("text-sm")}>
                           <Text style={tw("font-bold")}>
                             For Ok Agencies.:-{" "}
                           </Text>
-                          M/s. {reportData?.tested_by || "--"}
+                          M/s. {reportData?.for_ok_agency || "--"}
                         </Text>
                       </View>
                     </View>

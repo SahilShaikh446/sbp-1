@@ -8,6 +8,7 @@ import { contactUsSlice } from "@/features/contactus/contactUsSlice";
 import { HTBreakerReportSlice } from "@/features/HTBreakerReport/htBreakerReportSlice";
 import { oilReportSlice } from "@/features/oilReport/oilReportSlice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { earthReportSlice } from "@/features/earthReport/earthReportSlice";
 
 const appReducer = combineReducers({
   company: companySlice,
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
   acbReport: acbReportSlice.reducer,
   HTBreakerReport: HTBreakerReportSlice.reducer,
   allCompany: allCompanySlice.reducer,
+  earthReport: earthReportSlice.reducer,
 });
 
 // Root reducer that handles reset

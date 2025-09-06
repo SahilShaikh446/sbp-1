@@ -12,7 +12,8 @@ import ACBReportUpdate from "./features/acbReport/ACBReportUpdate";
 import HTBreakerTabs from "./pages/HTBreakerTabs";
 import HTBreakerReportupdate from "./features/HTBreakerReport/HTBreakerUpdate";
 import EarthReportTabs from "./pages/EarthReportTabs";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
+import EarthReportUpdate from "./features/earthReport/EarthReportUpdate";
 
 axios.interceptors.request.use(
   function (config) {
@@ -87,6 +88,10 @@ function App() {
         {
           path: "/earth-pit",
           element: <EarthReportTabs />,
+        },
+        {
+          path: "/earth-report-update/:id",
+          element: <EarthReportUpdate />,
         },
         {
           path: "/contact-us",

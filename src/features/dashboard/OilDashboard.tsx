@@ -5,6 +5,7 @@ import { CheckCircle, Calendar, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { BASE_URL } from "@/lib/constants";
+import { Report } from "../oilReport/type";
 
 const metrics = [
   {
@@ -75,38 +76,56 @@ const filtrations = [
     statusColor: "bg-red-100 text-red-800 hover:bg-red-100",
   },
 ];
-
-const overdueItems = [
-  { client: "XYZ Industries", date: "2024-02-20" },
-  { client: "PQR Enterprises", date: "2024-01-15" },
-  { client: "ABC Corp.", date: "2023-12-10" },
-];
-
-const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
-const calendarDays = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-  23, 24, 25, 26, 27, 28,
-];
-
-const scheduledDays = [10, 15, 23];
+interface CardData {
+  overdue_count: number;
+  total_company: number;
+  total_status_done: number;
+  upcoming_count: number;
+}
 
 function OilDashboard() {
-  const [cardData, setCardData] = React.useState(null);
+  const [cardData, setCardData] = React.useState<CardData | null>(null);
+  const [overdueData, setOverdueData] = React.useState<Report[]>([]);
+  const [upcomingData, setUpcomingData] = React.useState<Report[]>([]);
 
   const fetchCardData = async () => {
     try {
       const res = await axios.get(
-        BASE_URL +
-          "API/List/Dashboard/Upcoming/Report?page=0&size=10&sortDir=asc&query=transformer&report_id=3&year=2025"
+        BASE_URL + "/API/Count/Dashboard/Details?report_id=1&year=2025"
       );
       if (res.status === 200) {
-        console.log(res.data);
+        setCardData(res.data);
+      }
+    } catch (error) {}
+  };
+
+  const fetchOverdueData = async () => {
+    try {
+      const res = await axios.get(
+        BASE_URL +
+          "/API/List/Dashboard/Overdue/Report?page=0&size=1000&report_id=1&year=2025"
+      );
+      if (res.status === 200) {
+        setOverdueData(res.data.content);
+      }
+    } catch (error) {}
+  };
+  const fetchUpcomingData = async () => {
+    try {
+      const res = await axios.get(
+        BASE_URL +
+          "/API/List/Dashboard/Upcoming/Report?page=0&size=1000&report_id=1&year=2025"
+      );
+      if (res.status === 200) {
+        console.log(res.data.content);
       }
     } catch (error) {}
   };
 
   useEffect(() => {
     fetchCardData();
+    fetchOverdueData();
+    fetchUpcomingData();
   }, []);
 
   return (
@@ -133,7 +152,17 @@ function OilDashboard() {
                       {metric.title}
                     </p>
                     <p className="text-2xl font-bold text-foreground">
-                      {metric.value}
+                      {cardData
+                        ? metric.title === "Total Company"
+                          ? cardData.total_company
+                          : metric.title === "Total Filtrations Done"
+                          ? cardData.total_status_done
+                          : metric.title === "Upcoming This Month"
+                          ? cardData.upcoming_count
+                          : metric.title === "Overdue"
+                          ? cardData.overdue_count
+                          : "N/A"
+                        : "Loading..."}
                     </p>
                   </div>
                   <div className={`p-2 rounded-lg bg-muted ${metric.color}`}>
@@ -222,61 +251,19 @@ function OilDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {overdueItems.map((item, index) => (
+                  {overdueData.map((item, index) => (
                     <div
                       key={index}
                       className="flex justify-between items-center p-3 bg-red-50 rounded-lg border border-red-200"
                     >
                       <span className="text-sm font-medium text-foreground">
-                        {item.client}
+                        {item.company_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {item.date}
+                        {item.next_date_of_filtriation}
                       </span>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-border shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-accent" />
-                  Filtrations
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Days of week header */}
-                  <div className="grid grid-cols-7 gap-1">
-                    {daysOfWeek.map((day) => (
-                      <div
-                        key={day}
-                        className="text-center text-xs font-medium text-muted-foreground p-2"
-                      >
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Calendar grid */}
-                  <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day) => (
-                      <div
-                        key={day}
-                        className={`
-                  text-center text-sm p-2 rounded-md cursor-pointer transition-colors
-                  ${
-                    scheduledDays.includes(day)
-                      ? "bg-accent text-accent-foreground font-medium"
-                      : "text-foreground hover:bg-muted"
-                  }
-                `}
-                      >
-                        {day}
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </CardContent>
             </Card>

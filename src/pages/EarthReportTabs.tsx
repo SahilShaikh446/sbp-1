@@ -2,6 +2,7 @@ import { useAppSelector } from "@/app/hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { selectRole } from "@/features/authSlice/authSlice";
 import EarthReportCreate from "@/features/earthReport/EarthReportCreate";
+import EarthReportList from "@/features/earthReport/EarthReportList";
 
 function EarthReportTabs() {
   const role = useAppSelector(selectRole);
@@ -17,12 +18,13 @@ function EarthReportTabs() {
             <EarthReportCreate />
           </TabsContent>
           <TabsContent value="view Report">
-            {/* <HTBreakerReportList /> */}
+            <EarthReportList />
           </TabsContent>
         </Tabs>
       ) : (
-        // <OilReportList />
-        <></>
+        <>
+          <EarthReportList />
+        </>
       )}
     </>
   );

@@ -409,12 +409,13 @@ function ACBReportUpdate() {
     }
     setLoading(false);
   };
-  console.log(form.formState.errors);
+
   useEffect(() => {
     if (id) {
       fetchReport(id);
     }
   }, [id]);
+  
   async function onSubmit(data: ACBInspectionForm) {
     try {
       const res = await axios.post(BASE_URL + "API/Update/ACB/Report", {
