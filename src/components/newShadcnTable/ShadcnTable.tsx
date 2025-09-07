@@ -204,7 +204,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                   </div>
                 </DropdownMenuLabel>
 
-                <ScrollArea className="h-[150px] w-[150px]">
+                <ScrollArea className="max-h-[150px] w-[150px]">
                   {table
                     .getAllColumns()
                     .filter((column) => column.getCanHide())
@@ -278,7 +278,20 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                     isPinned === "left" && column.getIsLastColumn("left");
                   const isFirstRightPinned =
                     isPinned === "right" && column.getIsFirstColumn("right");
-
+                  let sortDirection: "asc" | "desc" | undefined;
+                  if (api) {
+                    const sortBy = searchParams.get("sortBy");
+                    if (sortBy) {
+                      const decodedSortBy = decodeURIComponent(sortBy);
+                      const [sortColumn, direction] = decodedSortBy.split(",");
+                      if (
+                        sortColumn === header.column.id &&
+                        (direction === "asc" || direction === "desc")
+                      ) {
+                        sortDirection = direction;
+                      }
+                    }
+                  }
                   return (
                     <TableHead
                       key={header.id}
@@ -344,6 +357,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                             }
                           }
                         }}
+
                         // tabIndex={header.column.getCanSort() ? 0 : undefined}
                       >
                         <span className="truncate">
@@ -356,20 +370,22 @@ const ShadcnTable: React.FC<ComponentProps> = ({
                         </span>
                         <div className="flex items-center gap-2">
                           {api ? (
-                            paramSort.split(",")[1] === "asc" ? (
-                              <ChevronUp
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                strokeWidth={2}
-                                aria-hidden="true"
-                              />
-                            ) : paramSort.split(",")[1] === "desc" ? (
-                              <ChevronDown
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                strokeWidth={2}
-                                aria-hidden="true"
-                              />
+                            sortDirection ? (
+                              sortDirection === "asc" ? (
+                                <ChevronUp
+                                  className="shrink-0 opacity-60"
+                                  size={16}
+                                  strokeWidth={2}
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <ChevronDown
+                                  className="shrink-0 opacity-60"
+                                  size={16}
+                                  strokeWidth={2}
+                                  aria-hidden="true"
+                                />
+                              )
                             ) : null
                           ) : (
                             {

@@ -80,10 +80,6 @@ export const clientSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchClientAsync.pending, (state) => {
-        state.loading = true;
-        state.error = false;
-      })
       .addCase(fetchClientAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload;

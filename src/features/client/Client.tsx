@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "@/app/store";
 import {
@@ -26,7 +25,7 @@ import {
   clientError,
   fetchClientAsync,
 } from "./clientSlice";
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { BASE_URL } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
 import {
@@ -44,7 +43,6 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
-import { fetchAllCompanyAsync } from "../company/paginateCompanySlice";
 import { useLocation } from "react-router-dom";
 
 export const schema = z.object({
@@ -57,22 +55,23 @@ export const schema = z.object({
 });
 
 const Client = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const params = useLocation().search;
-
-  const [open, setOpen] = useState(false);
 
   const data = useAppSelector(selectClient);
   const loading = useAppSelector(clientLoading);
   const error = useAppSelector(clientError);
 
   const company = useAppSelector(selectCompany);
-  console.log(company);
+
+  useEffect(() => {
+    console.log("hi");
+    dispatch(fetchClientAsync(params));
+  }, [params]);
 
   useEffect(() => {
     !company && dispatch(fetchCompanyAsync());
-    dispatch(fetchClientAsync(params));
-  }, [params, company]);
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -169,7 +168,7 @@ const Client = () => {
                   >
                     Company
                   </Label>
-                  <Popover open={open} onOpenChange={setOpen}>
+                  <Popover>
                     <PopoverTrigger className="w-full">
                       <Button
                         type="button"
@@ -218,7 +217,6 @@ const Client = () => {
                                   form.setValue("company_id", `${c.id}`, {
                                     shouldValidate: true,
                                   });
-                                  setOpen(false);
                                 }}
                               >
                                 {c.name}
@@ -291,7 +289,7 @@ const Client = () => {
       </Card>
       <ShadcnTable
         title="Client"
-        desc=" Clients"
+        desc=" Client"
         data={data?.content || []}
         columns={COLUMNS}
         loading={loading}

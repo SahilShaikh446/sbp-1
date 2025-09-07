@@ -76,6 +76,7 @@ export const COLUMNS: ColumnDef<clientType>[] = [
   },
   {
     header: "Edit",
+    id: "edit",
     cell: ({ row }) => {
       const [open, setOpen] = useState(false);
       const dispatch = useAppDispatch();

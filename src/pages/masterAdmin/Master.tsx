@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Admin from "@/features/admin/Admin";
 import Client from "@/features/client/Client";
 import Company from "@/features/company/Company";
 
