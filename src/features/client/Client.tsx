@@ -92,7 +92,7 @@ const Client = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Client added Successfully");
-        await dispatch(fetchClientAsync("page=0&size=10")).unwrap();
+        await dispatch(fetchClientAsync("?page=0&size=10")).unwrap();
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Client");

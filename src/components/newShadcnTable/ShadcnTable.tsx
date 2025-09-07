@@ -186,7 +186,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
           {children}
           <div className=" flex item-center space-x-4">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button variant="outline">
                   <MixerVerticalIcon
                     className=" opacity-60 rotate-90"

@@ -64,7 +64,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   container: {
-    padding: 6,
+    // padding: 2,
+    paddingHorizontal: 20,
   },
   headerContainer: {
     width: "100%",
@@ -73,9 +74,15 @@ const styles = StyleSheet.create({
     margin: "auto",
     justifyContent: "space-between",
     paddingHorizontal: 4,
+    paddingVertical: 6,
+    fontSize: 33,
+    fontWeight: "bold",
+    gap: 4,
   },
   headerText: {
     fontSize: 10,
+    display: "flex",
+    flexDirection: "row",
   },
   table: {
     width: "100%",
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
   tableCell: {
     borderRightWidth: 1,
     borderRightColor: "#000000",
-    padding: 1,
+    padding: 2,
     fontSize: 10,
     flex: 1,
     textAlign: "left",
@@ -112,9 +119,10 @@ const styles = StyleSheet.create({
   specialCellContainer: {
     flexDirection: "row",
     flex: 1,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    textAlign: "center",
+    justifyContent: "center", // horizontal alignment
+    alignItems: "center", // vertical alignment
+    marginBottom: 3,
   },
   specialCell: {
     flex: 1,
@@ -126,16 +134,16 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   subRowDescription: {
-    paddingLeft: 2,
+    paddingLeft: 4,
     textAlign: "left",
   },
   footerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
     paddingHorizontal: 3,
     fontWeight: "bold",
     fontSize: 10,
+    marginTop: 2,
   },
   footerColumn: {
     flexDirection: "column",
@@ -218,7 +226,7 @@ const inspectionData = [
   },
   {
     srNo: 20,
-    description: "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )",
+    description: "Insulation Resistance Check Using 5KV Insulation Tester",
     fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
     observationReport: "special",
   },
@@ -352,12 +360,20 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   justifyContent: "space-between",
                   margin: "auto",
                   width: "100%",
+                  fontSize: 33,
+                  fontWeight: "bold",
                 }}
               >
-                <Text style={styles.headerText}>
-                  Client:{" "}
-                  <View style={{ flexDirection: "column" }}>
-                    <Text>
+                <View style={styles.headerText}>
+                  <Text>Client: </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: 4,
+                    }}
+                  >
+                    <Text style={{}}>
                       {
                         companyData?.find(
                           (i) => `${i.id}` == `${reportData.company_id}`
@@ -372,7 +388,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                       }
                     </Text>
                   </View>
-                </Text>
+                </View>
                 <Text style={styles.headerText}>
                   Date: {convertReportDate(reportData?.report_date)}
                 </Text>
@@ -388,7 +404,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   style={[
                     styles.tableHeader,
                     styles.tableCellLeft,
-                    { flex: 0.5, padding: 1.5 },
+                    { flex: 0.5, padding: 2.5 },
                   ]}
                 >
                   <Text>Sr No.</Text>
@@ -397,7 +413,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   style={[
                     styles.tableHeader,
                     styles.tableCellLeft,
-                    { flex: 2, padding: 3.1 },
+                    { flex: 2, padding: 3.5 },
                   ]}
                 >
                   <Text>Description</Text>
@@ -559,9 +575,9 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
               <View style={styles.footerColumn}>
                 <Text>For Client: {reportData.for_client || "--"}</Text>
               </View>
-              {/* <View style={styles.footerColumn}>
+              <View style={styles.footerColumn}>
                 <Text>For Ok Agencies: {reportData.for_ok_agency || "--"}</Text>
-              </View> */}
+              </View>
             </View>
           </View>
           <View style={{ maxWidth: "90%" }}>
@@ -569,7 +585,6 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
               src="/stamp.jpg"
               style={{
                 objectFit: "contain",
-                bottom: 10,
                 left: safeX,
                 width: 90,
                 height: 90,

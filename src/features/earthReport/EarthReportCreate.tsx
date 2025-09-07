@@ -54,16 +54,19 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { PDFViewer } from "@react-pdf/renderer";
 import EarthReport from "@/components/template/EarthReport";
+import { fetchEarthReportAsync } from "./earthReportSlice";
+import { addOneYear } from "../oilReport/column";
 
 export const reportFormSchema = z.object({
   earth_pit_list: z.array(
     z.object({
-      description: z.string().min(1, { message: "Description is required" }),
-      location: z.string().min(1, { message: "Location is required" }),
-      remark: z.string().min(1, { message: "Remark is required" }),
+      description: z.string(),
+      location: z.string(),
+      remark: z.string(),
       earth_resistance: z.object({
-        open_pit: z.string().min(1, { message: "Open Pit is required" }),
-        Connected: z.string().min(1, { message: "Connected is required" }),
+        open_pit: z.string(),
+        Connected: z.string(),
+        id: z.number(),
       }),
     })
   ),
@@ -144,11 +147,8 @@ export default function EarthReportCreate() {
         {
           description: "",
           location: "",
+          earth_resistance: { open_pit: "", Connected: "", id: 1 },
           remark: "",
-          earth_resistance: {
-            open_pit: "",
-            Connected: "",
-          },
         },
       ],
       report_date: "",
@@ -168,15 +168,7 @@ export default function EarthReportCreate() {
   });
 
   // group by location
-  const groupedData = useMemo(() => {
-    return fields.reduce((acc, item, index) => {
-      const location =
-        form.watch(`earth_pit_list.${index}.location`) || "No Location";
-      if (!acc[location]) acc[location] = [];
-      acc[location].push({ ...item, originalIndex: index });
-      return acc;
-    }, {} as Record<string, { description: string; location: string; remark: string; earth_resistance: { open_pit: string; Connected: string }; originalIndex: number }[]>);
-  }, [fields, form.watch("earth_pit_list")]);
+  const earthPitList = form.watch("earth_pit_list") || [];
 
   const company = useAppSelector(selectCompany);
   const dispatch = useAppDispatch();
@@ -190,19 +182,19 @@ export default function EarthReportCreate() {
       const res = await axios.post(BASE_URL + "API/Add/Earth/Test/Report", {
         ...data,
         image_data: { x: position.x },
+        next_date_of_filtriation: addOneYear(data.report_date),
       });
       if (res.status === 201) {
         toast.success("Report submitted successfully!");
         form.reset();
-        // dispatch(fetchOilReportAsync("page=0"));
+        dispatch(fetchEarthReportAsync("?page=0"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
       console.error("Error submitting report:", error);
     }
-    // You can also make an API POST request here
   }
-
+  console.log(form.watch("earth_pit_list"));
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
@@ -516,6 +508,7 @@ export default function EarthReportCreate() {
                             earth_resistance: {
                               open_pit: "",
                               Connected: "",
+                              id: fields.length + 1,
                             },
                             remark: "",
                           })
@@ -693,96 +686,59 @@ export default function EarthReportCreate() {
                       </tr>
                     </thead>
                     <tbody>
-                      {fields.length > 0 && (
-                        <>
-                          {Object.entries(groupedData).flatMap(
-                            ([location, items], groupIndex) =>
-                              items.map((item, itemIndex) => {
-                                const isFirstInGroup = itemIndex === 0;
-                                const rowSpan = isFirstInGroup
-                                  ? items.length
-                                  : 0;
-                                const globalIndex =
-                                  Object.values(groupedData)
-                                    .flat()
-                                    .findIndex(
-                                      (i) =>
-                                        i.originalIndex === item.originalIndex
-                                    ) + 1;
-                                const currentLocation =
-                                  form.watch(
-                                    `earth_pit_list.${item.originalIndex}.location`
-                                  ) || "No Location";
+                      {earthPitList.map((item, index) => {
+                        const location = item.location || "No Location";
 
-                                return (
-                                  <tr key={item.originalIndex}>
-                                    <td className="border border-black px-2 text-center text-sm">
-                                      {globalIndex}
-                                    </td>
-                                    <td className="border border-black px-2 text-sm">
-                                      {form.watch(
-                                        `earth_pit_list.${item.originalIndex}.description`
-                                      ) || "--"}
-                                    </td>
-                                    {isFirstInGroup && (
-                                      <td
-                                        className="border border-black px-2 text-sm font-medium"
-                                        rowSpan={rowSpan}
-                                      >
-                                        {currentLocation === "No Location"
-                                          ? ""
-                                          : currentLocation || "--"}
-                                      </td>
-                                    )}
-                                    <td className="border border-black px-2 text-center text-sm">
-                                      {form.watch(
-                                        `earth_pit_list.${item.originalIndex}.earth_resistance.open_pit`
-                                      ) || "--"}
-                                    </td>
-                                    <td className="border border-black px-2 text-center text-sm">
-                                      {form.watch(
-                                        `earth_pit_list.${item.originalIndex}.earth_resistance.Connected`
-                                      ) || "--"}
-                                    </td>
-                                    <td className="border border-black px-2 text-center text-sm">
-                                      {form.watch(
-                                        `earth_pit_list.${item.originalIndex}.remark`
-                                      ) || "--"}
-                                    </td>
-                                  </tr>
-                                );
-                              })
-                          )}
-                        </>
-                      )}
+                        // Only show the location cell for the first occurrence of this location in consecutive rows
+                        let rowSpan = 1;
+                        if (
+                          index === 0 ||
+                          location !== earthPitList[index - 1].location
+                        ) {
+                          // count how many consecutive rows have the same location
+                          for (
+                            let i = index + 1;
+                            i < earthPitList.length;
+                            i++
+                          ) {
+                            if (earthPitList[i].location === location)
+                              rowSpan++;
+                            else break;
+                          }
+                        } else {
+                          rowSpan = 0; // skip rendering the cell
+                        }
 
-                      {fields.length === 0 && (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="border border-black px-2 py-8 text-center text-gray-500"
-                          >
-                            No earth pits added yet
-                          </td>
-                        </tr>
-                      )}
-                      <tr>
-                        <td colSpan={6}>
-                          <div className="flex justify-between px-3">
-                            <div className=" ">
-                              <span className="font-bold">For Client:</span>{" "}
-                              {form.watch("for_client") || "--"}
-                            </div>
-                            <div className=" ">
-                              <span className="font-bold">
-                                For Ok Agencies.:-
-                              </span>{" "}
-                              M/s.
-                              {form.watch("for_ok_agency") || "--"}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
+                        return (
+                          <tr key={index}>
+                            <td className="border border-black px-2 text-center text-sm">
+                              {item.earth_resistance?.id || index + 1}
+                            </td>
+                            <td className="border border-black px-2 text-sm">
+                              {item.description || "--"}
+                            </td>
+
+                            {rowSpan > 0 && (
+                              <td
+                                className="border border-black px-2 text-sm font-medium"
+                                rowSpan={rowSpan}
+                              >
+                                {location === "No Location" ? "" : location}
+                              </td>
+                            )}
+
+                            <td className="border border-black px-2 text-center text-sm">
+                              {item.earth_resistance?.open_pit || "--"}
+                            </td>
+                            <td className="border border-black px-2 text-center text-sm">
+                              {item.earth_resistance?.Connected || "--"}
+                            </td>
+                            <td className="border border-black px-2 text-center text-sm">
+                              {item.remark || "--"}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

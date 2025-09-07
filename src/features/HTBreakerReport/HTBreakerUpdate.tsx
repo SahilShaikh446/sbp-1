@@ -241,7 +241,7 @@ const inspectionData = [
   },
   {
     srNo: 20,
-    description: "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )",
+    description: "Insulation Resistance Check Using 5KV Insulation Tester",
     fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
     observationReport: "special",
     subRows: [
@@ -490,7 +490,7 @@ export default function HTBreakerReportupdate() {
     }
     setLoading(false);
   };
-  
+
   useEffect(() => {
     if (id) {
       fetchReport(id);
@@ -1240,9 +1240,9 @@ export default function HTBreakerReportupdate() {
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
               <div className="px-6 py-1" ref={containerRef}>
-                <div className="flex-col px-2 justify-between mx-auto tinos-regular">
-                  <div className="flex justify-between w-full mb-1">
-                    <div>
+                <div className="flex-col flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
+                  <div className="flex justify-between font-bold text-md ">
+                    <div className="flex gap-3">
                       Client:-{" "}
                       {form.watch("company_id") ? (
                         <>
@@ -1254,7 +1254,7 @@ export default function HTBreakerReportupdate() {
                               )?.name
                             }
                           </span>
-                          <span>
+                          <span className="ml-2 ">
                             {
                               company?.find(
                                 (i) =>
@@ -1264,17 +1264,17 @@ export default function HTBreakerReportupdate() {
                           </span>
                         </>
                       ) : (
-                        <>
+                        <span>
                           <span>-</span>
                           <span>-</span>
-                        </>
+                        </span>
                       )}
                     </div>
-                    <div>
+                    <>
                       Date:-{" "}
                       {convertReportDate(form.watch("report_date")) ||
                         "--/--/----"}
-                    </div>
+                    </>
                   </div>
                   <div>Location:- {form.watch("location") || "--"}</div>
                 </div>
@@ -1299,10 +1299,10 @@ export default function HTBreakerReportupdate() {
                           <td className="border border-black px-3 text-sm text-center align-center">
                             {item.srNo}
                           </td>
-                          <td className="border border-black px-3 text-sm font-medium align-center">
+                          <td className="border  border-black px-3 text-sm font-medium align-center">
                             {item.description}
                           </td>
-                          <td className="border border-black px-0 py-0 text-sm align-center text-center">
+                          <td className="border border-black max-w-[170px] px-0 py-0 text-sm align-center text-center">
                             {item.observationReport === "special" ? (
                               <div className="flex h-full">
                                 <div
@@ -1445,15 +1445,15 @@ export default function HTBreakerReportupdate() {
                     ))}
                   </tbody>
                 </table>
-                <div className="w-full flex justify-between items-center font-bold text-md px-3">
+                <div className="w-full flex justify-between items-center font-bold text-lg">
                   <div className="flex flex-col">
-                    <span>For Client:</span>
+                    <span className="">For Client :</span>
                     <span>{form.watch("for_client") || "--"}</span>
                   </div>
-                  {/* <div className="flex flex-col">
-                    <span>For Ok Agencies:</span>
-                    <span>{form.watch("for_ok_agencies") || "--"}</span>
-                  </div> */}
+                  <div className="flex flex-col">
+                    <span className="">For Ok Agencies :</span>
+                    <span>{form.watch("for_ok_agency") || "--"}</span>
+                  </div>
                 </div>
                 <img
                   ref={imgRef}

@@ -29,6 +29,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { fetchCompanyAsync } from "./companySlice";
+import { fetchAllCompanyAsync } from "./paginateCompanySlice";
 
 interface companyType {
   id: string;
@@ -65,7 +66,7 @@ export const COLUMNS: ColumnDef<companyType>[] = [
             id: row.original.id,
           });
           if (res.status == 200) {
-            await dispatch(fetchCompanyAsync()).unwrap();
+            await dispatch(fetchAllCompanyAsyncww("?page=0&size=10"));
             toast.success("Company updated Successfully");
             setOpen(false);
           } else {

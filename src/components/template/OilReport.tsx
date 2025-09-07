@@ -299,6 +299,7 @@ const OilReport = ({
                 justifyContent: "space-between",
                 fontWeight: "bold",
                 fontSize: 15,
+                marginTop: 5,
               }}
             >
               <View

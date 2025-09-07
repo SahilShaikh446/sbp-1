@@ -33,48 +33,22 @@ try {
 }
 
 function groupByLocation(data: Array<any>) {
-  const groups: Record<string, Array<any>> = {};
-  data?.forEach((item) => {
-    const key = item.location || "NO_LOCATION";
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(item);
-  });
+  const flattenedData = data.map((item, index) => {
+    // check if previous item has same location
+    const prevItem = index > 0 ? data[index - 1] : null;
+    const isNewGroup = !prevItem || prevItem.location !== item.location;
+    const nextItem = index < data.length - 1 ? data[index + 1] : null;
+    const isLastInGroup = !nextItem || nextItem.location !== item.location;
 
-  interface EarthPitItem {
-    location?: string;
-    srNo?: string | number;
-    description: string;
-    remark?: string;
-    earth_resistance?: {
-      open_pit: string | number;
-      Connected: string | number;
+    return {
+      ...item,
+      srNo: index + 1,
+      openPit: item.earth_resistance?.open_pit || "",
+      connected: item.earth_resistance?.Connected || "",
+      groupLocation: item.location || "",
+      isFirstInGroup: isNewGroup,
+      isLastInGroup: isLastInGroup,
     };
-    [key: string]: any;
-  }
-
-  interface GroupedEarthPitItem extends EarthPitItem {
-    isFirstInGroup: boolean;
-    isMiddleInGroup: boolean;
-    groupSize: number;
-    groupLocation: string;
-    openPit?: string | number;
-    connected?: string | number;
-  }
-
-  const flattenedData: GroupedEarthPitItem[] = [];
-  Object.entries(groups).forEach(([location, rows]) => {
-    rows.forEach((item, index) => {
-      flattenedData.push({
-        ...item,
-        srNo: item.srNo || index + 1,
-        openPit: item.earth_resistance?.open_pit || "",
-        connected: item.earth_resistance?.Connected || "",
-        isFirstInGroup: index === 0,
-        isMiddleInGroup: index === Math.floor(rows.length / 2),
-        groupSize: rows.length,
-        groupLocation: location === "NO_LOCATION" ? "" : location,
-      });
-    });
   });
 
   return flattenedData;
@@ -294,78 +268,63 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                   )}
 
                   {/* Body (continued on subsequent pages without header) */}
-                  {pageData.map((item, index) => {
-                    const showLocationText = item.isMiddleInGroup;
-
-                    const prevItem = index > 0 ? pageData[index - 1] : null;
-                    const nextItem =
-                      index < pageData.length - 1 ? pageData[index + 1] : null;
-                    const isNewGroup =
-                      !prevItem ||
-                      prevItem.groupLocation !== item.groupLocation;
-                    const isLastInGroup =
-                      !nextItem ||
-                      nextItem.groupLocation !== item.groupLocation;
-
-                    return (
-                      <View key={item.srNo} style={tw("flex flex-row")}>
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 w-[60pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.srNo}
-                          </Text>
-                        </View>
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 flex-1"
-                          )}
-                        >
-                          <Text style={tw("text-sm")}>{item.description}</Text>
-                        </View>
-                        <View
-                          style={tw(
-                            `border-r border-black px-2 w-[120pt] flex justify-center items-center ${
-                              isNewGroup ? "border-t" : "-py-2"
-                            } ${isLastInGroup ? "border-b-0" : ""}`
-                          )}
-                        >
-                          {showLocationText && (
-                            <Text style={tw("text-sm font-medium text-center")}>
-                              {item.groupLocation}
-                            </Text>
-                          )}
-                        </View>
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 w-[76pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.openPit}
-                          </Text>
-                        </View>
-                        <View
-                          style={tw("border-t border-black px-2 py-1 w-[75pt]")}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.connected}
-                          </Text>
-                        </View>
-                        <View
-                          style={tw(
-                            "border-l border-t border-black px-2 py-1 w-[59pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.remark || "--"}
-                          </Text>
-                        </View>
+                  {pageData.map((item, index) => (
+                    <View key={item.srNo} style={tw("flex flex-row")}>
+                      <View
+                        style={tw(
+                          "border-r border-t border-black px-2 py-1 w-[60pt]"
+                        )}
+                      >
+                        <Text style={tw("text-sm text-center")}>
+                          {item.srNo}
+                        </Text>
                       </View>
-                    );
-                  })}
+                      <View
+                        style={tw(
+                          "border-r border-t border-black px-2 py-1 flex-1"
+                        )}
+                      >
+                        <Text style={tw("text-sm")}>{item.description}</Text>
+                      </View>
+                      <View
+                        style={tw(
+                          "border-r border-t border-black px-2 w-[120pt] flex justify-center items-center"
+                        )}
+                      >
+                        {item.isFirstInGroup && (
+                          <Text style={tw("text-sm font-medium text-center")}>
+                            {item.groupLocation || "--"}
+                          </Text>
+                        )}
+                      </View>
+                      <View
+                        style={tw(
+                          "border-r border-t border-black px-2 py-1 w-[76pt]"
+                        )}
+                      >
+                        <Text style={tw("text-sm text-center")}>
+                          {item.openPit}
+                        </Text>
+                      </View>
+                      <View
+                        style={tw("border-t border-black px-2 py-1 w-[75pt]")}
+                      >
+                        <Text style={tw("text-sm text-center")}>
+                          {item.connected}
+                        </Text>
+                      </View>
+                      <View
+                        style={tw(
+                          "border-l border-t border-black px-2 py-1 w-[59pt]"
+                        )}
+                      >
+                        <Text style={tw("text-sm text-center")}>
+                          {item.remark || "--"}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+
                   {pageIndex === pages.length - 1 && (
                     <View style={tw("border-t border-black px-3 py-2")}>
                       <View style={tw("flex flex-row justify-between")}>

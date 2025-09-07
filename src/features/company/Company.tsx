@@ -60,7 +60,7 @@ const Company = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Company added Successfully");
-        await dispatch(fetchAllCompanyAsync("page=0&size=10")).unwrap();
+        await dispatch(fetchAllCompanyAsync("?page=0&size=10"));
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Company");

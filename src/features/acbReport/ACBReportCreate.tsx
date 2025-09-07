@@ -753,7 +753,6 @@ function ABCReportCreate() {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="arcing_contact_gap"
@@ -770,7 +769,6 @@ function ABCReportCreate() {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="condition_of_arc_chute"
@@ -801,11 +799,46 @@ function ABCReportCreate() {
                       </FormItem>
                     )}
                   />
-
+                  <FormField
+                    control={form.control}
+                    name="dusty_housing"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dusty Housing</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter dust level" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />{" "}
+                  <FormField
+                    control={form.control}
+                    name="broken_housing"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Broken Housing</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter Broken House" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />{" "}
+                  <FormField
+                    control={form.control}
+                    name="clean"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Clean</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter clean" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   {[
-                    { name: "dusty_housing", label: "Dusty Housing" },
-                    { name: "broken_housing", label: "Broken Housing" },
-                    { name: "clean", label: "Clean" },
                     {
                       name: "operation_of_auxiliary_contacts",
                       label: "Operation of Auxiliary Contacts",

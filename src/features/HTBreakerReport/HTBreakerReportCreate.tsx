@@ -56,7 +56,6 @@ import { addOneYear } from "../oilReport/column";
 
 // Zod schema (unchanged)
 export const reportFormSchema = z.object({
-  report_number: z.string(),
   report_date: z.string(),
   next_date_of_filtriation: z.string(),
   location: z.string(),
@@ -238,7 +237,7 @@ const inspectionData = [
   },
   {
     srNo: 20,
-    description: "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )",
+    description: "Insulation Resistance Check Using 5KV Insulation Tester",
     fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
     observationReport: "special",
     subRows: [
@@ -325,7 +324,6 @@ export default function HTBreakerReportCreate() {
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
-      report_number: "",
       next_date_of_filtriation: "",
       for_client: "",
       for_ok_agency: "",
@@ -428,7 +426,7 @@ export default function HTBreakerReportCreate() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="report_date"
@@ -437,23 +435,6 @@ export default function HTBreakerReportCreate() {
                         <FormLabel>Report Date</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="report_number"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Report Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            {...field}
-                            placeholder="Enter report number"
-                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1148,37 +1129,41 @@ export default function HTBreakerReportCreate() {
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
               <div className="px-6 py-1" ref={containerRef}>
-                <div className="flex flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
-                  <div>
-                    Client:-{" "}
-                    {form.watch("company_id") ? (
-                      <>
+                <div className="flex-col flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
+                  <div className="flex justify-between font-bold text-md ">
+                    <div className="flex gap-3">
+                      Client:-{" "}
+                      {form.watch("company_id") ? (
+                        <>
+                          <span>
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.name
+                            }
+                          </span>
+                          <span className="ml-2 ">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.address
+                            }
+                          </span>
+                        </>
+                      ) : (
                         <span>
-                          {
-                            company?.find(
-                              (i) => `${i.id}` == `${form.watch("company_id")}`
-                            )?.name
-                          }
+                          <span>-</span>
+                          <span>-</span>
                         </span>
-                        <span>
-                          {
-                            company?.find(
-                              (i) => `${i.id}` == `${form.watch("company_id")}`
-                            )?.address
-                          }
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span>-</span>
-                        <span>-</span>
-                      </>
-                    )}
-                  </div>
-                  <div>
-                    Date:-{" "}
-                    {convertReportDate(form.watch("report_date")) ||
-                      "--/--/----"}
+                      )}
+                    </div>
+                    <>
+                      Date:-{" "}
+                      {convertReportDate(form.watch("report_date")) ||
+                        "--/--/----"}
+                    </>
                   </div>
                   <div>Location:- {form.watch("location") || "--"}</div>
                 </div>
@@ -1349,10 +1334,13 @@ export default function HTBreakerReportCreate() {
                     ))}
                   </tbody>
                 </table>
-                <div className="w-full flex justify-between items-center font-bold text-md px-3">
-                  <div className="flex flex-col"></div>
+                <div className="w-full flex justify-between items-center font-bold text-lg">
                   <div className="flex flex-col">
-                    <span>For Ok Agency:</span>
+                    <span className="">For Client :</span>
+                    <span>{form.watch("for_client") || "--"}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="">For Ok Agencies :</span>
                     <span>{form.watch("for_ok_agency") || "--"}</span>
                   </div>
                 </div>

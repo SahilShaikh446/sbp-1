@@ -99,7 +99,7 @@ export const COLUMNS: ColumnDef<clientType>[] = [
             id: row.original.id,
           });
           if (res.status == 200) {
-            await dispatch(fetchClientAsync()).unwrap();
+            await dispatch(fetchClientAsync("?page=0&size=10")).unwrap();
             toast.success("Client updated Successfully");
             setOpen(false);
           } else {
