@@ -1,5 +1,6 @@
 export interface Report {
   id: number;
+  status: string;
   report_date: string;
   next_date_of_filtriation: string;
   report_number: string;

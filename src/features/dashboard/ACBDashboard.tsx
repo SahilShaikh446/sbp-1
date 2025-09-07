@@ -68,21 +68,20 @@ const column: ColumnDef<Report>[] = [
   {
     header: "Days Left",
     accessorKey: "days_left",
-    cell: ({ row }) => {
-      const reportDate = new Date(row.original.report_date);
-      const nextDate = new Date(row.original.next_date_of_filtriation);
-      const diffTime = nextDate.getTime() - reportDate.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return <span>{diffDays}</span>;
-    },
   },
   {
     header: "Status",
     accessorKey: "status",
-    cell: () => (
+    cell: ({ row }) => (
       <Badge
         variant="secondary"
-        className="bg-red-100 text-red-800 hover:bg-red-100 text-xs px-2 py-0.5"
+        className={`${
+          row.original.status === "Upcoming"
+            ? "bg-blue-100 text-blue-800 hover:bg-blue-100"
+            : row.original.status === "Overdue"
+            ? "bg-green-100 text-green-800 hover:bg-green-100"
+            : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+        } text-xs px-2 py-0.5`}
       >
         Overdue
       </Badge>
