@@ -32,31 +32,42 @@ try {
   console.error("Failed to register Tinos fonts:", error);
 }
 
-function groupByLocation(data: Array<any>) {
-  const flattenedData = data.map((item, index) => {
-    // check if previous item has same location
-    const prevItem = index > 0 ? data[index - 1] : null;
-    const isNewGroup = !prevItem || prevItem.location !== item.location;
-    const nextItem = index < data.length - 1 ? data[index + 1] : null;
-    const isLastInGroup = !nextItem || nextItem.location !== item.location;
-
-    return {
-      ...item,
-      srNo: index + 1,
-      openPit: item.earth_resistance?.open_pit || "",
-      connected: item.earth_resistance?.Connected || "",
-      groupLocation: item.location || "",
-      isFirstInGroup: isNewGroup,
-      isLastInGroup: isLastInGroup,
-    };
-  });
-
-  return flattenedData;
-}
-
 interface EarthReportProps {
   reportData: Report;
   companyData: companyType[];
+}
+
+function groupByLocation(data: Array<any>) {
+  const groupedData: any[] = [];
+  let i = 0;
+
+  while (i < data.length) {
+    const location = data[i].location;
+    const groupItems: any[] = [];
+    let j = i;
+
+    while (j < data.length && data[j].location === location) {
+      groupItems.push(data[j]);
+      j++;
+    }
+
+    const groupSize = groupItems.length;
+
+    groupItems.forEach((item, idx) => {
+      groupedData.push({
+        ...item,
+        srNo: groupedData.length + 1,
+        openPit: item.earth_resistance?.open_pit || "",
+        connected: item.earth_resistance?.Connected || "",
+        groupLocation: item.location || "",
+        isMiddleInGroup: idx === Math.floor(groupSize / 2), // ✅ only middle row shows location
+      });
+    });
+
+    i = j;
+  }
+
+  return groupedData;
 }
 
 const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
@@ -268,62 +279,147 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                   )}
 
                   {/* Body (continued on subsequent pages without header) */}
-                  {pageData.map((item, index) => (
-                    <View key={item.srNo} style={tw("flex flex-row")}>
+                  {/* ---------- Table Body (page-local grouping + merged Location) ---------- */}
+                  {(() => {
+                    // annotate pageData per-page (groups of consecutive same location)
+                    const annotated: any[] = [];
+                    let i = 0;
+                    while (i < pageData.length) {
+                      const loc = (
+                        pageData[i].groupLocation ||
+                        pageData[i].location ||
+                        ""
+                      ).toString();
+                      let j = i;
+                      while (
+                        j < pageData.length &&
+                        (
+                          pageData[j].groupLocation ||
+                          pageData[j].location ||
+                          ""
+                        ).toString() === loc
+                      ) {
+                        j++;
+                      }
+                      const groupSize = j - i;
+
+                      for (let k = 0; k < groupSize; k++) {
+                        const row = pageData[i + k];
+                        const isFirst = k === 0;
+                        const isLast = k === groupSize - 1;
+                        // choose middle row: single row -> that row; odd -> exact middle; even -> upper-middle (adjust if you want lower)
+                        let isMiddle: boolean;
+                        if (groupSize === 1) isMiddle = true;
+                        else if (groupSize % 2 === 1)
+                          isMiddle = k === Math.floor(groupSize / 2);
+                        else isMiddle = k === Math.floor((groupSize - 1) / 2);
+
+                        annotated.push({
+                          ...row,
+                          isPageFirst: isFirst,
+                          isPageLast: isLast,
+                          isPageMiddle: isMiddle,
+                          pageGroupSize: groupSize,
+                        });
+                      }
+
+                      i = j;
+                    }
+
+                    // render annotated rows
+                    return annotated.map((item) => (
                       <View
-                        style={tw(
-                          "border-r border-t border-black px-2 py-1 w-[60pt]"
-                        )}
+                        key={item.srNo || `${item.location}-${Math.random()}`}
+                        style={tw("flex flex-row")}
                       >
-                        <Text style={tw("text-sm text-center")}>
-                          {item.srNo}
-                        </Text>
-                      </View>
-                      <View
-                        style={tw(
-                          "border-r border-t border-black px-2 py-1 flex-1"
-                        )}
-                      >
-                        <Text style={tw("text-sm")}>{item.description}</Text>
-                      </View>
-                      <View
-                        style={tw(
-                          "border-r border-t border-black px-2 w-[120pt] flex justify-center items-center"
-                        )}
-                      >
-                        {item.isFirstInGroup && (
-                          <Text style={tw("text-sm font-medium text-center")}>
-                            {item.groupLocation || "--"}
+                        {/* Sr. No. */}
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 w-[60pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.srNo}
                           </Text>
-                        )}
+                        </View>
+
+                        {/* Description */}
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 flex-1"
+                          )}
+                        >
+                          <Text style={tw("text-sm")}>{item.description}</Text>
+                        </View>
+
+                        {/* Location column: show borders only on first/last of page-group, text only on middle */}
+                        <View
+                          style={[
+                            // keep basic layout from tailwind for spacing/alignment
+                            tw(
+                              "px-2 w-[120pt] flex justify-center items-center"
+                            ),
+                            {
+                              // always keep right border for the column edge
+                              borderRightWidth: 1,
+                              borderRightColor: "black",
+
+                              // conditional top/bottom borders for merged look
+                              borderTopWidth: item.isPageFirst ? 1 : 0,
+                              borderBottomWidth: item.isPageLast ? 1 : 0,
+                              borderTopColor: "black",
+                              borderBottomColor: "black",
+                            },
+                          ]}
+                        >
+                          {item.isPageMiddle && (
+                            <Text
+                              style={{
+                                fontSize: 10,
+                                fontWeight: "500",
+                                textAlign: "center",
+                              }}
+                            >
+                              {item.groupLocation || "--"}
+                            </Text>
+                          )}
+                        </View>
+
+                        {/* Open Pit */}
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 w-[76pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.openPit}
+                          </Text>
+                        </View>
+
+                        {/* Connected */}
+                        <View
+                          style={tw(
+                            "border-r border-t border-black px-2 py-1 w-[75pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.connected}
+                          </Text>
+                        </View>
+
+                        {/* Remark */}
+                        <View
+                          style={tw(
+                            "border-l border-t border-black px-2 py-1 w-[59pt]"
+                          )}
+                        >
+                          <Text style={tw("text-sm text-center")}>
+                            {item.remark || "--"}
+                          </Text>
+                        </View>
                       </View>
-                      <View
-                        style={tw(
-                          "border-r border-t border-black px-2 py-1 w-[76pt]"
-                        )}
-                      >
-                        <Text style={tw("text-sm text-center")}>
-                          {item.openPit}
-                        </Text>
-                      </View>
-                      <View
-                        style={tw("border-t border-black px-2 py-1 w-[75pt]")}
-                      >
-                        <Text style={tw("text-sm text-center")}>
-                          {item.connected}
-                        </Text>
-                      </View>
-                      <View
-                        style={tw(
-                          "border-l border-t border-black px-2 py-1 w-[59pt]"
-                        )}
-                      >
-                        <Text style={tw("text-sm text-center")}>
-                          {item.remark || "--"}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
+                    ));
+                  })()}
 
                   {pageIndex === pages.length - 1 && (
                     <View style={tw("border-t border-black px-3 py-2")}>
