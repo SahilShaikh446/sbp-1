@@ -83,7 +83,7 @@ const column: ColumnDef<Report>[] = [
             : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
         } text-xs px-2 py-0.5`}
       >
-        Overdue
+        {row.original.status}
       </Badge>
     ),
   },
