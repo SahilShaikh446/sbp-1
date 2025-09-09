@@ -415,7 +415,7 @@ function ACBReportUpdate() {
       fetchReport(id);
     }
   }, [id]);
-  
+
   async function onSubmit(data: ACBInspectionForm) {
     try {
       const res = await axios.post(BASE_URL + "API/Update/ACB/Report", {
@@ -478,7 +478,7 @@ function ACBReportUpdate() {
                                 type="button"
                                 variant="outline"
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "w-full pl-3 text-left ",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -888,7 +888,6 @@ function ACBReportUpdate() {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="arcing_contact_gap"
@@ -905,7 +904,6 @@ function ACBReportUpdate() {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="condition_of_arc_chute"
@@ -936,11 +934,46 @@ function ACBReportUpdate() {
                       </FormItem>
                     )}
                   />
-
+                  <FormField
+                    control={form.control}
+                    name="dusty_housing"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dusty Housing</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter dust level" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />{" "}
+                  <FormField
+                    control={form.control}
+                    name="broken_housing"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Broken Housing</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter Broken House" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />{" "}
+                  <FormField
+                    control={form.control}
+                    name="clean"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Clean</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter clean" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   {[
-                    { name: "dusty_housing", label: "Dusty Housing" },
-                    { name: "broken_housing", label: "Broken Housing" },
-                    { name: "clean", label: "Clean" },
                     {
                       name: "operation_of_auxiliary_contacts",
                       label: "Operation of Auxiliary Contacts",
@@ -1343,17 +1376,25 @@ function ACBReportUpdate() {
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Name of Client:{" "}
-                        {
-                          company?.find(
-                            (i) => `${i.id}` == `${form.watch("company_id")}`
-                          )?.name
-                        }
-                        {
-                          company?.find(
-                            (i) => `${i.id}` == `${form.watch("company_id")}`
-                          )?.address
-                        }
+                        <div>
+                          <span className="font-bold">Name of Client: </span>
+                          <span className="ml-2">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.name
+                            }
+                          </span>
+                          <span className="ml-2">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.address
+                            }
+                          </span>
+                        </div>
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">

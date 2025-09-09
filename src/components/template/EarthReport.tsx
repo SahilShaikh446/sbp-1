@@ -233,14 +233,14 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
                         <View
                           style={tw(
-                            "border-r border-black px-2 py-1 w-[120.5pt] flex flex-col justify-center"
+                            "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
                           )}
                         >
                           <Text style={tw("text-sm font-semibold text-center")}>
                             Location
                           </Text>
                         </View>
-                        <View style={tw("border-r border-black w-[151.5pt]")}>
+                        <View style={tw("border-r border-black w-[151.8pt]")}>
                           <Text
                             style={tw("text-sm font-semibold text-center py-1")}
                           >
@@ -267,7 +267,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
                         <View
                           style={tw(
-                            "px-2 py-1 w-[58.5pt] flex flex-col justify-center"
+                            "px-2 py-1 w-[58.2pt] flex flex-col justify-center"
                           )}
                         >
                           <Text style={tw("text-sm font-semibold text-center")}>
@@ -308,17 +308,22 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         const isFirst = k === 0;
                         const isLast = k === groupSize - 1;
                         // choose middle row: single row -> that row; odd -> exact middle; even -> upper-middle (adjust if you want lower)
-                        let isMiddle: boolean;
-                        if (groupSize === 1) isMiddle = true;
-                        else if (groupSize % 2 === 1)
-                          isMiddle = k === Math.floor(groupSize / 2);
-                        else isMiddle = k === Math.floor((groupSize - 1) / 2);
+                        let isPageMiddle: boolean;
+                        if (groupSize === 1) {
+                          isPageMiddle = true; // Single row, show location
+                        } else if (groupSize === 2) {
+                          isPageMiddle = k === 1; // For two rows, keep in second row
+                        } else if (groupSize === 3) {
+                          isPageMiddle = k === 1; // For three rows, show in second row (instead of second-to-last)
+                        } else {
+                          isPageMiddle = k === groupSize - 3; // For four or more rows, show in third-to-last row
+                        }
 
                         annotated.push({
                           ...row,
                           isPageFirst: isFirst,
                           isPageLast: isLast,
-                          isPageMiddle: isMiddle,
+                          isPageMiddle: isPageMiddle,
                           pageGroupSize: groupSize,
                         });
                       }
@@ -366,7 +371,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
 
                               // conditional top/bottom borders for merged look
                               borderTopWidth: item.isPageFirst ? 1 : 0,
-                              borderBottomWidth: item.isPageLast ? 1 : 0,
+                              borderBottomWidth: item.isPageLast ? 0 : 0,
                               borderTopColor: "black",
                               borderBottomColor: "black",
                             },
@@ -378,6 +383,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                                 fontSize: 10,
                                 fontWeight: "500",
                                 textAlign: "center",
+                                alignSelf: "center",
                               }}
                             >
                               {item.groupLocation || "--"}
@@ -398,9 +404,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
 
                         {/* Connected */}
                         <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 w-[75pt]"
-                          )}
+                          style={tw("border-t border-black px-2 py-1 w-[75pt]")}
                         >
                           <Text style={tw("text-sm text-center")}>
                             {item.connected}

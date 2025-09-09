@@ -114,10 +114,8 @@ function YearPicker({
 }) {
   const currentYear = new Date().getFullYear();
 
-  // Generate a long list of years (you can extend both sides)
-  const years = Array.from({ length: 201 }, (_, i) =>
-    String(currentYear - 100 + i)
-  );
+  // Generate years in reverse order (currentYear down to currentYear - 200)
+  const years = Array.from({ length: 201 }, (_, i) => String(currentYear - i));
 
   return (
     <Popover modal={true}>
@@ -183,7 +181,7 @@ function OilDashboard() {
     setLoadingOverdue(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/API/List/Dashboard/Overdue/Report?page=0&size=1000&report_id=4&year=${selectedYear}`
+        `${BASE_URL}/API/List/Dashboard/Overdue/Report?page=0&size=3&report_id=4&year=${selectedYear}`
       );
       if (res.status === 200) {
         setOverdueData(res.data.content);
@@ -293,6 +291,7 @@ function OilDashboard() {
                 data={upcomingData}
                 loading={false}
                 error={false}
+                hiderow_page={true}
               />
             )}
           </div>
@@ -312,7 +311,7 @@ function OilDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-[390px] overflow-y-auto">
                     {overdueData.map((item, index) => (
                       <div
                         key={index}

@@ -64,6 +64,8 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MixerVerticalIcon } from "@radix-ui/react-icons";
 import { FaSpinner } from "react-icons/fa6";
 import TableSkeleton from "./TableSkeleton";
+import { TableNoData } from "./TableNoData";
+import { TableError } from "./TableError";
 
 const getPinningStyles = (column: any): CSSProperties => {
   const isPinned = column.getIsPinned();
@@ -90,6 +92,7 @@ type ComponentProps = {
   hideGlobalSearch?: boolean;
   loading: boolean;
   error: boolean;
+  hiderow_page?: boolean;
 };
 
 type ColumnMetaType = {
@@ -108,6 +111,7 @@ const ShadcnTable: React.FC<ComponentProps> = ({
   children,
   loading,
   error,
+  hiderow_page = false,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<any>([]);
@@ -267,316 +271,326 @@ const ShadcnTable: React.FC<ComponentProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            {table?.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup?.headers?.map((header) => {
-                  const { column } = header;
-                  const isPinned = column.getIsPinned();
-                  const isLastLeftPinned =
-                    isPinned === "left" && column.getIsLastColumn("left");
-                  const isFirstRightPinned =
-                    isPinned === "right" && column.getIsFirstColumn("right");
-                  let sortDirection: "asc" | "desc" | undefined;
-                  if (api) {
-                    const sortBy = searchParams.get("sortBy");
-                    if (sortBy) {
-                      const decodedSortBy = decodeURIComponent(sortBy);
-                      const [sortColumn, direction] = decodedSortBy.split(",");
-                      if (
-                        sortColumn === header.column.id &&
-                        (direction === "asc" || direction === "desc")
-                      ) {
-                        sortDirection = direction;
+        {error ? (
+          <TableError></TableError>
+        ) : loading ? (
+          <TableNoData />
+        ) : (
+          <Table>
+            <TableHeader>
+              {table?.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup?.headers?.map((header) => {
+                    const { column } = header;
+                    const isPinned = column.getIsPinned();
+                    const isLastLeftPinned =
+                      isPinned === "left" && column.getIsLastColumn("left");
+                    const isFirstRightPinned =
+                      isPinned === "right" && column.getIsFirstColumn("right");
+                    let sortDirection: "asc" | "desc" | undefined;
+                    if (api) {
+                      const sortBy = searchParams.get("sortBy");
+                      if (sortBy) {
+                        const decodedSortBy = decodeURIComponent(sortBy);
+                        const [sortColumn, direction] =
+                          decodedSortBy.split(",");
+                        if (
+                          sortColumn === header.column.id &&
+                          (direction === "asc" || direction === "desc")
+                        ) {
+                          sortDirection = direction;
+                        }
                       }
                     }
-                  }
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={`relative h-10 truncate  [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-muted/90 [&[data-pinned]:backdrop-blur-sm group text-black `}
-                      colSpan={header.colSpan}
-                      style={{ ...getPinningStyles(column) }}
-                      data-pinned={isPinned || undefined}
-                      data-last-col={
-                        isLastLeftPinned
-                          ? "left"
-                          : isFirstRightPinned
-                          ? "right"
-                          : undefined
-                      }
-                      aria-sort={
-                        header.column.getIsSorted() === "asc"
-                          ? "ascending"
-                          : header.column.getIsSorted() === "desc"
-                          ? "descending"
-                          : "none"
-                      }
-                    >
-                      <div
-                        className={cn(
-                          "flex items-center justify-between gap-2",
-                          header.column.getCanSort() &&
-                            "cursor-pointer select-none"
-                        )}
-                        onClick={(e) => {
-                          if (api) {
-                            const currentSort = paramSort.split(",")[1];
-                            let newSort;
-                            if (currentSort === "asc") {
-                              newSort = "desc";
-                            } else if (currentSort === "desc") {
-                              newSort = undefined; // Descending → No Sort
-                            } else {
-                              newSort = "asc"; // No Sort → Ascending
-                            }
-                            if (newSort) {
-                              params.set(
-                                "sortBy",
-                                `${header.column.id},${newSort}`
-                              );
-                            } else {
-                              params.delete("sortBy"); // Remove if no sort is applied
-                            }
-
-                            // Convert params to string and replace `%2C` with `,`
-                            const queryString = params
-                              .toString()
-                              .replace(/%2C/g, ",");
-
-                            navigate(`?${queryString}`);
-                          } else {
-                            // header.column.getToggleSortingHandler()?.(e);
-                            if (header.column.getIsSorted() === "desc") {
-                              header.column.toggleSorting(false); // Asc → Desc
-                            } else if (header.column.getIsSorted() === "asc") {
-                              header.column.clearSorting(); // Desc → No Sort
-                            } else {
-                              header.column.toggleSorting(true); // No Sort → Asc
-                            }
-                          }
-                        }}
-
-                        // tabIndex={header.column.getCanSort() ? 0 : undefined}
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={`relative h-10 truncate  [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-muted/90 [&[data-pinned]:backdrop-blur-sm group text-black `}
+                        colSpan={header.colSpan}
+                        style={{ ...getPinningStyles(column) }}
+                        data-pinned={isPinned || undefined}
+                        data-last-col={
+                          isLastLeftPinned
+                            ? "left"
+                            : isFirstRightPinned
+                            ? "right"
+                            : undefined
+                        }
+                        aria-sort={
+                          header.column.getIsSorted() === "asc"
+                            ? "ascending"
+                            : header.column.getIsSorted() === "desc"
+                            ? "descending"
+                            : "none"
+                        }
                       >
-                        <span className="truncate">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {api ? (
-                            sortDirection ? (
-                              sortDirection === "asc" ? (
-                                <ChevronUp
-                                  className="shrink-0 opacity-60"
-                                  size={16}
-                                  strokeWidth={2}
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <ChevronDown
-                                  className="shrink-0 opacity-60"
-                                  size={16}
-                                  strokeWidth={2}
-                                  aria-hidden="true"
-                                />
-                              )
-                            ) : null
-                          ) : (
-                            {
-                              asc: (
-                                <ChevronUp
-                                  className="shrink-0 opacity-60"
-                                  size={16}
-                                  strokeWidth={2}
-                                  aria-hidden="true"
-                                />
-                              ),
-                              desc: (
-                                <ChevronDown
-                                  className="shrink-0 opacity-60"
-                                  size={16}
-                                  strokeWidth={2}
-                                  aria-hidden="true"
-                                />
-                              ),
-                            }[header.column.getIsSorted() as string] ?? null
+                        <div
+                          className={cn(
+                            "flex items-center justify-between gap-2",
+                            header.column.getCanSort() &&
+                              "cursor-pointer select-none"
                           )}
+                          onClick={(e) => {
+                            if (api) {
+                              const currentSort = paramSort.split(",")[1];
+                              let newSort;
+                              if (currentSort === "asc") {
+                                newSort = "desc";
+                              } else if (currentSort === "desc") {
+                                newSort = undefined; // Descending → No Sort
+                              } else {
+                                newSort = "asc"; // No Sort → Ascending
+                              }
+                              if (newSort) {
+                                params.set(
+                                  "sortBy",
+                                  `${header.column.id},${newSort}`
+                                );
+                              } else {
+                                params.delete("sortBy"); // Remove if no sort is applied
+                              }
 
-                          {/* Pin/Unpin column controls with enhanced accessibility */}
-                          {!header.isPlaceholder &&
-                            header.column.getCanPin() &&
-                            (header.column.getIsPinned() ? (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="-mr-1 size-7 shadow-none"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  header.column.pin(false);
-                                }}
-                                aria-label={`Unpin ${
-                                  header.column.columnDef.header as string
-                                } column`}
-                                title={`Unpin ${
-                                  header.column.columnDef.header as string
-                                } column`}
-                              >
-                                <PinOff
-                                  className="opacity-60"
-                                  size={16}
-                                  strokeWidth={2}
-                                  aria-hidden="true"
-                                />
-                              </Button>
+                              // Convert params to string and replace `%2C` with `,`
+                              const queryString = params
+                                .toString()
+                                .replace(/%2C/g, ",");
+
+                              navigate(`?${queryString}`);
+                            } else {
+                              // header.column.getToggleSortingHandler()?.(e);
+                              if (header.column.getIsSorted() === "desc") {
+                                header.column.toggleSorting(false); // Asc → Desc
+                              } else if (
+                                header.column.getIsSorted() === "asc"
+                              ) {
+                                header.column.clearSorting(); // Desc → No Sort
+                              } else {
+                                header.column.toggleSorting(true); // No Sort → Asc
+                              }
+                            }
+                          }}
+
+                          // tabIndex={header.column.getCanSort() ? 0 : undefined}
+                        >
+                          <span className="truncate">
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {api ? (
+                              sortDirection ? (
+                                sortDirection === "asc" ? (
+                                  <ChevronUp
+                                    className="shrink-0 opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <ChevronDown
+                                    className="shrink-0 opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                )
+                              ) : null
                             ) : (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="-mr-1 size-7 shadow-none"
-                                    onClick={(e) => e.stopPropagation()}
-                                    aria-label={`Pin options for ${
-                                      header.column.columnDef.header as string
-                                    } column`}
-                                    title={`Pin options for ${
-                                      header.column.columnDef.header as string
-                                    } column`}
-                                  >
-                                    <EllipsisIcon
-                                      className="opacity-60"
-                                      size={16}
-                                      strokeWidth={2}
-                                      aria-hidden="true"
-                                    />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() => header.column.pin("left")}
-                                  >
-                                    {/* <ArrowLeftToLineIcon
+                              {
+                                asc: (
+                                  <ChevronUp
+                                    className="shrink-0 opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                ),
+                                desc: (
+                                  <ChevronDown
+                                    className="shrink-0 opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                ),
+                              }[header.column.getIsSorted() as string] ?? null
+                            )}
+
+                            {/* Pin/Unpin column controls with enhanced accessibility */}
+                            {!header.isPlaceholder &&
+                              header.column.getCanPin() &&
+                              (header.column.getIsPinned() ? (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="-mr-1 size-7 shadow-none"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    header.column.pin(false);
+                                  }}
+                                  aria-label={`Unpin ${
+                                    header.column.columnDef.header as string
+                                  } column`}
+                                  title={`Unpin ${
+                                    header.column.columnDef.header as string
+                                  } column`}
+                                >
+                                  <PinOff
+                                    className="opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                </Button>
+                              ) : (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="-mr-1 size-7 shadow-none"
+                                      onClick={(e) => e.stopPropagation()}
+                                      aria-label={`Pin options for ${
+                                        header.column.columnDef.header as string
+                                      } column`}
+                                      title={`Pin options for ${
+                                        header.column.columnDef.header as string
+                                      } column`}
+                                    >
+                                      <EllipsisIcon
+                                        className="opacity-60"
+                                        size={16}
+                                        strokeWidth={2}
+                                        aria-hidden="true"
+                                      />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                      onClick={() => header.column.pin("left")}
+                                    >
+                                      {/* <ArrowLeftToLineIcon
                                       size={16}
                                       strokeWidth={2}
                                       className="opacity-60"
                                       aria-hidden="true"
                                     /> */}
-                                    Stick to left
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => header.column.pin("right")}
-                                  >
-                                    <ArrowRightToLine
-                                      size={16}
-                                      strokeWidth={2}
-                                      className="opacity-60"
-                                      aria-hidden="true"
-                                    />
-                                    Stick to right
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            ))}
-                        </div>
-                      </div>
-                      {header.column.getCanResize() && (
-                        <div
-                          {...{
-                            onDoubleClick: () => header.column.resetSize(),
-                            onMouseDown: header.getResizeHandler(),
-                            onTouchStart: header.getResizeHandler(),
-                            className:
-                              "absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px",
-                          }}
-                        />
-                      )}
-
-                      {isChildOpen &&
-                        (header.column.getCanFilter() ? (
-                          <div>
-                            <Filter column={header.column} />
+                                      Stick to left
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => header.column.pin("right")}
+                                    >
+                                      <ArrowRightToLine
+                                        size={16}
+                                        strokeWidth={2}
+                                        className="opacity-60"
+                                        aria-hidden="true"
+                                      />
+                                      Stick to right
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              ))}
                           </div>
-                        ) : null)}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody className="h-[20]">
-            {table.getRowModel().rows != undefined &&
-            table.getRowModel().rows?.length > 0 ? (
-              table.getRowModel().rows?.map((row) => (
-                <Fragment key={row.id}>
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="h-[55px]"
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const { column } = cell;
-                      const isPinned = column.getIsPinned();
-                      const isLastLeftPinned =
-                        isPinned === "left" && column.getIsLastColumn("left");
-                      const isFirstRightPinned =
-                        isPinned === "right" &&
-                        column.getIsFirstColumn("right");
+                        </div>
+                        {header.column.getCanResize() && (
+                          <div
+                            {...{
+                              onDoubleClick: () => header.column.resetSize(),
+                              onMouseDown: header.getResizeHandler(),
+                              onTouchStart: header.getResizeHandler(),
+                              className:
+                                "absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px",
+                            }}
+                          />
+                        )}
 
-                      return (
+                        {isChildOpen &&
+                          (header.column.getCanFilter() ? (
+                            <div>
+                              <Filter column={header.column} />
+                            </div>
+                          ) : null)}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody className="h-[20]">
+              {table.getRowModel().rows != undefined &&
+              table.getRowModel().rows?.length > 0 ? (
+                table.getRowModel().rows?.map((row) => (
+                  <Fragment key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="h-[55px]"
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const { column } = cell;
+                        const isPinned = column.getIsPinned();
+                        const isLastLeftPinned =
+                          isPinned === "left" && column.getIsLastColumn("left");
+                        const isFirstRightPinned =
+                          isPinned === "right" &&
+                          column.getIsFirstColumn("right");
+
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            className="truncate [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-background/90 [&[data-pinned]]:backdrop-blur-sm "
+                            style={{ ...getPinningStyles(column) }}
+                            data-pinned={isPinned || undefined}
+                            data-last-col={
+                              isLastLeftPinned
+                                ? "left"
+                                : isFirstRightPinned
+                                ? "right"
+                                : undefined
+                            }
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                    {row.getIsExpanded() && (
+                      <TableRow>
                         <TableCell
-                          key={cell.id}
-                          className="truncate [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-background/90 [&[data-pinned]]:backdrop-blur-sm "
-                          style={{ ...getPinningStyles(column) }}
-                          data-pinned={isPinned || undefined}
-                          data-last-col={
-                            isLastLeftPinned
-                              ? "left"
-                              : isFirstRightPinned
-                              ? "right"
-                              : undefined
+                          colSpan={
+                            row.getVisibleCells() &&
+                            row.getVisibleCells().length
                           }
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          {columns
+                            .find((col) => col.id === "expander")
+                            ?.expandedContent?.(row)}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                  {row.getIsExpanded() && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={
-                          row.getVisibleCells() && row.getVisibleCells().length
-                        }
-                      >
-                        {columns
-                          .find((col) => col.id === "expander")
-                          ?.expandedContent?.(row)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </Fragment>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
         <div className="mt-4 flex items-center justify-between px-2">
           <div className="flex-1 text-sm text-muted-foreground">
             Showing{" "}
@@ -597,35 +611,39 @@ const ShadcnTable: React.FC<ComponentProps> = ({
             entries
           </div>
           <div className="flex items-center space-x-6 lg:space-x-8 flex-nowrap">
-            <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium whitespace-nowrap">
-                Rows per page
-              </p>
-              <select
-                className="h-8 w-[70px] rounded-md border border-input bg-transparent px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&_option]:bg-background"
-                value={
-                  api
-                    ? searchParams.get("size") || "10"
-                    : table.getState().pagination.pageSize
-                }
-                onChange={(e) => {
-                  if (api) {
-                    params.set("size", e.target.value);
-                    const queryString = params.toString().replace(/%2C/g, ",");
-
-                    navigate(`?${queryString}`);
-                  } else {
-                    table.setPageSize(Number(e.target.value));
+            {!hiderow_page && (
+              <div className="flex items-center space-x-2">
+                <p className="text-sm font-medium whitespace-nowrap">
+                  Rows per page
+                </p>
+                <select
+                  className="h-8 w-[70px] rounded-md border border-input bg-transparent px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&_option]:bg-background"
+                  value={
+                    api
+                      ? searchParams.get("size") || "10"
+                      : table.getState().pagination.pageSize
                   }
-                }}
-              >
-                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize}
-                  </option>
-                ))}
-              </select>
-            </div>
+                  onChange={(e) => {
+                    if (api) {
+                      params.set("size", e.target.value);
+                      const queryString = params
+                        .toString()
+                        .replace(/%2C/g, ",");
+
+                      navigate(`?${queryString}`);
+                    } else {
+                      table.setPageSize(Number(e.target.value));
+                    }
+                  }}
+                >
+                  {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                    <option key={pageSize} value={pageSize}>
+                      {pageSize}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <Pagination>
               <PaginationContent>
                 {/* First page button */}

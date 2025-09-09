@@ -1240,17 +1240,25 @@ function ABCReportCreate() {
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Name of Client:{" "}
-                        {
-                          company?.find(
-                            (i) => `${i.id}` == `${form.watch("company_id")}`
-                          )?.name
-                        }
-                        {
-                          company?.find(
-                            (i) => `${i.id}` == `${form.watch("company_id")}`
-                          )?.address
-                        }
+                        <div>
+                          <span className="font-bold">Name of Client: </span>
+                          <span className="ml-2">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.name
+                            }
+                          </span>
+                          <span className="ml-2">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.address
+                            }
+                          </span>
+                        </div>
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">
