@@ -171,7 +171,7 @@ const OilReport = ({
               <View style={styles.logoRight}>
                 <Image src="/l&k.jpeg" style={styles.logo} />
                 <Text style={styles.logoRightText}>
-                  L&K AUTHORIZED SERVICE CENTER
+                  LK AUTHORIZED SERVICE CENTER
                 </Text>
               </View>
             </View>
@@ -182,10 +182,10 @@ const OilReport = ({
           <View style={[styles.section, { position: "relative" }]}>
             <View style={styles.row}>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Report No.: {reportData.report_number || "--"}
+                Report No.: TR {reportData.report_number || "--"}
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Date: {reportData.report_date || ""}
+                Date of Filteration: {reportData.report_date || ""}
               </Text>
             </View>
 

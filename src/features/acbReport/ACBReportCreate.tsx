@@ -267,6 +267,14 @@ function ABCReportCreate() {
           actual_tms: "",
           result: "",
         },
+        {
+          protection: "INST",
+          setting_1: "",
+          characteristics: "",
+          tms_as_per_relay_setting: "",
+          actual_tms: "",
+          result: "",
+        },
       ],
     },
   });
@@ -1211,7 +1219,7 @@ function ABCReportCreate() {
                 <div className="text-right text-xs w-[40%]">
                   <img src="/l&k.jpeg" alt="Logo" className="w-full" />
                   <p className="text-blue-600 font-bold">
-                    L&K AUTHORIZED SERVICE CENTER
+                    LK AUTHORIZED SERVICE CENTER
                   </p>
                 </div>
               </div>
@@ -1230,7 +1238,7 @@ function ABCReportCreate() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Test Report No. {form.watch("report_number") || "--"}
+                        Report No. ACB {form.watch("report_number") || "--"}
                       </td>
                       <td className="font-bold  text-left">
                         Date:-{" "}
@@ -1601,7 +1609,7 @@ function ABCReportCreate() {
                       {form.watch("for_client") || "--"}
                     </td>
                     <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">For Ok Agencies.:-</span> M/s.
+                      <span className="font-bold">For Ok Agencies.:-</span>
                       {form.watch("for_ok_agency") || "--"}
                     </td>
                   </tr>

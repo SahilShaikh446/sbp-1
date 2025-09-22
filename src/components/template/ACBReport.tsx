@@ -241,7 +241,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
               <View style={styles.logoRight}>
                 <Image src="/l&k.jpeg" style={styles.logo} />
                 <Text style={styles.logoRightText}>
-                  L&K AUTHORIZED SERVICE CENTER
+                  LK AUTHORIZED SERVICE CENTER
                 </Text>
               </View>
             </View>
@@ -260,7 +260,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   flexWrap: "nowrap",
                 }}
               >
-                Test Report No.: 12/25-26
+                Report No.: ACB {reportData.report_number}
               </Text>
               <Text
                 style={{

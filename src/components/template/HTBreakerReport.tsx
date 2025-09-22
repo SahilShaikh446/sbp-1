@@ -170,12 +170,12 @@ const inspectionData = [
     description: "PANEL NO/FEEDER NAME PLATE",
     fieldName: "panel_no_feeder_name_plate",
   },
-  { srNo: 2, description: "CB TYPE", fieldName: "cb_type" },
+  { srNo: 2, description: "CIRCUIT BREAKERTYPE", fieldName: "cb_type" },
   { srNo: 3, description: "VOLTAGE/AMPS/KA", fieldName: "voltage_amps_ka" },
-  { srNo: 4, description: "VCB SERIAL NO.", fieldName: "vcb_sr_no_year" },
+  { srNo: 4, description: "SERIALNO./MANUFACTURED YEAR", fieldName: "vcb_sr_no_year" },
   {
     srNo: 5,
-    description: "SPRING CHARGE MOTOR VOLTS",
+    description: "SPRING CHARGING MOTOR VOLTS",
     fieldName: "spring_charge_motor_volts",
   },
   {
@@ -343,7 +343,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
               <View style={styles.logoRight}>
                 <Image src="/l&k.jpeg" style={styles.logo} />
                 <Text style={styles.logoRightText}>
-                  L&K AUTHORIZED SERVICE CENTER
+                  LK AUTHORIZED SERVICE CENTER
                 </Text>
               </View>
             </View>
@@ -390,7 +390,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   </View>
                 </View>
                 <Text style={styles.headerText}>
-                  Date: {convertReportDate(reportData?.report_date)}
+                  Service Date: {convertReportDate(reportData?.report_date)}
                 </Text>
               </View>
               <Text style={styles.headerText}>

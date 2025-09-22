@@ -128,7 +128,7 @@ const inspectionData = [
   },
   {
     srNo: 2,
-    description: "CB TYPE",
+    description: "CIRCUIT BREAKERTYPE",
     fieldName: "cb_type",
     observationReport: "HPA 24 / 1225C ( SF6)",
   },
@@ -140,13 +140,13 @@ const inspectionData = [
   },
   {
     srNo: 4,
-    description: "VCB SERIAL NO.",
+    description: "SERIALNO./MANUFACTURED YEAR",
     fieldName: "vcb_sr_no_year",
     observationReport: "1VYN020411001007 / 2011",
   },
   {
     srNo: 5,
-    description: "SPRING CHARGE MOTOR VOLTS",
+    description: "SPRING CHARGING MOTOR VOLTS",
     fieldName: "spring_charge_motor_volts",
     observationReport: "220V AC/DC",
   },
@@ -1121,7 +1121,7 @@ export default function HTBreakerReportCreate() {
                   <div className="text-right text-xs w-[40%]">
                     <img src="/l&k.jpeg" alt="Logo" className="w-full" />
                     <p className="text-blue-600 font-bold">
-                      L&K AUTHORIZED SERVICE CENTER
+                      LK AUTHORIZED SERVICE CENTER
                     </p>
                   </div>
                 </div>
@@ -1160,7 +1160,7 @@ export default function HTBreakerReportCreate() {
                       )}
                     </div>
                     <>
-                      Date:-{" "}
+                      Service Date:-{" "}
                       {convertReportDate(form.watch("report_date")) ||
                         "--/--/----"}
                     </>

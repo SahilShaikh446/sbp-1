@@ -600,7 +600,7 @@ export default function EarthReportUpdate() {
                   <div className="text-right text-xs w-[40%]">
                     <img src="/l&k.jpeg" alt="Logo" className="w-full" />
                     <p className="text-blue-600 font-bold">
-                      L&K AUTHORIZED SERVICE CENTER
+                      LK AUTHORIZED SERVICE CENTER
                     </p>
                   </div>
                 </div>
@@ -613,10 +613,10 @@ export default function EarthReportUpdate() {
                   {/* Header */}
                   <div className="flex justify-between items-start text-xl">
                     <div className="font-bold">
-                      Report No.:{form.watch("report_number") || "--"}
+                      Report No.:EP {form.watch("report_number") || "--"}
                     </div>
                     <div className="font-bold">
-                      Date:
+                      Test Date:
                       {convertReportDate(form.watch("report_date")) ||
                         "--/--/----"}
                     </div>
@@ -708,7 +708,7 @@ export default function EarthReportUpdate() {
                           className="border border-black px-2  text-sm font-semibold"
                           colSpan={2}
                         >
-                          Earth Resistance 2025
+                          Earth Resistance
                         </th>
                         <th
                           className="border border-black px-2  text-sm font-semibold"

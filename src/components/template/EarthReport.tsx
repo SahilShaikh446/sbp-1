@@ -120,7 +120,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       style={tw("w-full h-[40pt] object-contain")}
                     />
                     <Text style={tw("text-xs text-blue-600 font-bold")}>
-                      L&K AUTHORIZED SERVICE CENTER
+                      LK AUTHORIZED SERVICE CENTER
                     </Text>
                   </View>
                 </View>
@@ -137,10 +137,10 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                 <>
                   <View style={tw("flex flex-row justify-between text-lg")}>
                     <Text style={tw("font-bold")}>
-                      Report No.: {reportData?.report_number || "--"}
+                      Report No.: EP {reportData?.report_number || "--"}
                     </Text>
                     <Text style={tw("font-bold")}>
-                      Date: {reportData?.report_date || "--/--/----"}
+                      Test Date: {reportData?.report_date || "--/--/----"}
                     </Text>
                   </View>
 
@@ -244,7 +244,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                           <Text
                             style={tw("text-sm font-semibold text-center py-1")}
                           >
-                            Earth Resistance 2025
+                            Earth Resistance
                           </Text>
                           <View style={tw("flex flex-row")}>
                             <View

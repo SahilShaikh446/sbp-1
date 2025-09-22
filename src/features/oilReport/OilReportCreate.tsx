@@ -594,7 +594,7 @@ export default function OilReportCreate() {
                   <div className="text-right text-xs w-[40%]">
                     <img src="/l&k.jpeg" alt="Logo" className="w-full" />
                     <p className="text-blue-600 font-bold">
-                      L&K AUTHORIZED SERVICE CENTER
+                      LK AUTHORIZED SERVICE CENTER
                     </p>
                   </div>
                 </div>
@@ -611,10 +611,10 @@ export default function OilReportCreate() {
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
                         <span className="text-md font-bold">Report No.:</span>{" "}
-                        {form.watch("report_number") || "--"}
+                        TR {form.watch("report_number") || "--"}
                       </div>
                       <div className="text-md font-bold">
-                        <span className="font-bold">Date:</span>{" "}
+                        <span className="font-bold">Date of Filteration:</span>{" "}
                         {convertReportDate(form.watch("report_date")) ||
                           "--/--/----"}
                       </div>
@@ -788,7 +788,7 @@ export default function OilReportCreate() {
                           </tr>
                           <tr className="">
                             <td className="py-0.5 font-medium">
-                              Before Filtration
+                              BDV Before Filtration
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
@@ -799,7 +799,7 @@ export default function OilReportCreate() {
                           </tr>
                           <tr className="">
                             <td className="py-0.5 font-medium">
-                              After Filtration
+                              BDV After Filtration
                             </td>
                             <td className="py-0.5 text-center">:</td>
                             <td className="py-0.5">
