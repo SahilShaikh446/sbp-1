@@ -1,8 +1,6 @@
 import { Document, Page, Text, View, Image, Font } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
-import { reportFormSchema } from "@/features/earthReport/EarthReportCreate";
 import { companyType } from "@/features/company/companySlice";
-import { z } from "zod";
 import { Report } from "@/features/earthReport/type";
 
 const tw = createTw({
@@ -231,39 +229,53 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                             Description
                           </Text>
                         </View>
+                        {reportData.showLocation == true && (
+                          <View
+                            style={tw(
+                              "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
+                            )}
+                          >
+                            <Text
+                              style={tw("text-sm font-semibold text-center")}
+                            >
+                              Locations
+                            </Text>
+                          </View>
+                        )}
                         <View
                           style={tw(
-                            "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
+                            `border-r border-black ${
+                              reportData.showOpenConnected
+                                ? "w-[151.8pt]"
+                                : "w-[151.8pt]"
+                            }`
                           )}
                         >
-                          <Text style={tw("text-sm font-semibold text-center")}>
-                            Location
-                          </Text>
-                        </View>
-                        <View style={tw("border-r border-black w-[151.8pt]")}>
                           <Text
                             style={tw("text-sm font-semibold text-center py-1")}
                           >
                             Earth Resistance
                           </Text>
-                          <View style={tw("flex flex-row")}>
-                            <View
-                              style={tw(
-                                "border-t border-r border-black py-1 flex-1"
-                              )}
-                            >
-                              <Text style={tw("text-xs text-center")}>
-                                Open Pit
-                              </Text>
+                          {reportData.showOpenConnected == true && (
+                            <View style={tw("flex flex-row")}>
+                              <View
+                                style={tw(
+                                  "border-t border-r border-black py-1 flex-1"
+                                )}
+                              >
+                                <Text style={tw("text-xs text-center")}>
+                                  Open Pit
+                                </Text>
+                              </View>
+                              <View
+                                style={tw("border-t border-black py-1 flex-1")}
+                              >
+                                <Text style={tw("text-xs text-center")}>
+                                  Connected
+                                </Text>
+                              </View>
                             </View>
-                            <View
-                              style={tw("border-t border-black py-1 flex-1")}
-                            >
-                              <Text style={tw("text-xs text-center")}>
-                                Connected
-                              </Text>
-                            </View>
-                          </View>
+                          )}
                         </View>
                         <View
                           style={tw(
@@ -358,58 +370,75 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
 
                         {/* Location column: show borders only on first/last of page-group, text only on middle */}
-                        <View
-                          style={[
-                            // keep basic layout from tailwind for spacing/alignment
-                            tw(
-                              "px-2 w-[120pt] flex justify-center items-center"
-                            ),
-                            {
-                              // always keep right border for the column edge
-                              borderRightWidth: 1,
-                              borderRightColor: "black",
+                        {reportData.showLocation && (
+                          <View
+                            style={[
+                              // keep basic layout from tailwind for spacing/alignment
+                              tw(
+                                "px-2 w-[120pt] flex justify-center items-center"
+                              ),
+                              {
+                                // always keep right border for the column edge
+                                borderRightWidth: 1,
+                                borderRightColor: "black",
 
-                              // conditional top/bottom borders for merged look
-                              borderTopWidth: item.isPageFirst ? 1 : 0,
-                              borderBottomWidth: item.isPageLast ? 0 : 0,
-                              borderTopColor: "black",
-                              borderBottomColor: "black",
-                            },
-                          ]}
-                        >
-                          {item.isPageMiddle && (
-                            <Text
-                              style={{
-                                fontSize: 10,
-                                fontWeight: "500",
-                                textAlign: "center",
-                                alignSelf: "center",
-                              }}
-                            >
-                              {item.groupLocation || "--"}
-                            </Text>
-                          )}
-                        </View>
+                                // conditional top/bottom borders for merged look
+                                borderTopWidth: item.isPageFirst ? 1 : 0,
+                                borderBottomWidth: item.isPageLast ? 0 : 0,
+                                borderTopColor: "black",
+                                borderBottomColor: "black",
+                              },
+                            ]}
+                          >
+                            {item.isPageMiddle && (
+                              <Text
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: "500",
+                                  textAlign: "center",
+                                  alignSelf: "center",
+                                }}
+                              >
+                                {item.groupLocation || "--"}
+                              </Text>
+                            )}
+                          </View>
+                        )}
 
                         {/* Open Pit */}
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 w-[76pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.openPit}
-                          </Text>
-                        </View>
-
-                        {/* Connected */}
-                        <View
-                          style={tw("border-t border-black px-2 py-1 w-[75pt]")}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.connected}
-                          </Text>
-                        </View>
+                        {reportData.showOpenConnected == true && (
+                          <View
+                            style={tw(
+                              "border-r border-t border-black px-2 py-1 w-[76pt]"
+                            )}
+                          >
+                            <Text style={tw("text-sm text-center")}>
+                              {item.openPit}
+                            </Text>
+                          </View>
+                        )}
+                        {reportData.showOpenConnected && (
+                          <View
+                            style={tw(
+                              "border-t border-black px-2 py-1 w-[75pt]"
+                            )}
+                          >
+                            <Text style={tw("text-sm text-center")}>
+                              {item.connected}
+                            </Text>
+                          </View>
+                        )}
+                        {reportData.showOpenConnected == false && (
+                          <View
+                            style={tw(
+                              "border-t border-black px-2 py-1 w-[151pt]"
+                            )}
+                          >
+                            <Text style={tw("text-sm text-center")}>
+                              {item.combined}
+                            </Text>
+                          </View>
+                        )}
 
                         {/* Remark */}
                         <View
@@ -426,22 +455,32 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                   })()}
 
                   {pageIndex === pages.length - 1 && (
-                    <View style={tw("border-t border-black px-3 py-2")}>
-                      <View style={tw("flex flex-row justify-between")}>
-                        <Text style={tw("text-sm")}>
-                          <Text style={tw("font-bold")}>For Client: </Text>
-                          {reportData?.for_client || "--"}
-                        </Text>
-                        <Text style={tw("text-sm")}>
-                          <Text style={tw("font-bold")}>
-                            For Ok Agencies.:-{" "}
+                    <>
+                      <View style={tw("border-t border-black px-3 py-2")}>
+                        <View style={tw("flex flex-row justify-between")}>
+                          <Text style={tw("text-sm")}>
+                            <Text style={tw("font-bold")}>Remark</Text>
+                            {reportData?.remark || "--"}
                           </Text>
-                          M/s. {reportData?.for_ok_agency || "--"}
-                        </Text>
+                        </View>
                       </View>
-                    </View>
+                    </>
                   )}
                 </View>
+                {pageIndex === pages.length - 1 && (
+                  <View style={tw("border-t border-black px-3 py-2")}>
+                    <View style={tw("flex flex-row justify-between")}>
+                      <Text style={tw("text-sm")}>
+                        <Text style={tw("font-bold")}>For Client: </Text>
+                        {reportData?.for_client || "--"}
+                      </Text>
+                      <Text style={tw("text-sm")}>
+                        <Text style={tw("font-bold")}>For Ok Agencies.:- </Text>
+                        M/s. {reportData?.for_ok_agency || "--"}
+                      </Text>
+                    </View>
+                  </View>
+                )}
               </View>
 
               {/* Footer and stamp only on the last page */}

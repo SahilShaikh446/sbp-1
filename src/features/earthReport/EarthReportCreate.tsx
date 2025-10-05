@@ -28,11 +28,12 @@ import {
   CalendarIcon,
   CheckIcon,
   ChevronDownIcon,
+  CircleAlertIcon,
   Loader,
   Plus,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -52,10 +53,20 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import { PDFViewer } from "@react-pdf/renderer";
-import EarthReport from "@/components/template/EarthReport";
 import { fetchEarthReportAsync } from "./earthReportSlice";
 import { addOneYear } from "../oilReport/column";
+import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const reportFormSchema = z.object({
   earth_pit_list: z.array(
@@ -66,18 +77,20 @@ export const reportFormSchema = z.object({
       earth_resistance: z.object({
         open_pit: z.string(),
         Connected: z.string(),
+        combined: z.string(),
         id: z.number(),
       }),
     })
   ),
-  report_date: z.string(),
-  weather_condition: z.string(),
-  soil: z.string(),
+  report_date: z.string().min(1, "Report date is required"),
+  showLocation: z.boolean(),
+  showOpenConnected: z.boolean(),
   for_client: z.string(),
   for_ok_agency: z.string(),
-  company_id: z.string(),
+  company_id: z.string().min(1, "Company Name is required"),
   report_number: z.string(),
   next_date_of_filtriation: z.string().optional(),
+  remark: z.string(),
 });
 
 export type ReportType = z.infer<typeof reportFormSchema>;
@@ -97,6 +110,7 @@ export default function EarthReportCreate() {
   const imgRef = useRef<HTMLImageElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -147,13 +161,19 @@ export default function EarthReportCreate() {
         {
           description: "",
           location: "",
-          earth_resistance: { open_pit: "", Connected: "", id: 1 },
+          earth_resistance: {
+            open_pit: "",
+            Connected: "",
+            id: 1,
+            combined: "",
+          },
           remark: "",
         },
       ],
+      remark: "",
       report_date: "",
-      weather_condition: "",
-      soil: "",
+      showLocation: true,
+      showOpenConnected: true,
       for_client: "",
       for_ok_agency: "",
       company_id: "",
@@ -178,6 +198,9 @@ export default function EarthReportCreate() {
   }, [company]);
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
+    console.log(data);
+    return;
+
     try {
       const res = await axios.post(BASE_URL + "API/Add/Earth/Test/Report", {
         ...data,
@@ -197,6 +220,42 @@ export default function EarthReportCreate() {
   console.log(form.watch("earth_pit_list"));
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+          <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+            <div
+              className="flex size-9 shrink-0 items-center justify-center rounded-full border"
+              aria-hidden="true"
+            >
+              <CircleAlertIcon className="opacity-80" size={16} />
+            </div>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to hide Open Connected Columns?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setIsOpen(false); // just close modal
+                form.setValue("showOpenConnected", true); // reset switch back to true
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsOpen(false);
+                form.setValue("showOpenConnected", false); // confirm → set to false
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
         <Card className="h-fit">
@@ -362,41 +421,6 @@ export default function EarthReportCreate() {
                         </PopoverContent>
                       </Popover>
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name="weather_condition"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Weather Condition</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              placeholder="Enter report number"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="soil"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Soil</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              placeholder="Enter Soil"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </CardContent>
                 </Card>
                 <Card>
@@ -408,6 +432,50 @@ export default function EarthReportCreate() {
                   </CardHeader>
                   <CardContent className="">
                     <div className="space-y-6">
+                      <div className="flex gap-2 w-full justify-between">
+                        <FormField
+                          control={form.control}
+                          name="showLocation"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>Location</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="showOpenConnected"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>Show Open Connected </FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={(val) => {
+                                    if (!val) {
+                                      // user unticked → ask confirmation
+                                      setIsOpen(true);
+                                    } else {
+                                      // user enabled directly
+                                      field.onChange(true);
+                                    }
+                                  }}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       {fields.map((field, index) => (
                         <div
                           key={field.id}
@@ -443,45 +511,66 @@ export default function EarthReportCreate() {
                                 </FormItem>
                               )}
                             />
-                            <FormField
-                              control={form.control}
-                              name={`earth_pit_list.${index}.location`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g.," {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`earth_pit_list.${index}.earth_resistance.open_pit`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Open Pit</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g.," {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name={`earth_pit_list.${index}.earth_resistance.Connected`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Connected</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g.," {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                            {form.watch("showLocation") && (
+                              <FormField
+                                control={form.control}
+                                name={`earth_pit_list.${index}.location`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Location</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g.," {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
+                            {form.watch("showOpenConnected") && (
+                              <>
+                                <FormField
+                                  control={form.control}
+                                  name={`earth_pit_list.${index}.earth_resistance.open_pit`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Open Pit</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g.," {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`earth_pit_list.${index}.earth_resistance.Connected`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Connected</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g.," {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </>
+                            )}
+                            {form.watch("showOpenConnected") == false && (
+                              <FormField
+                                control={form.control}
+                                name={`earth_pit_list.${index}.earth_resistance.combined`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Combined</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g.," {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
                             <FormField
                               control={form.control}
                               name={`earth_pit_list.${index}.remark`}
@@ -508,6 +597,7 @@ export default function EarthReportCreate() {
                             earth_resistance: {
                               open_pit: "",
                               Connected: "",
+                              combined: "",
                               id: fields.length + 1,
                             },
                             remark: "",
@@ -521,7 +611,27 @@ export default function EarthReportCreate() {
                     </div>
                   </CardContent>
                 </Card>
-
+                <Card>
+                  <CardContent>
+                    <FormField
+                      control={form.control}
+                      name="remark"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>Remark</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              placeholder="Enter Remark"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <div className="flex items-center gap-2">
@@ -549,7 +659,6 @@ export default function EarthReportCreate() {
         {/* Preview Section */}
         <Card className="">
           <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto tinos-regular flex flex-col">
-            {/* Header */}
             <div className="border border-grayd q-300">
               <div className="p-2">
                 <div className="flex items-center justify-between">
@@ -569,7 +678,6 @@ export default function EarthReportCreate() {
 
               <div className="px-9 py-2" ref={containerRef}>
                 <div className="">
-                  {/* Header */}
                   <div className="flex justify-between items-start text-xl">
                     <div className="font-bold">
                       Report No.:EP {form.watch("report_number") || "--"}
@@ -581,12 +689,10 @@ export default function EarthReportCreate() {
                     </div>
                   </div>
 
-                  {/* Title */}
                   <div className="text-center font-bold underline text-2xl">
                     EARTH TEST REPORT
                   </div>
 
-                  {/* Client Information */}
                   <div className="flex items-start">
                     <span className="font-bold mr-2">Client Name:</span>
                     <div>
@@ -607,25 +713,9 @@ export default function EarthReportCreate() {
                     </div>
                   </div>
 
-                  {/* Test Details */}
                   <div className="">
                     We certify that we have carried out the Earth Resistance
                     Test at site and the results are as under:
-                  </div>
-
-                  <div className="">
-                    <div className="flex">
-                      <span className="w-40 flex-shrink-0">
-                        Weather Condition
-                      </span>
-                      <span className="mx-4">:</span>
-                      <span>{form.watch("weather_condition") || "--"}</span>
-                    </div>
-                    <div className="flex">
-                      <span className="w-40 flex-shrink-0">Soil</span>
-                      <span className="mx-4">:</span>
-                      <span>{form.watch("soil") || "--"}</span>
-                    </div>
                   </div>
 
                   <div className="">
@@ -657,45 +747,49 @@ export default function EarthReportCreate() {
                         >
                           Description
                         </th>
+                        {form.watch("showLocation") && (
+                          <th
+                            rowSpan={2}
+                            className="border border-black px-2  text-sm font-semibold"
+                          >
+                            Location
+                          </th>
+                        )}
                         <th
-                          rowSpan={2}
                           className="border border-black px-2  text-sm font-semibold"
-                        >
-                          Location
-                        </th>
-                        <th
-                          className="border border-black px-2  text-sm font-semibold"
-                          colSpan={2}
+                          colSpan={
+                            form.watch("showOpenConnected") == true ? 2 : 1
+                          }
                         >
                           Earth Resistance
                         </th>
                         <th
-                          className="border border-black px-2  text-sm font-semibold"
+                          className={`border border-black px-2  text-sm font-semibold`}
                           rowSpan={2}
                         >
                           Remark
                         </th>
                       </tr>
-                      <tr className="">
-                        <th className="border border-black px-2  text-xs">
-                          Open Pit
-                        </th>
-                        <th className="border border-black px-2  text-xs">
-                          Connected
-                        </th>
-                      </tr>
+                      {form.watch("showOpenConnected") && (
+                        <tr className="">
+                          <th className="border border-black px-2  text-xs">
+                            Open Pit
+                          </th>
+                          <th className="border border-black px-2  text-xs">
+                            Connected
+                          </th>
+                        </tr>
+                      )}
                     </thead>
                     <tbody>
                       {earthPitList.map((item, index) => {
                         const location = item.location || "No Location";
 
-                        // Only show the location cell for the first occurrence of this location in consecutive rows
                         let rowSpan = 1;
                         if (
                           index === 0 ||
                           location !== earthPitList[index - 1].location
                         ) {
-                          // count how many consecutive rows have the same location
                           for (
                             let i = index + 1;
                             i < earthPitList.length;
@@ -706,7 +800,7 @@ export default function EarthReportCreate() {
                             else break;
                           }
                         } else {
-                          rowSpan = 0; // skip rendering the cell
+                          rowSpan = 0;
                         }
 
                         return (
@@ -717,8 +811,7 @@ export default function EarthReportCreate() {
                             <td className="border border-black px-2 text-sm">
                               {item.description || "--"}
                             </td>
-
-                            {rowSpan > 0 && (
+                            {form.watch("showLocation") && rowSpan > 0 && (
                               <td
                                 className="border border-black px-2 text-sm font-medium"
                                 rowSpan={rowSpan}
@@ -726,21 +819,45 @@ export default function EarthReportCreate() {
                                 {location === "No Location" ? "" : location}
                               </td>
                             )}
+                            {form.watch("showOpenConnected") && (
+                              <td className="border border-black px-2 text-center text-sm">
+                                {item.earth_resistance?.open_pit || "--"}
+                              </td>
+                            )}
+                            {form.watch("showOpenConnected") && (
+                              <td className="border border-black px-2 text-center text-sm">
+                                {item.earth_resistance?.Connected || "--"}
+                              </td>
+                            )}
+                            {form.watch("showOpenConnected") == false && (
+                              <td className="border border-black px-2 text-center text-sm">
+                                {item.earth_resistance?.combined || "--"}
+                              </td>
+                            )}
 
-                            <td className="border border-black px-2 text-center text-sm">
-                              {item.earth_resistance?.open_pit || "--"}
-                            </td>
-                            <td className="border border-black px-2 text-center text-sm">
-                              {item.earth_resistance?.Connected || "--"}
-                            </td>
-                            <td className="border border-black px-2 text-center text-sm">
+                            <td
+                              className={`border border-black px-2 text-center text-sm ${
+                                form.watch("showOpenConnected") === false &&
+                                "border-b-black"
+                              }`}
+                            >
                               {item.remark || "--"}
                             </td>
                           </tr>
                         );
                       })}
-                      <tr>
+                      <tr className="border-b-black">
                         <td colSpan={6}>
+                          <div className="flex justify-between px-3">
+                            <div className=" ">
+                              <span className="font-bold">Remark</span>{" "}
+                              {form.watch("remark") || "--"}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="border border-white border-t-black">
+                        <td colSpan={6} className="border-b-0">
                           <div className="flex justify-between px-3">
                             <div className=" ">
                               <span className="font-bold">For Client:</span>{" "}
@@ -793,6 +910,16 @@ export default function EarthReportCreate() {
               </div>
             </div>
           </div>
+          ;
+          {/* <PDFViewer width="100%" height="600px" className="w-full">
+            <EarthReport
+              reportData={{
+                ...form.watch(),
+                image_data: { x: position.x },
+              }}
+              companyData={company || []}
+            />
+          </PDFViewer> */}
         </Card>
       </div>
     </div>

@@ -45,10 +45,6 @@ export const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAdminAsync.pending, (state) => {
-        state.loading = true;
-        state.error = false;
-      })
       .addCase(fetchAdminAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload;

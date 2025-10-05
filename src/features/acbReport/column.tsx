@@ -14,28 +14,13 @@ import { fetchCompanyAsync, selectCompany } from "../company/companySlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useNavigate } from "react-router-dom";
 import { addYears, format, parseISO } from "date-fns";
-import { ApiResponse, Report } from "./type";
+import { Report } from "./type";
 import ACBReport from "@/components/template/ACBReport";
-
-function addOneYear(dateString: string): string {
-  try {
-    const parsed = parseISO(dateString); // safely parses YYYY-MM-DD
-    const newDate = addYears(parsed, 1);
-    return format(newDate, "yyyy-MM-dd");
-  } catch (e) {
-    console.error("Error parsing date:", dateString);
-    return "date error";
-  }
-}
 
 export const COLUMNS: ColumnDef<Report>[] = [
   {
-    header: "Company Name",
-    accessorKey: "company_name",
-  },
-  {
-    header: "Report Number",
-    accessorKey: "report_number",
+    header: "Serial No",
+    accessorKey: "id",
   },
   {
     header: "Report Date",
@@ -48,6 +33,10 @@ export const COLUMNS: ColumnDef<Report>[] = [
   {
     header: "Company Name",
     accessorKey: "company_name",
+  },
+  {
+    header: "Company Address",
+    accessorKey: "company_address",
   },
   {
     header: "Actions",

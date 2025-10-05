@@ -39,7 +39,10 @@ export interface Report {
   soil: string;
   for_client: string;
   for_ok_agency: string;
+  showLocation: boolean;
+  showOpenConnected: boolean;
   company_id: number;
+  remark: number;
   image_data: {
     x: number;
   };
@@ -53,5 +56,6 @@ interface EarthPit {
   earth_resistance: {
     open_pit: string;
     Connected: string;
+    combined: string;
   };
 }

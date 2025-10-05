@@ -161,6 +161,12 @@ const styles = StyleSheet.create({
     color: "#1e3a8a",
     fontWeight: "bold",
   },
+  special1SubRow: {
+    textSize: 8,
+    marginTop: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 });
 
 // Inspection data structure to map form fields to table rows
@@ -169,81 +175,174 @@ const inspectionData = [
     srNo: 1,
     description: "PANEL NO/FEEDER NAME PLATE",
     fieldName: "panel_no_feeder_name_plate",
+    observationReport: "01 / 100s FTL II",
   },
-  { srNo: 2, description: "CIRCUIT BREAKERTYPE", fieldName: "cb_type" },
-  { srNo: 3, description: "VOLTAGE/AMPS/KA", fieldName: "voltage_amps_ka" },
-  { srNo: 4, description: "SERIALNO./MANUFACTURED YEAR", fieldName: "vcb_sr_no_year" },
+  {
+    srNo: 2,
+    description: "CIRCUIT BREAKERTYPE",
+    fieldName: "cb_type",
+    observationReport: "HPA 24 / 1225C ( SF6)",
+  },
+  {
+    srNo: 3,
+    description: "VOLTAGE/AMPS/KA",
+    fieldName: "voltage_amps_ka",
+    observationReport: "24KV / 1250A / 26.3KA",
+  },
+  {
+    srNo: 4,
+    description: "SERIALNO./MANUFACTURED YEAR",
+    fieldName: "vcb_sr_no_year",
+    observationReport: "1VYN020411001007 / 2011",
+  },
   {
     srNo: 5,
     description: "SPRING CHARGING MOTOR VOLTS",
     fieldName: "spring_charge_motor_volts",
+    hide: "is_spring_charge_motor_volts",
+    fieldName1: "spring_motor_resistance",
+    observationReport: "special1",
+    subRows: [
+      {
+        description: "MOTOR RESISTANCE",
+      },
+    ],
   },
   {
     srNo: 6,
-    description: "CLOSING COIL VOLTAGE",
+    description: "CLOSING COIL VOLTAGE/RESISTANCE",
     fieldName: "closing_coil_voltage",
+    hide: "is_closing_coil_voltage",
+    fieldName1: "closing_coil_voltage_resistance",
+    observationReport: "special1",
+    subRows: [
+      {
+        description: "RESISTANCE",
+      },
+    ],
   },
-  { srNo: 7, description: "TRIP COIL VOLTAGE", fieldName: "trip_coil_voltage" },
-  { srNo: 8, description: "COUNTER READING", fieldName: "counter_reading" },
+  {
+    srNo: 7,
+    description: "TRIP COIL VOLTAGE/ RESISTANCE",
+    fieldName: "trip_coil_voltage",
+    hide: "is_trip_coil_voltage",
+    fieldName1: "trip_coil_voltage_resistance",
+    observationReport: "special1",
+    subRows: [{ description: "RESISTANCE" }],
+  },
+  {
+    srNo: 8,
+    description: "COUNTER READING/ ANTIPUMPING(K1)",
+    fieldName: "counter_reading",
+    observationReport: "0382",
+  },
   {
     srNo: 9,
-    description: "VISUAL INSPECTION FOR DAMAGED",
+    description: "VISUALINSPECTION FOR DAMAGED",
     fieldName: "visual_inspection_for_damaged",
+    observationReport: "OK",
   },
-  { srNo: 10, description: "REPLACEMENT", fieldName: "replacement" },
-  { srNo: 11, description: "THOROUGH CLEANING", fieldName: "through_cleaning" },
+  {
+    srNo: 11,
+    description: "THOROUGH CLEANING",
+    fieldName: "through_cleaning",
+    observationReport: "YES DONE CRC SPRAY / SCOTCH BRITE",
+  },
   {
     srNo: 12,
-    description: "LUBRICATION OF MOVING PARTS",
+    description: "LUBRICATION OF MOVING PARTS/COIL",
     fieldName: "lubricant_oil_moving_parts",
+    observationReport: "Done to all moving parts",
   },
-  { srNo: 13, description: "TORQUE", fieldName: "torque" },
   {
     srNo: 14,
     description: "ON/OFF OPERATION ELECT/MANUAL",
     fieldName: "on_off_operation_elect_manual",
+    observationReport: "Manual and Electrical Operation checked OK",
   },
-  { srNo: 15, description: "SF6 CHECKING", fieldName: "sp6_checking" },
   {
-    srNo: 16,
+    srNo: 15,
     description: "RACK IN/OUT CHECKING",
     fieldName: "rack_in_out_checking",
+    observationReport: "OK",
+  },
+  {
+    srNo: 16,
+    description: "DRIVE MECHANISM CHECKING",
+    fieldName: "drive_mechanism_checkin",
+    observationReport: "OK",
   },
   {
     srNo: 17,
-    description: "SHUTTER MOVEMENT CHECKING",
-    fieldName: "shutter_movement_checking",
+    description: "CHECKING C.B./DOOR INTERLOCK",
+    fieldName: "checking_cb_door_interlock",
+    observationReport: "OK",
   },
   {
     srNo: 18,
-    description: "DRIVE MECHANISM CHECKING",
-    fieldName: "drive_mechanism_checkin",
+    description: "INSULATION RESISTANCE CHECK(Ω)",
+    fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
+    observationReport: "special",
+    subRows: [
+      {
+        description: "BETWEEN UPPER AND LOWER CONTACT",
+        r: "1 TΩ",
+        y: "1 TΩ",
+        b: "1 TΩ",
+      },
+      { description: "PHASE TO EARTH", r: "1 TΩ", y: "1 TΩ", b: "1 TΩ" },
+      { description: "PHASE TO PHASE", r: ">1 TΩ", y: ">1 TΩ", b: ">1 TΩ" },
+    ],
   },
   {
     srNo: 19,
-    description: "CHECKING CB/DOOR INTERLOCK",
-    fieldName: "checking_cb_door_interlock",
-  },
-  {
-    srNo: 20,
-    description: "Insulation Resistance Check Using 5KV Insulation Tester",
-    fieldName: "insulation_resistance_check_using_5kv_insulation_tester",
-    observationReport: "special",
-  },
-  {
-    srNo: 21,
     description: "CHECKING CB TIMING",
     fieldName: "checking_cb_timing",
     observationReport: "special",
+    subRows: [
+      { description: "CLOSE (ms)", r: "60", y: "59", b: "62" },
+      { description: "OPEN (ms)", r: "46", y: "44", b: "44" },
+    ],
   },
   {
-    srNo: 22,
+    srNo: 20,
     description: "CONTACT RESISTANCE ( MICRO OHM )",
     fieldName: "contact_resistance",
     observationReport: "special",
+    rValue: "36.4 μΩ",
+    yValue: "33.9 μΩ",
+    bValue: "37.5 μΩ",
   },
-  { srNo: 23, description: "REPAIR", fieldName: "repair" },
-  { srNo: 24, description: "REMARK", fieldName: "remark" },
+  {
+    srNo: 21,
+    description: "REPLACEMENT",
+    fieldName: "replacement",
+    observationReport: "NIL",
+  },
+  {
+    srNo: 22,
+    description: "REPAIR",
+    fieldName: "repair",
+    observationReport: "NIL",
+  },
+  {
+    srNo: 23,
+    description: "REMARK",
+    fieldName: "remark",
+    observationReport: "Breaker found working satisfactory.",
+  },
+  {
+    srNo: 24,
+    description: "Panel/VCB Spares Required",
+    fieldName: "Panel/VCB_Spares_Required",
+    observationReport: "Panel/VCB Spares Required.",
+  },
+  {
+    srNo: 25,
+    description: "Vaccum Bottle Test",
+    fieldName: "Vaccum_Bottle_Test",
+    observationReport: "Vaccum Bottle Test.",
+  },
 ];
 
 interface HTBreakerReportProps {
@@ -325,11 +424,6 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
       bValue,
     };
   });
-
-  // Get company details
-  const company = companyData.find(
-    (c) => `${c.id}` === `${reportData.company_id}`
-  );
 
   return (
     <Document>
@@ -518,6 +612,20 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                               "CONTACT RESISTANCE ( MICRO OHM )"
                                 ? item.bValue || "--"
                                 : "B"}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : item.srNo == 5 || 6 || 7 ? (
+                        <View style={{ padding: 2 }}>
+                          <Text style={{ marginBottom: 2 }}>
+                            {item.observationReport || "--"}
+                          </Text>
+                          <View style={{ fontSize: 8, marginTop: 2 }}>
+                            <Text style={styles.special1SubRow}>
+                              <Text>MOTOR RESISTANCE</Text>
+                              <Text>
+                                {reportData[item?.fieldName1] || "--"}
+                              </Text>
                             </Text>
                           </View>
                         </View>

@@ -83,7 +83,9 @@ export const COLUMNS: ColumnDef<Report>[] = [
               variant="outline"
               size="sm"
               className="flex items-center gap-1 bg-transparent w-full sm:w-auto"
-              onClick={() => navigate(`/earth-report-update/${row.original.id}`)}
+              onClick={() =>
+                navigate(`/earth-report-update/${row.original.id}`)
+              }
             >
               <Edit className="h-4 w-4" />
               Edit
