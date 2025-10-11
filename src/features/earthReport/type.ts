@@ -39,8 +39,8 @@ export interface Report {
   soil: string;
   for_client: string;
   for_ok_agency: string;
-  showLocation: boolean;
-  showOpenConnected: boolean;
+  show_location: boolean;
+  show_open_connected: boolean;
   company_id: number;
   remark: number;
   image_data: {

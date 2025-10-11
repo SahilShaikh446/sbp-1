@@ -67,7 +67,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 export const reportFormSchema = z.object({
@@ -79,14 +78,14 @@ export const reportFormSchema = z.object({
       earth_resistance: z.object({
         open_pit: z.string(),
         Connected: z.string(),
-        id: z.number().optional(),
-        combined: z.string().optional(),
+        combined: z.string(),
+        id: z.number(),
       }),
     })
   ),
   report_date: z.string().min(1, "Report date is required"),
-  showLocation: z.boolean(),
-  showOpenConnected: z.boolean(),
+  show_location: z.boolean(),
+  show_open_connected: z.boolean(),
   for_client: z.string(),
   for_ok_agency: z.string(),
   company_id: z.string().min(1, "Company Name is required"),
@@ -161,30 +160,6 @@ export default function EarthReportUpdate() {
 
   const form = useForm({
     resolver: zodResolver(reportFormSchema),
-    defaultValues: {
-      earth_pit_list: [
-        {
-          description: "",
-          location: "",
-          remark: "",
-          earth_resistance: {
-            open_pit: "",
-            combined: "",
-            Connected: "",
-            id: 1,
-          },
-        },
-      ],
-      report_date: "",
-      showLocation: true,
-      showOpenConnected: true,
-      remark: "",
-      for_client: "",
-      for_ok_agency: "",
-      company_id: "",
-      report_number: "",
-      next_date_of_filtriation: "",
-    },
   });
 
   const fetchReport = async (id: string) => {
@@ -198,11 +173,17 @@ export default function EarthReportUpdate() {
         form.setValue("for_client", res.data.for_client);
         form.setValue("for_ok_agency", res.data.for_ok_agency);
         form.setValue("report_number", res.data.report_number);
-        form.setValue("report_number", res.data.report_number);
         form.setValue("company_id", `${res.data.company_id}`);
         form.setValue("remark", res.data.remark || "");
-        form.setValue("showLocation", res.data.showLocation);
-        form.setValue("showOpenConnected", res.data.showOpenConnected);
+        form.setValue(
+          "show_location",
+          String(res.data.show_location).toLowerCase() === "true"
+        );
+        form.setValue(
+          "show_open_connected",
+          String(res.data.show_open_connected).toLowerCase() === "true"
+        );
+        form.setValue("remark", res.data.remark);
         replace(res.data.earth_pit_list);
         setPosition({ x: res.data.image_data.x, y: 0 });
       }
@@ -217,7 +198,7 @@ export default function EarthReportUpdate() {
     if (id) {
       fetchReport(id);
     }
-  }, [id]);
+  }, []);
 
   const { fields, remove, append, replace } = useFieldArray({
     control: form.control,
@@ -233,6 +214,8 @@ export default function EarthReportUpdate() {
   }, [company]);
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
+    console.log(data);
+
     try {
       const res = await axios.post(BASE_URL + "API/Update/Earth/Test/Report", {
         ...data,
@@ -241,10 +224,12 @@ export default function EarthReportUpdate() {
         next_date_of_filtriation: addOneYear(data.report_date),
       });
       if (res.status === 200) {
+        console.log(data);
+
         toast.success("Report submitted successfully!");
         navigate("/earth-pit");
         form.reset();
-        dispatch(fetchEarthReportAsync("page=0"));
+        dispatch(fetchEarthReportAsync("?page=0"));
       }
     } catch (error) {
       toast.error("Failed to submit report. Please try again.");
@@ -277,7 +262,7 @@ export default function EarthReportUpdate() {
             <AlertDialogCancel
               onClick={() => {
                 setIsOpen(false); // just close modal
-                form.setValue("showOpenConnected", true); // reset switch back to true
+                form.setValue("show_open_connected", true); // reset switch back to true
               }}
             >
               Cancel
@@ -285,7 +270,7 @@ export default function EarthReportUpdate() {
             <AlertDialogAction
               onClick={() => {
                 setIsOpen(false);
-                form.setValue("showOpenConnected", false); // confirm → set to false
+                form.setValue("show_open_connected", false); // confirm → set to false
               }}
             >
               Confirm
@@ -472,7 +457,7 @@ export default function EarthReportUpdate() {
                       <div className="flex gap-2 w-full justify-between">
                         <FormField
                           control={form.control}
-                          name="showLocation"
+                          name="show_location"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
@@ -489,7 +474,7 @@ export default function EarthReportUpdate() {
                         />
                         <FormField
                           control={form.control}
-                          name="showOpenConnected"
+                          name="show_open_connected"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
@@ -548,7 +533,7 @@ export default function EarthReportUpdate() {
                                 </FormItem>
                               )}
                             />
-                            {form.watch("showLocation") && (
+                            {form.watch("show_location") && (
                               <FormField
                                 control={form.control}
                                 name={`earth_pit_list.${index}.location`}
@@ -563,7 +548,7 @@ export default function EarthReportUpdate() {
                                 )}
                               />
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <>
                                 <FormField
                                   control={form.control}
@@ -593,7 +578,7 @@ export default function EarthReportUpdate() {
                                 />
                               </>
                             )}
-                            {form.watch("showOpenConnected") == false && (
+                            {form.watch("show_open_connected") == false && (
                               <FormField
                                 control={form.control}
                                 name={`earth_pit_list.${index}.earth_resistance.combined`}
@@ -682,14 +667,14 @@ export default function EarthReportUpdate() {
               </form>
             </Form>
             {/* <PDFViewer width="100%" height="600px" className="w-full">
-              <EarthReport
-                reportData={{
-                  ...form.watch(),
-                  image_data: { x: position.x },
-                }}
-                companyData={company || []}
-              />
-            </PDFViewer> */}
+                  <EarthReport
+                    reportData={{
+                      ...form.watch(),
+                      image_data: { x: position.x },
+                    }}
+                    companyData={company || []}
+                  />
+                </PDFViewer> */}
           </CardContent>
         </Card>
 
@@ -784,7 +769,7 @@ export default function EarthReportUpdate() {
                         >
                           Description
                         </th>
-                        {form.watch("showLocation") && (
+                        {form.watch("show_location") && (
                           <th
                             rowSpan={2}
                             className="border border-black px-2  text-sm font-semibold"
@@ -795,7 +780,7 @@ export default function EarthReportUpdate() {
                         <th
                           className="border border-black px-2  text-sm font-semibold"
                           colSpan={
-                            form.watch("showOpenConnected") == true ? 2 : 1
+                            form.watch("show_open_connected") == true ? 2 : 1
                           }
                         >
                           Earth Resistance
@@ -807,7 +792,7 @@ export default function EarthReportUpdate() {
                           Remark
                         </th>
                       </tr>
-                      {form.watch("showOpenConnected") && (
+                      {form.watch("show_open_connected") && (
                         <tr className="">
                           <th className="border border-black px-2  text-xs">
                             Open Pit
@@ -848,7 +833,7 @@ export default function EarthReportUpdate() {
                             <td className="border border-black px-2 text-sm">
                               {item.description || "--"}
                             </td>
-                            {form.watch("showLocation") && rowSpan > 0 && (
+                            {form.watch("show_location") && rowSpan > 0 && (
                               <td
                                 className="border border-black px-2 text-sm font-medium"
                                 rowSpan={rowSpan}
@@ -856,17 +841,17 @@ export default function EarthReportUpdate() {
                                 {location === "No Location" ? "" : location}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.open_pit || "--"}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.Connected || "--"}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") == false && (
+                            {form.watch("show_open_connected") == false && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.combined || "--"}
                               </td>
@@ -874,7 +859,7 @@ export default function EarthReportUpdate() {
 
                             <td
                               className={`border border-black px-2 text-center text-sm ${
-                                form.watch("showOpenConnected") === false &&
+                                form.watch("show_open_connected") === false &&
                                 "border-b-black"
                               }`}
                             >
@@ -949,14 +934,14 @@ export default function EarthReportUpdate() {
           </div>
           ;
           {/* <PDFViewer width="100%" height="600px" className="w-full">
-            <EarthReport
-              reportData={{
-                ...form.watch(),
-                image_data: { x: position.x },
-              }}
-              companyData={company || []}
-            />
-          </PDFViewer> */}
+                <EarthReport
+                  reportData={{
+                    ...form.watch(),
+                    image_data: { x: position.x },
+                  }}
+                  companyData={company || []}
+                />
+              </PDFViewer> */}
         </Card>
       </div>
     </div>

@@ -83,8 +83,8 @@ export const reportFormSchema = z.object({
     })
   ),
   report_date: z.string().min(1, "Report date is required"),
-  showLocation: z.boolean(),
-  showOpenConnected: z.boolean(),
+  show_location: z.boolean(),
+  show_open_connected: z.boolean(),
   for_client: z.string(),
   for_ok_agency: z.string(),
   company_id: z.string().min(1, "Company Name is required"),
@@ -172,8 +172,8 @@ export default function EarthReportCreate() {
       ],
       remark: "",
       report_date: "",
-      showLocation: true,
-      showOpenConnected: true,
+      show_location: true,
+      show_open_connected: true,
       for_client: "",
       for_ok_agency: "",
       company_id: "",
@@ -198,9 +198,6 @@ export default function EarthReportCreate() {
   }, [company]);
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
-    console.log(data);
-    return;
-
     try {
       const res = await axios.post(BASE_URL + "API/Add/Earth/Test/Report", {
         ...data,
@@ -217,7 +214,6 @@ export default function EarthReportCreate() {
       console.error("Error submitting report:", error);
     }
   }
-  console.log(form.watch("earth_pit_list"));
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -240,7 +236,7 @@ export default function EarthReportCreate() {
             <AlertDialogCancel
               onClick={() => {
                 setIsOpen(false); // just close modal
-                form.setValue("showOpenConnected", true); // reset switch back to true
+                form.setValue("show_open_connected", true); // reset switch back to true
               }}
             >
               Cancel
@@ -248,7 +244,7 @@ export default function EarthReportCreate() {
             <AlertDialogAction
               onClick={() => {
                 setIsOpen(false);
-                form.setValue("showOpenConnected", false); // confirm → set to false
+                form.setValue("show_open_connected", false); // confirm → set to false
               }}
             >
               Confirm
@@ -435,7 +431,7 @@ export default function EarthReportCreate() {
                       <div className="flex gap-2 w-full justify-between">
                         <FormField
                           control={form.control}
-                          name="showLocation"
+                          name="show_location"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
@@ -452,7 +448,7 @@ export default function EarthReportCreate() {
                         />
                         <FormField
                           control={form.control}
-                          name="showOpenConnected"
+                          name="show_open_connected"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
@@ -511,7 +507,7 @@ export default function EarthReportCreate() {
                                 </FormItem>
                               )}
                             />
-                            {form.watch("showLocation") && (
+                            {form.watch("show_location") && (
                               <FormField
                                 control={form.control}
                                 name={`earth_pit_list.${index}.location`}
@@ -526,7 +522,7 @@ export default function EarthReportCreate() {
                                 )}
                               />
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <>
                                 <FormField
                                   control={form.control}
@@ -556,7 +552,7 @@ export default function EarthReportCreate() {
                                 />
                               </>
                             )}
-                            {form.watch("showOpenConnected") == false && (
+                            {form.watch("show_open_connected") == false && (
                               <FormField
                                 control={form.control}
                                 name={`earth_pit_list.${index}.earth_resistance.combined`}
@@ -747,7 +743,7 @@ export default function EarthReportCreate() {
                         >
                           Description
                         </th>
-                        {form.watch("showLocation") && (
+                        {form.watch("show_location") && (
                           <th
                             rowSpan={2}
                             className="border border-black px-2  text-sm font-semibold"
@@ -758,7 +754,7 @@ export default function EarthReportCreate() {
                         <th
                           className="border border-black px-2  text-sm font-semibold"
                           colSpan={
-                            form.watch("showOpenConnected") == true ? 2 : 1
+                            form.watch("show_open_connected") == true ? 2 : 1
                           }
                         >
                           Earth Resistance
@@ -770,7 +766,7 @@ export default function EarthReportCreate() {
                           Remark
                         </th>
                       </tr>
-                      {form.watch("showOpenConnected") && (
+                      {form.watch("show_open_connected") && (
                         <tr className="">
                           <th className="border border-black px-2  text-xs">
                             Open Pit
@@ -811,7 +807,7 @@ export default function EarthReportCreate() {
                             <td className="border border-black px-2 text-sm">
                               {item.description || "--"}
                             </td>
-                            {form.watch("showLocation") && rowSpan > 0 && (
+                            {form.watch("show_location") && rowSpan > 0 && (
                               <td
                                 className="border border-black px-2 text-sm font-medium"
                                 rowSpan={rowSpan}
@@ -819,17 +815,17 @@ export default function EarthReportCreate() {
                                 {location === "No Location" ? "" : location}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.open_pit || "--"}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") && (
+                            {form.watch("show_open_connected") && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.Connected || "--"}
                               </td>
                             )}
-                            {form.watch("showOpenConnected") == false && (
+                            {form.watch("show_open_connected") == false && (
                               <td className="border border-black px-2 text-center text-sm">
                                 {item.earth_resistance?.combined || "--"}
                               </td>
@@ -837,7 +833,7 @@ export default function EarthReportCreate() {
 
                             <td
                               className={`border border-black px-2 text-center text-sm ${
-                                form.watch("showOpenConnected") === false &&
+                                form.watch("show_open_connected") === false &&
                                 "border-b-black"
                               }`}
                             >

@@ -57,6 +57,7 @@ function groupByLocation(data: Array<any>) {
         srNo: groupedData.length + 1,
         openPit: item.earth_resistance?.open_pit || "",
         connected: item.earth_resistance?.Connected || "",
+        combined: item.earth_resistance?.combined || "",
         groupLocation: item.location || "",
         isMiddleInGroup: idx === Math.floor(groupSize / 2), // ✅ only middle row shows location
       });
@@ -94,6 +95,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
     pages.push(pageData);
     currentPage++;
   }
+  console.log(reportData);
 
   return (
     <Document style={{ fontFamily: "Tinos" }}>
@@ -169,21 +171,6 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                     Test at site and the results are as under:
                   </Text>
 
-                  <View style={tw("text-base")}>
-                    <View style={tw("flex flex-row mb-1")}>
-                      <Text style={tw("w-[100pt] flex-shrink-0")}>
-                        Weather Condition
-                      </Text>
-                      <Text style={tw("mx-4")}>:</Text>
-                      <Text>{reportData?.weather_condition || "--"}</Text>
-                    </View>
-                    <View style={tw("flex flex-row")}>
-                      <Text style={tw("w-[100pt] flex-shrink-0")}>Soil</Text>
-                      <Text style={tw("mx-4")}>:</Text>
-                      <Text>{reportData?.soil || "--"}</Text>
-                    </View>
-                  </View>
-
                   <Text style={tw("text-base mb-1")}>
                     The test was carried out on 3 pin method spacing the probes
                     at approximately 15 to 30 meters from test electrodes.
@@ -229,7 +216,8 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                             Description
                           </Text>
                         </View>
-                        {reportData.showLocation == true && (
+                        {String(reportData.show_location).toLowerCase() ===
+                          "true" && (
                           <View
                             style={tw(
                               "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
@@ -245,7 +233,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         <View
                           style={tw(
                             `border-r border-black ${
-                              reportData.showOpenConnected
+                              String(
+                                reportData.show_open_connected
+                              ).toLowerCase() === "true"
                                 ? "w-[151.8pt]"
                                 : "w-[151.8pt]"
                             }`
@@ -256,7 +246,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                           >
                             Earth Resistance
                           </Text>
-                          {reportData.showOpenConnected == true && (
+                          {String(
+                            reportData.show_open_connected
+                          ).toLowerCase() === "true" && (
                             <View style={tw("flex flex-row")}>
                               <View
                                 style={tw(
@@ -370,7 +362,8 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
 
                         {/* Location column: show borders only on first/last of page-group, text only on middle */}
-                        {reportData.showLocation && (
+                        {String(reportData.show_location).toLowerCase() ===
+                          "true" && (
                           <View
                             style={[
                               // keep basic layout from tailwind for spacing/alignment
@@ -406,7 +399,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         )}
 
                         {/* Open Pit */}
-                        {reportData.showOpenConnected == true && (
+                        {String(
+                          reportData.show_open_connected
+                        ).toLowerCase() === "true" && (
                           <View
                             style={tw(
                               "border-r border-t border-black px-2 py-1 w-[76pt]"
@@ -417,7 +412,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                             </Text>
                           </View>
                         )}
-                        {reportData.showOpenConnected && (
+                        {String(
+                          reportData.show_open_connected
+                        ).toLowerCase() === "true" && (
                           <View
                             style={tw(
                               "border-t border-black px-2 py-1 w-[75pt]"
@@ -428,7 +425,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                             </Text>
                           </View>
                         )}
-                        {reportData.showOpenConnected == false && (
+                        {String(
+                          reportData.show_open_connected
+                        ).toLowerCase() === "false" && (
                           <View
                             style={tw(
                               "border-t border-black px-2 py-1 w-[151pt]"
