@@ -60,8 +60,8 @@ import { PDFViewer } from "@react-pdf/renderer";
 
 // Zod schema (unchanged)
 export const reportFormSchema = z.object({
-  report_date: z.string(),
-  report_no: z.string(),
+  report_date: z.string().min(1, "Report date is required"),
+  report_number: z.string().min(1, "Report number is required"),
   next_date_of_filtriation: z.string(),
   location: z.string(),
   for_client: z.string(),
@@ -90,7 +90,7 @@ export const reportFormSchema = z.object({
   replacement: z.string(),
   repair: z.string(),
   remark: z.string(),
-  company_id: z.string(),
+  company_id: z.string().min(1, "Company is required"),
   panel_vc_spares: z.string(),
   vaccum_bottle_test: z.string(),
   insulation_resistance_check_using_5kv_insulation_tester: z.object({
@@ -342,7 +342,7 @@ export default function HTBreakerReportCreate() {
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       report_date: "",
-      report_no: "",
+      report_number: "",
       next_date_of_filtriation: "",
       location: "",
       for_client: "",
@@ -427,6 +427,12 @@ export default function HTBreakerReportCreate() {
   console.log(form.watch("is_spring_charge_motor_volts"));
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
+    data.is_closing_coil_voltage == false &&
+      (data.closing_coil_voltage_resistance = "");
+    data.is_spring_charge_motor_volts == false &&
+      (data.spring_charge_motor_volts_resistance = "");
+    data.is_trip_coil_voltage == false &&
+      (data.trip_coil_voltage_resistance = "");
     try {
       const res = await axios.post(BASE_URL + "API/Add/Service/Report", {
         ...data,
@@ -468,7 +474,9 @@ export default function HTBreakerReportCreate() {
                     name="report_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Date</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report Date
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -478,10 +486,12 @@ export default function HTBreakerReportCreate() {
                   />
                   <FormField
                     control={form.control}
-                    name="report_no"
+                    name="report_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report No</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report No
+                        </FormLabel>
                         <FormControl>
                           <Input type="text" {...field} />
                         </FormControl>
@@ -490,7 +500,9 @@ export default function HTBreakerReportCreate() {
                     )}
                   />
                   <div className="*:not-first:mt-2">
-                    <Label>Company</Label>
+                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                      Company
+                    </Label>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger className="w-full">
                         <Button
@@ -804,8 +816,6 @@ export default function HTBreakerReportCreate() {
                       </FormItem>
                     )}
                   />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="visual_inspection_for_damaged"
@@ -1314,7 +1324,7 @@ export default function HTBreakerReportCreate() {
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
               <div className="px-6 py-1" ref={containerRef}>
-                <div className="flex-col flex-wrap justify-between max-w-[90%] mx-auto tinos-regular">
+                <div className="flex-col flex-wrap justify-between mx-auto tinos-regular">
                   <div className="flex justify-between font-bold text-md ">
                     <div className="flex gap-3">
                       Client:-{" "}
@@ -1343,6 +1353,14 @@ export default function HTBreakerReportCreate() {
                           <span>-</span>
                         </span>
                       )}
+                    </div>
+                    <div>
+                      <span>
+                        Report No.: {form.watch("report_number") && "HTCB"}
+                      </span>
+                      <span className="ml-1">
+                        {form.watch("report_number") || "--"}
+                      </span>
                     </div>
                     <>
                       Service Date:-{" "}
@@ -1431,7 +1449,13 @@ export default function HTBreakerReportCreate() {
                               <td className="border border-black px-3 text-sm font-medium text-">
                                 {item.description}
                               </td>
-                              <div className="flex justify-between px-2 border-b border-black">
+                              <div
+                                className={`flex ${
+                                  form.watch("is_spring_charge_motor_volts")
+                                    ? "justify-between"
+                                    : "justify-center"
+                                } px-2 border-b border-black `}
+                              >
                                 <div>
                                   {(() => {
                                     const value = form.watch(
@@ -1443,7 +1467,7 @@ export default function HTBreakerReportCreate() {
                                   })()}
                                 </div>
                                 {form.watch("is_spring_charge_motor_volts") && (
-                                  <div className="flex  border-l w-[60%] px-1 text-sm border-black">
+                                  <div className="flex  border-l w-[60%] px-1 text-sm border-black gap-1">
                                     <div>{item.desciption1}:</div>
                                     <div>
                                       {typeof item.fieldName1 === "string"
@@ -1476,7 +1500,13 @@ export default function HTBreakerReportCreate() {
                               <td className="border border-black px-3 text-sm font-medium text-">
                                 {item.description}
                               </td>
-                              <div className="flex justify-between px-2 ">
+                              <div
+                                className={`flex justify-between px-2   border-black border-b ${
+                                  form.watch("is_closing_coil_voltage")
+                                    ? "justify-between"
+                                    : "justify-center"
+                                }`}
+                              >
                                 <div>
                                   {(() => {
                                     const value = form.watch(
@@ -1488,7 +1518,7 @@ export default function HTBreakerReportCreate() {
                                   })()}
                                 </div>
                                 {form.watch("is_closing_coil_voltage") && (
-                                  <div className="flex border-l w-[60%] px-1 text-sm border-black">
+                                  <div className="flex border-l w-[60%] px-1 text-sm border-black gap-1">
                                     <div>{item.desciption1}:</div>
                                     <div>
                                       {typeof item.fieldName1 === "string"
@@ -1521,7 +1551,13 @@ export default function HTBreakerReportCreate() {
                               <td className="border border-black px-3 text-sm font-medium text-">
                                 {item.description}
                               </td>
-                              <div className="flex justify-between px-2 border-t border-black">
+                              <div
+                                className={`flex justify-between px-2 ${
+                                  form.watch("is_trip_coil_voltage")
+                                    ? "justify-between"
+                                    : "justify-center"
+                                }`}
+                              >
                                 <div>
                                   {(() => {
                                     const value = form.watch(
@@ -1533,7 +1569,7 @@ export default function HTBreakerReportCreate() {
                                   })()}
                                 </div>
                                 {form.watch("is_trip_coil_voltage") && (
-                                  <div className="flex  border-l w-[60%] px-1 text-sm border-black">
+                                  <div className="flex  border-l w-[60%] px-1 text-sm border-black gap-1">
                                     <div>{item.desciption1}:</div>
                                     <div>
                                       {typeof item.fieldName1 === "string"

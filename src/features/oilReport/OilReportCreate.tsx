@@ -43,7 +43,7 @@ import {
 import { addOneYear } from "./column";
 
 export const reportFormSchema = z.object({
-  report_date: z.string(),
+  report_date: z.string().min(1, "Report date is required"),
   report_description: z.string(),
   kva: z.string(),
   voltage: z.string(),
@@ -59,10 +59,10 @@ export const reportFormSchema = z.object({
   remark: z.string(),
   for_client: z.string(),
   for_ok_agency: z.string(),
-  company_id: z.string(),
+  company_id: z.string().min(1, "Company is required"),
   next_date_of_filtriation: z.string().optional(),
   manufacturing_year: z.string(),
-  report_number: z.string(),
+  report_number: z.string().min(1, "Report number is required"),
   id: z.string(),
 });
 
@@ -212,7 +212,9 @@ export default function OilReportCreate() {
                     name="report_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Date</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Report Date
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -225,7 +227,9 @@ export default function OilReportCreate() {
                     name="report_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Number</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                          Report Number
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -238,7 +242,9 @@ export default function OilReportCreate() {
                     )}
                   />
                   <div className="*:not-first:mt-2">
-                    <Label>Company</Label>
+                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                      Company
+                    </Label>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger className="w-full">
                         <Button
@@ -302,6 +308,11 @@ export default function OilReportCreate() {
                           </CommandList>
                         </Command>
                       </PopoverContent>
+                      {form.formState.errors.company_id && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {form.formState.errors.company_id.message}
+                        </p>
+                      )}
                     </Popover>
                   </div>
                 </div>

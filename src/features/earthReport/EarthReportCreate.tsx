@@ -88,7 +88,7 @@ export const reportFormSchema = z.object({
   for_client: z.string(),
   for_ok_agency: z.string(),
   company_id: z.string().min(1, "Company Name is required"),
-  report_number: z.string(),
+  report_number: z.string().min(1, "Report number is required"),
   next_date_of_filtriation: z.string().optional(),
   remark: z.string(),
 });
@@ -198,6 +198,30 @@ export default function EarthReportCreate() {
   }, [company]);
 
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
+    data.show_location == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        location: "",
+      })));
+    if (data.show_open_connected === false) {
+      data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        earth_resistance: {
+          ...i.earth_resistance,
+          Connected: "",
+          open_pit: "",
+        },
+      }));
+    } else {
+      data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        earth_resistance: {
+          ...i.earth_resistance,
+          combined: "",
+        },
+      }));
+    }
+
     try {
       const res = await axios.post(BASE_URL + "API/Add/Earth/Test/Report", {
         ...data,
@@ -282,7 +306,7 @@ export default function EarthReportCreate() {
                       name="report_date"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>Report Date </FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Date </FormLabel>
                           <Popover modal={true}>
                             <PopoverTrigger>
                               <FormControl>
@@ -333,7 +357,7 @@ export default function EarthReportCreate() {
                       name="report_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Report Number</FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Number</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -347,7 +371,7 @@ export default function EarthReportCreate() {
                     />
 
                     <div className="*:not-first:mt-2">
-                      <Label>Company</Label>
+                      <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Company</Label>
                       <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger className="w-full">
                           <Button

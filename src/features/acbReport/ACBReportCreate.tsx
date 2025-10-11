@@ -78,9 +78,9 @@ export const acbReleaseTestingSchema = z.object({
 
 export const acbInspectionSchema = z.object({
   // Basic Information
-  report_date: z.string(),
+  report_date: z.string().min(1, "Report date is required"),
   next_date_of_filtriation: z.string().optional(),
-  report_number: z.string(),
+  report_number: z.string().min(1, "Report number is required"),
   location: z.string(),
 
   // ACB Details
@@ -343,7 +343,7 @@ function ABCReportCreate() {
                     name="report_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Report Date </FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Date </FormLabel>
                         <Popover modal={true}>
                           <PopoverTrigger>
                             <FormControl>
@@ -389,7 +389,7 @@ function ABCReportCreate() {
                     name="report_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Number</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Number</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -403,7 +403,7 @@ function ABCReportCreate() {
                   />
 
                   <div className="*:not-first:mt-2">
-                    <Label>Company</Label>
+                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Company</Label>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger className="w-full">
                         <Button

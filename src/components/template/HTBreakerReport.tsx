@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
   tableCell: {
     borderRightWidth: 1,
     borderRightColor: "#000000",
-    padding: 2,
     fontSize: 10,
     flex: 1,
     textAlign: "left",
@@ -122,7 +121,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center", // horizontal alignment
     alignItems: "center", // vertical alignment
-    marginBottom: 3,
   },
   specialCell: {
     flex: 1,
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
-    padding: 3,
+    padding: 2,
   },
   subRowDescription: {
     paddingLeft: 4,
@@ -180,7 +178,7 @@ const inspectionData = [
   {
     srNo: 2,
     description: "CIRCUIT BREAKERTYPE",
-    fieldName: "cb_type",
+    fieldName: "circuit_breakertype",
     observationReport: "HPA 24 / 1225C ( SF6)",
   },
   {
@@ -192,7 +190,7 @@ const inspectionData = [
   {
     srNo: 4,
     description: "SERIALNO./MANUFACTURED YEAR",
-    fieldName: "vcb_sr_no_year",
+    fieldName: "serial_no_manufactured_year",
     observationReport: "1VYN020411001007 / 2011",
   },
   {
@@ -200,13 +198,9 @@ const inspectionData = [
     description: "SPRING CHARGING MOTOR VOLTS",
     fieldName: "spring_charge_motor_volts",
     hide: "is_spring_charge_motor_volts",
-    fieldName1: "spring_motor_resistance",
+    fieldName1: "spring_charge_motor_volts_resistance",
     observationReport: "special1",
-    subRows: [
-      {
-        description: "MOTOR RESISTANCE",
-      },
-    ],
+    desciption1: "MOTAR RESISTANCE",
   },
   {
     srNo: 6,
@@ -215,11 +209,7 @@ const inspectionData = [
     hide: "is_closing_coil_voltage",
     fieldName1: "closing_coil_voltage_resistance",
     observationReport: "special1",
-    subRows: [
-      {
-        description: "RESISTANCE",
-      },
-    ],
+    desciption1: "RESISTANCE",
   },
   {
     srNo: 7,
@@ -228,12 +218,12 @@ const inspectionData = [
     hide: "is_trip_coil_voltage",
     fieldName1: "trip_coil_voltage_resistance",
     observationReport: "special1",
-    subRows: [{ description: "RESISTANCE" }],
+    desciption1: "RESISTANCE",
   },
   {
     srNo: 8,
     description: "COUNTER READING/ ANTIPUMPING(K1)",
-    fieldName: "counter_reading",
+    fieldName: "counter_reading_antipumping",
     observationReport: "0382",
   },
   {
@@ -269,7 +259,7 @@ const inspectionData = [
   {
     srNo: 16,
     description: "DRIVE MECHANISM CHECKING",
-    fieldName: "drive_mechanism_checkin",
+    fieldName: "drive_mechanism_checking",
     observationReport: "OK",
   },
   {
@@ -308,10 +298,7 @@ const inspectionData = [
     srNo: 20,
     description: "CONTACT RESISTANCE ( MICRO OHM )",
     fieldName: "contact_resistance",
-    observationReport: "special",
-    rValue: "36.4 μΩ",
-    yValue: "33.9 μΩ",
-    bValue: "37.5 μΩ",
+    subRows: [{ r: "60", y: "59", b: "62" }],
   },
   {
     srNo: 21,
@@ -334,13 +321,13 @@ const inspectionData = [
   {
     srNo: 24,
     description: "Panel/VCB Spares Required",
-    fieldName: "Panel/VCB_Spares_Required",
+    fieldName: "panel_vc_spares",
     observationReport: "Panel/VCB Spares Required.",
   },
   {
     srNo: 25,
     description: "Vaccum Bottle Test",
-    fieldName: "Vaccum_Bottle_Test",
+    fieldName: "vaccum_bottle_test",
     observationReport: "Vaccum Bottle Test.",
   },
 ];
@@ -379,41 +366,56 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
   const tableData = inspectionData.map((item) => {
     let observationReport: string;
     let subRows:
-      | { description: string; r: string; y: string; b: string }[]
+      | { description?: string; r?: string; y?: string; b?: string }[]
       | undefined;
     let rValue: string | undefined;
     let yValue: string | undefined;
     let bValue: string | undefined;
 
-    if (item.observationReport === "special") {
+    if (item.fieldName === "contact_resistance") {
       observationReport = "special";
-      if (
-        item.fieldName ===
+      const contactData = reportData.contact_resistance || {
+        subrows: [{ r: "--", y: "--", b: "--" }],
+      };
+      rValue = contactData.subrows[0]?.r || "--";
+      yValue = contactData.subrows[0]?.y || "--";
+      bValue = contactData.subrows[0]?.b || "--";
+      subRows = [
+        {
+          description: "Contact Resistance Values",
+          r: contactData.subrows[0]?.r || "--",
+          y: contactData.subrows[0]?.y || "--",
+          b: contactData.subrows[0]?.b || "--",
+        },
+      ];
+    } else if (
+      item.observationReport === "special" &&
+      item.fieldName ===
         "insulation_resistance_check_using_5kv_insulation_tester"
-      ) {
-        subRows =
-          reportData.insulation_resistance_check_using_5kv_insulation_tester
-            .subrows;
-      } else if (item.fieldName === "checking_cb_timing") {
-        subRows = reportData.checking_cb_timing.subrows;
-      } else if (item.fieldName === "contact_resistance") {
-        observationReport = "special";
-        rValue = reportData.contact_resistance || "--";
-        yValue = reportData.contact_resistance || "--";
-        bValue = reportData.contact_resistance || "--";
-        subRows = [
-          {
-            description: "Contact Resistance Values",
-            r: reportData.contact_resistance || "--",
-            y: reportData.contact_resistance || "--",
-            b: reportData.contact_resistance || "--",
-          },
-        ];
-      }
+    ) {
+      observationReport = "special";
+      subRows =
+        reportData.insulation_resistance_check_using_5kv_insulation_tester
+          ?.subrows || [];
+    } else if (
+      item.observationReport === "special" &&
+      item.fieldName === "checking_cb_timing"
+    ) {
+      observationReport = "special";
+      subRows = reportData.checking_cb_timing?.subrows || [];
     } else {
       const value = reportData[item.fieldName as keyof Report];
       observationReport = typeof value === "string" ? value : "--";
     }
+
+    console.log("tableData item:", {
+      fieldName: item.fieldName,
+      observationReport,
+      subRows,
+      rValue,
+      yValue,
+      bValue,
+    });
 
     return {
       ...item,
@@ -483,6 +485,13 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                     </Text>
                   </View>
                 </View>
+                <View style={styles.headerText}>
+                  <Text>
+                    {" "}
+                    Report No: HTCB{reportData?.report_number || "--"}
+                  </Text>
+                </View>
+
                 <Text style={styles.headerText}>
                   Service Date: {convertReportDate(reportData?.report_date)}
                 </Text>
@@ -498,7 +507,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   style={[
                     styles.tableHeader,
                     styles.tableCellLeft,
-                    { flex: 0.5, padding: 2.5 },
+                    { flex: 0.5, padding: 0.5 },
                   ]}
                 >
                   <Text>Sr No.</Text>
@@ -507,7 +516,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   style={[
                     styles.tableHeader,
                     styles.tableCellLeft,
-                    { flex: 2, padding: 3.5 },
+                    { flex: 2, padding: 2 },
                   ]}
                 >
                   <Text>Description</Text>
@@ -520,148 +529,50 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
               </View>
 
               {tableData.map((item, index) => (
-                <View key={index}>
-                  <View style={styles.tableRow}>
-                    <View
-                      style={[
-                        styles.tableCell,
-                        {
-                          flex: 0.5,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        },
-                      ]}
-                    >
-                      <Text>{item.srNo}</Text>
-                    </View>
-                    <View
-                      style={[
-                        styles.tableCell,
-                        { flex: 2, fontWeight: "medium" },
-                      ]}
-                    >
-                      <Text>{item.description}</Text>
-                    </View>
-                    <View
-                      style={[
-                        styles.tableCell,
-                        { flex: 2, borderRightWidth: 0, padding: 0 },
-                      ]}
-                    >
-                      {item.observationReport === "special" ? (
-                        <View style={styles.specialCellContainer}>
-                          <View
-                            style={[
-                              styles.specialCell,
-                              {
-                                padding:
-                                  item.description ===
-                                  "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
-                                    ? 8
-                                    : item.description === "CHECKING CB TIMING"
-                                    ? 1
-                                    : 0,
-                              },
-                            ]}
-                          >
-                            <Text>
-                              {item.description ===
-                              "CONTACT RESISTANCE ( MICRO OHM )"
-                                ? item.rValue || "--"
-                                : "R"}
-                            </Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.specialCell,
-                              {
-                                padding:
-                                  item.description ===
-                                  "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
-                                    ? 8
-                                    : item.description === "CHECKING CB TIMING"
-                                    ? 1
-                                    : 0,
-                              },
-                            ]}
-                          >
-                            <Text>
-                              {item.description ===
-                              "CONTACT RESISTANCE ( MICRO OHM )"
-                                ? item.yValue || "--"
-                                : "Y"}
-                            </Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.specialCell,
-                              {
-                                padding:
-                                  item.description ===
-                                  "INSULATION RESISTANCE CHECK USING 5KV MEGGER ( GΩ )"
-                                    ? 8
-                                    : item.description === "CHECKING CB TIMING"
-                                    ? 1
-                                    : 0,
-                                borderRightWidth: 0,
-                              },
-                            ]}
-                          >
-                            <Text>
-                              {item.description ===
-                              "CONTACT RESISTANCE ( MICRO OHM )"
-                                ? item.bValue || "--"
-                                : "B"}
-                            </Text>
-                          </View>
-                        </View>
-                      ) : item.srNo == 5 || 6 || 7 ? (
-                        <View style={{ padding: 2 }}>
-                          <Text style={{ marginBottom: 2 }}>
-                            {item.observationReport || "--"}
-                          </Text>
-                          <View style={{ fontSize: 8, marginTop: 2 }}>
-                            <Text style={styles.special1SubRow}>
-                              <Text>MOTOR RESISTANCE</Text>
-                              <Text>
-                                {reportData[item?.fieldName1] || "--"}
-                              </Text>
-                            </Text>
-                          </View>
-                        </View>
-                      ) : (
-                        <Text style={{ padding: 3, textAlign: "left" }}>
-                          {item.observationReport}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-
-                  {item.subRows &&
-                    item.subRows.map((subRow, subIndex) => (
-                      <View style={styles.tableRow} key={subIndex}>
-                        <View style={[styles.tableCell, { flex: 0.5 }]} />
+                <View key={index} style={{ fontWeight: "medium" }}>
+                  {item.fieldName === "contact_resistance" ? (
+                    <>
+                      {/* First Row: Sr No., Description, and R/Y/B Headers */}
+                      <View style={[styles.tableRow]}>
                         <View
                           style={[
                             styles.tableCell,
-                            styles.subRowDescription,
-                            { flex: 2, padding: 0 },
+                            {
+                              flex: 0.5,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            },
                           ]}
                         >
-                          <Text>{subRow.description}</Text>
+                          <Text>{item.srNo}</Text>
                         </View>
                         <View
                           style={[
                             styles.tableCell,
-                            { flex: 2, padding: 0, borderRightWidth: 0 },
+                            {
+                              flex: 2,
+                              fontWeight: "medium",
+                              borderBottomWidth: 0,
+                              borderBottomColor: "transparent",
+                              marginLeft: 5,
+                              maxWidth: 233.7,
+                            },
+                          ]}
+                        >
+                          <Text>{item.description}</Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.tableCell,
+                            { flex: 2, borderRightWidth: 0 },
                           ]}
                         >
                           <View style={styles.specialCellContainer}>
                             <View style={styles.specialCell}>
-                              <Text>{subRow.r || "--"}</Text>
+                              <Text>R</Text>
                             </View>
                             <View style={styles.specialCell}>
-                              <Text>{subRow.y || "--"}</Text>
+                              <Text>Y</Text>
                             </View>
                             <View
                               style={[
@@ -669,12 +580,222 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                                 { borderRightWidth: 0 },
                               ]}
                             >
-                              <Text>{subRow.b || "--"}</Text>
+                              <Text>B</Text>
                             </View>
                           </View>
                         </View>
                       </View>
-                    ))}
+                      {/* Second Row: Empty Sr No. and Description, subRows Values */}
+                      {item.subRows &&
+                        item.subRows.map((subRow, subIndex) => (
+                          <View style={[styles.tableRow]} key={subIndex}>
+                            <View
+                              style={[
+                                styles.tableCell,
+                                { flex: 0.5, paddingVertical: 8 },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.tableCell,
+                                styles.subRowDescription,
+                                {
+                                  flex: 2,
+                                  padding: 0,
+                                  borderTopWidth: 0,
+                                  borderTopColor: "transparent",
+                                },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.tableCell,
+                                { flex: 2, padding: 0, borderRightWidth: 0 },
+                              ]}
+                            >
+                              <View style={styles.specialCellContainer}>
+                                <View style={styles.specialCell}>
+                                  <Text>{subRow.r || "--"}</Text>
+                                </View>
+                                <View style={styles.specialCell}>
+                                  <Text>{subRow.y || "--"}</Text>
+                                </View>
+                                <View
+                                  style={[
+                                    styles.specialCell,
+                                    { borderRightWidth: 0 },
+                                  ]}
+                                >
+                                  <Text>{subRow.b || "--"}</Text>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        ))}
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.tableRow}>
+                        <View
+                          style={[
+                            styles.tableCell,
+                            {
+                              flex: 0.5,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            },
+                          ]}
+                        >
+                          <Text>{item.srNo}</Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.tableCell,
+                            {
+                              flex: 2,
+                              fontWeight: "medium",
+                              justifyContent: "center",
+                              alignItems: "flex-start",
+                            },
+                          ]}
+                        >
+                          <View style={{ marginLeft: 5 }}>
+                            <Text>{item.description}</Text>
+                          </View>
+                        </View>
+                        <View
+                          style={[
+                            styles.tableCell,
+                            { flex: 2, borderRightWidth: 0, padding: 0 },
+                          ]}
+                        >
+                          {item.observationReport === "special" ? (
+                            <View style={styles.specialCellContainer}>
+                              <View style={styles.specialCell}>
+                                <Text>R</Text>
+                              </View>
+                              <View style={styles.specialCell}>
+                                <Text>Y</Text>
+                              </View>
+                              <View
+                                style={[
+                                  styles.specialCell,
+                                  { borderRightWidth: 0 },
+                                ]}
+                              >
+                                <Text>B</Text>
+                              </View>
+                            </View>
+                          ) : item.srNo === 5 ||
+                            item.srNo === 6 ||
+                            item.srNo === 7 ? (
+                            <View
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                height: "13",
+                                paddingHorizontal: 4,
+                              }}
+                            >
+                              <Text>
+                                {(reportData as Record<string, any>)[
+                                  item.fieldName
+                                ] || "--"}
+                              </Text>
+                              {reportData[item?.hide] && (
+                                <View
+                                  style={{
+                                    fontSize: 8,
+                                    borderLeft: "1px solid black",
+                                    minWidth: "50%",
+                                    padding: 0,
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.special1SubRow,
+                                      {
+                                        gap: 6,
+                                        paddingHorizontal: 4,
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        textAlign: "left",
+                                      },
+                                    ]}
+                                  >
+                                    <View>
+                                      <Text style={{ marginRight: 6 }}>
+                                        {item.desciption1 || "RESISTANCE"}:
+                                      </Text>
+                                    </View>
+                                    <View style={{ marginLeft: 6 }}>
+                                      <Text>
+                                        {reportData[item.fieldName1] || "--"}Ω
+                                      </Text>
+                                    </View>
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+                          ) : (
+                            <Text style={{ padding: 3, textAlign: "center" }}>
+                              {item.observationReport}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+
+                      {item.subRows &&
+                        item.subRows.map((subRow, subIndex) => (
+                          <View style={styles.tableRow} key={subIndex}>
+                            <View
+                              style={[
+                                styles.tableCell,
+                                { flex: 0.5, paddingVertical: 8 },
+                              ]}
+                            />
+                            <View
+                              style={[
+                                styles.tableCell,
+                                styles.subRowDescription,
+                                {
+                                  flex: 2,
+                                  padding: 0,
+                                  marginLeft: 5,
+                                  maxWidth: 233.7,
+                                },
+                              ]}
+                            >
+                              <Text>{subRow.description || "N/A"}</Text>
+                            </View>
+                            <View
+                              style={[
+                                styles.tableCell,
+                                { flex: 2, padding: 0, borderRightWidth: 0 },
+                              ]}
+                            >
+                              <View style={styles.specialCellContainer}>
+                                <View style={styles.specialCell}>
+                                  <Text>{subRow.r || "--"}</Text>
+                                </View>
+                                <View style={styles.specialCell}>
+                                  <Text>{subRow.y || "--"}</Text>
+                                </View>
+                                <View
+                                  style={[
+                                    styles.specialCell,
+                                    { borderRightWidth: 0 },
+                                  ]}
+                                >
+                                  <Text>{subRow.b || "--"}</Text>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        ))}
+                    </>
+                  )}
                 </View>
               ))}
             </View>

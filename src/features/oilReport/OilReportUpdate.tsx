@@ -54,9 +54,13 @@ import {
 import { addOneYear } from "./column";
 
 export const reportFormSchema = z.object({
-  report_date: z.string(),
+  report_date: z.string().min(1, {
+    message: "Report date is required",
+  }),
   next_date_of_filtriation: z.string().optional(),
-  report_number: z.string(),
+  report_number: z.string().min(1, {
+    message: "Report number is required",
+  }),
   report_description: z.string().min(1, {
     message: "Description is required",
   }),
@@ -74,7 +78,9 @@ export const reportFormSchema = z.object({
   remark: z.string(),
   for_client: z.string(),
   for_ok_agency: z.string(),
-  company_id: z.string(),
+  company_id: z.string().min(1, {
+    message: "Company is required",
+  }),
   manufacturing_year: z.string(),
 });
 
@@ -281,7 +287,9 @@ export default function OilReportUpdate() {
                     name="report_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Date</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report Date
+                        </FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -294,7 +302,9 @@ export default function OilReportUpdate() {
                     name="report_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Report Number</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report Number
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -307,7 +317,9 @@ export default function OilReportUpdate() {
                     )}
                   />
                   <div className="*:not-first:mt-2">
-                    <Label>Company</Label>
+                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                      Company
+                    </Label>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger className="w-full">
                         <Button

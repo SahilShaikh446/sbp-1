@@ -6,7 +6,3 @@ export const BASE_URL = "/report/";
 // Master Admin
 // "username":"master",
 // "password":"123456"
-
-// Group Admin
-// "username":"group hov",
-// "password":"admin"
