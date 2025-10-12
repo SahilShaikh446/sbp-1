@@ -329,7 +329,9 @@ export default function EarthReportUpdate() {
                       name="report_date"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Date </FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                            Report Date{" "}
+                          </FormLabel>
                           <Popover modal={true}>
                             <PopoverTrigger>
                               <FormControl>
@@ -380,7 +382,9 @@ export default function EarthReportUpdate() {
                       name="report_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Number</FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                            Report Number
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -394,7 +398,9 @@ export default function EarthReportUpdate() {
                     />
 
                     <div className="*:not-first:mt-2">
-                      <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Company</Label>
+                      <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                        Company
+                      </Label>
                       <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger className="w-full">
                           <Button
@@ -673,6 +679,40 @@ export default function EarthReportUpdate() {
                         </FormItem>
                       )}
                     />
+                    <div className="grid grid-cols-2 gap-4 mt-3">
+                      <FormField
+                        control={form.control}
+                        name="for_client"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>For Client</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., Mr. Sakharam Parab"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="for_ok_agency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>For Ok Agencies</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., M/s. OK AGENCIES"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
@@ -910,7 +950,6 @@ export default function EarthReportUpdate() {
                               <span className="font-bold">
                                 For Ok Agencies.:-
                               </span>{" "}
-                              M/s.
                               {form.watch("for_ok_agency") || "--"}
                             </div>
                           </div>

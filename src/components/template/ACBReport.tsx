@@ -9,6 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import { ACBInspectionForm } from "@/features/acbReport/ACBReportCreate";
 import { companyType } from "@/features/company/companySlice"; // Adjust import path
+import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 
 // Register Tinos fonts (regular and bold)
 Font.register({
@@ -269,7 +270,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   flexWrap: "nowrap",
                 }}
               >
-                Date: {reportData.report_date || "--"}
+                Date: {convertReportDate(reportData.report_date) || "--"}
               </Text>
             </View>
 

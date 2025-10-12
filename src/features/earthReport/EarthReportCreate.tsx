@@ -306,7 +306,9 @@ export default function EarthReportCreate() {
                       name="report_date"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Date </FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                            Report Date{" "}
+                          </FormLabel>
                           <Popover modal={true}>
                             <PopoverTrigger>
                               <FormControl>
@@ -357,7 +359,9 @@ export default function EarthReportCreate() {
                       name="report_number"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Number</FormLabel>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                            Report Number
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -371,7 +375,9 @@ export default function EarthReportCreate() {
                     />
 
                     <div className="*:not-first:mt-2">
-                      <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Company</Label>
+                      <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                        Company
+                      </Label>
                       <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger className="w-full">
                           <Button
@@ -633,23 +639,59 @@ export default function EarthReportCreate() {
                 </Card>
                 <Card>
                   <CardContent>
-                    <FormField
-                      control={form.control}
-                      name="remark"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>Remark</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              placeholder="Enter Remark"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="remark"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Remark</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="text"
+                                {...field}
+                                placeholder="Enter Remark"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-3">
+                      <FormField
+                        control={form.control}
+                        name="for_client"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>For Client</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., Mr. Sakharam Parab"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="for_ok_agency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>For Ok Agencies</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., M/s. OK AGENCIES"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
@@ -887,7 +929,6 @@ export default function EarthReportCreate() {
                               <span className="font-bold">
                                 For Ok Agencies.:-
                               </span>{" "}
-                              M/s.
                               {form.watch("for_ok_agency") || "--"}
                             </div>
                           </div>

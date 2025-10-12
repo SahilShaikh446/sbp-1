@@ -2,6 +2,7 @@ import { Document, Page, Text, View, Image, Font } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
 import { companyType } from "@/features/company/companySlice";
 import { Report } from "@/features/earthReport/type";
+import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 
 const tw = createTw({
   theme: {
@@ -140,7 +141,9 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       Report No.: EP {reportData?.report_number || "--"}
                     </Text>
                     <Text style={tw("font-bold")}>
-                      Test Date: {reportData?.report_date || "--/--/----"}
+                      Test Date:{" "}
+                      {convertReportDate(reportData?.report_date) ||
+                        "--/--/----"}
                     </Text>
                   </View>
 

@@ -343,7 +343,9 @@ function ABCReportCreate() {
                     name="report_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Date </FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report Date{" "}
+                        </FormLabel>
                         <Popover modal={true}>
                           <PopoverTrigger>
                             <FormControl>
@@ -389,7 +391,9 @@ function ABCReportCreate() {
                     name="report_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Report Number</FormLabel>
+                        <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                          Report Number
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -403,7 +407,9 @@ function ABCReportCreate() {
                   />
 
                   <div className="*:not-first:mt-2">
-                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">Company</Label>
+                    <Label className="after:content-['*'] after:ml-0.5 after:text-red-500 ">
+                      Company
+                    </Label>
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger className="w-full">
                         <Button
@@ -1210,7 +1216,7 @@ function ABCReportCreate() {
       <Card className="">
         <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto tinos-regular flex flex-col">
           {/* Header */}
-          <div className="border border-grayd q-300">
+          <div className="border border-gray">
             <div className="p-2">
               <div className="flex items-center justify-between">
                 <div className="w-[40%]">
@@ -1615,9 +1621,10 @@ function ABCReportCreate() {
                   </tr>
                 </table>
               </div>
+            </div>
               <img
                 ref={imgRef}
-                className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab"
+                className="object-contain max-h-[150px] max-w-[150px] ml-[65px]  bottom-0 cursor-grab"
                 src="/stamp.jpg"
                 onMouseDown={handleMouseDown}
                 style={{
@@ -1625,7 +1632,6 @@ function ABCReportCreate() {
                 }}
                 alt="Stamp"
               />
-            </div>
 
             <div className="border-t-8 border-[#fcae08] text-center p-3 text-md mt-auto">
               <p className="">

@@ -1,4 +1,5 @@
 import { companyType } from "@/features/company/companySlice";
+import { convertReportDate } from "@/features/oilReport/OilReportCreate";
 import { Report } from "@/features/oilReport/type";
 import {
   Document,
@@ -185,7 +186,8 @@ const OilReport = ({
                 Report No.: TR {reportData.report_number || "--"}
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Date of Filteration: {reportData.report_date || ""}
+                Date of Filteration:{" "}
+                {convertReportDate(reportData.report_date) || ""}
               </Text>
             </View>
 
