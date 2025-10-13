@@ -56,6 +56,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { PreLoader } from "@/components/ui/Preloader";
 import { addOneYear } from "../oilReport/column";
 import { Switch } from "@/components/ui/switch";
+import { PDFViewer } from "@react-pdf/renderer";
+import HTBreakerReport from "@/components/template/HTBreakerReport";
 
 // Zod schema (unchanged)
 export const reportFormSchema = z.object({
@@ -280,23 +282,24 @@ const inspectionData = [
     fieldName: "repair",
     observationReport: "NIL",
   },
+
   {
     srNo: 23,
-    description: "REMARK",
-    fieldName: "remark",
-    observationReport: "Breaker found working satisfactory.",
-  },
-  {
-    srNo: 24,
     description: "Panel/VCB Spares Required",
     fieldName: "panel_vc_spares",
     observationReport: "Panel/VCB Spares Required.",
   },
   {
-    srNo: 25,
+    srNo: 24,
     description: "Vaccum Bottle Test",
     fieldName: "vaccum_bottle_test",
     observationReport: "Vaccum Bottle Test.",
+  },
+  {
+    srNo: 25,
+    description: "REMARK",
+    fieldName: "remark",
+    observationReport: "Breaker found working satisfactory.",
   },
 ];
 
@@ -574,7 +577,7 @@ export default function HTBreakerReportupdate() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
-        <Card className="h-fit">
+        {/* <Card className="h-fit">
           <CardHeader>
             <h2 className="text-2xl font-bold text-gray-800">
               Create HT Breaker Report
@@ -624,23 +627,22 @@ export default function HTBreakerReportupdate() {
                           type="button"
                           variant="outline"
                           role="combobox"
-                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
-                            form.formState.errors.company_id
-                              ? "border-red-500"
-                              : ""
-                          }`}
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
+                            ? "border-red-500"
+                            : ""
+                            }`}
                         >
                           <span
                             className={cn(
                               "truncate",
                               !form.watch("company_id") &&
-                                "text-muted-foreground"
+                              "text-muted-foreground"
                             )}
                           >
                             {form.watch("company_id")
                               ? company?.find(
-                                  (c) => `${c.id}` === form.watch("company_id")
-                                )?.name || "Select company"
+                                (c) => `${c.id}` === form.watch("company_id")
+                              )?.name || "Select company"
                               : "Select company"}
                           </span>
                           <ChevronDownIcon
@@ -1411,7 +1413,16 @@ export default function HTBreakerReportupdate() {
               </form>
             </Form>
           </CardContent>
-        </Card>
+        </Card> */}
+        <PDFViewer className="w-full h-[800px]">
+          <HTBreakerReport
+            reportData={{
+              ...form.watch(),
+              image_data: { x: position.x },
+            }}
+            companyData={company || []}
+          />
+        </PDFViewer>
         <Card className="h-auto overflow-auto">
           <div className="max-w-[2480px] max-h-[3508px] px-8 mx-auto flex flex-col">
             <div className="border border-gray-300">
@@ -1463,7 +1474,7 @@ export default function HTBreakerReportupdate() {
                     </div>
                     <div>
                       <span>
-                        Report No.: {form.watch("report_number") && "HTCB"}
+                        Report No.: HT -- {form.watch("report_number")}
                       </span>
                       <span className="ml-1">
                         {form.watch("report_number") || "--"}
@@ -1557,11 +1568,10 @@ export default function HTBreakerReportupdate() {
                                 {item.description}
                               </td>
                               <div
-                                className={`flex ${
-                                  form.watch("is_spring_charge_motor_volts")
-                                    ? "justify-between"
-                                    : "justify-center"
-                                } px-2 border-b border-black `}
+                                className={`flex ${form.watch("is_spring_charge_motor_volts")
+                                  ? "justify-between"
+                                  : "justify-center"
+                                  } px-2 border-b border-black `}
                               >
                                 <div>
                                   {(() => {
@@ -1579,15 +1589,15 @@ export default function HTBreakerReportupdate() {
                                     <div>
                                       {typeof item.fieldName1 === "string"
                                         ? (() => {
-                                            const value = form.watch(
-                                              item.fieldName1 as keyof ReportType
-                                            );
-                                            return typeof value === "string" ||
-                                              typeof value === "number" ||
-                                              typeof value === "boolean"
-                                              ? value + "Ω" || "--"
-                                              : "--";
-                                          })()
+                                          const value = form.watch(
+                                            item.fieldName1 as keyof ReportType
+                                          );
+                                          return typeof value === "string" ||
+                                            typeof value === "number" ||
+                                            typeof value === "boolean"
+                                            ? value + "Ω" || "--"
+                                            : "--";
+                                        })()
                                         : "--"}
                                     </div>
                                   </div>
@@ -1608,11 +1618,10 @@ export default function HTBreakerReportupdate() {
                                 {item.description}
                               </td>
                               <div
-                                className={`flex justify-between px-2   border-black border-b ${
-                                  form.watch("is_closing_coil_voltage")
-                                    ? "justify-between"
-                                    : "justify-center"
-                                }`}
+                                className={`flex justify-between px-2   border-black border-b ${form.watch("is_closing_coil_voltage")
+                                  ? "justify-between"
+                                  : "justify-center"
+                                  }`}
                               >
                                 <div>
                                   {(() => {
@@ -1630,15 +1639,15 @@ export default function HTBreakerReportupdate() {
                                     <div>
                                       {typeof item.fieldName1 === "string"
                                         ? (() => {
-                                            const value = form.watch(
-                                              item.fieldName1 as keyof ReportType
-                                            );
-                                            return typeof value === "string" ||
-                                              typeof value === "number" ||
-                                              typeof value === "boolean"
-                                              ? value + "Ω" || "--"
-                                              : "--";
-                                          })()
+                                          const value = form.watch(
+                                            item.fieldName1 as keyof ReportType
+                                          );
+                                          return typeof value === "string" ||
+                                            typeof value === "number" ||
+                                            typeof value === "boolean"
+                                            ? value + "Ω" || "--"
+                                            : "--";
+                                        })()
                                         : "--"}
                                     </div>
                                   </div>
@@ -1659,11 +1668,10 @@ export default function HTBreakerReportupdate() {
                                 {item.description}
                               </td>
                               <div
-                                className={`flex justify-between px-2 ${
-                                  form.watch("is_trip_coil_voltage")
-                                    ? "justify-between"
-                                    : "justify-center"
-                                }`}
+                                className={`flex justify-between px-2 ${form.watch("is_trip_coil_voltage")
+                                  ? "justify-between"
+                                  : "justify-center"
+                                  }`}
                               >
                                 <div>
                                   {(() => {
@@ -1681,15 +1689,15 @@ export default function HTBreakerReportupdate() {
                                     <div>
                                       {typeof item.fieldName1 === "string"
                                         ? (() => {
-                                            const value = form.watch(
-                                              item.fieldName1 as keyof ReportType
-                                            );
-                                            return typeof value === "string" ||
-                                              typeof value === "number" ||
-                                              typeof value === "boolean"
-                                              ? value + "Ω" || "--"
-                                              : "--";
-                                          })()
+                                          const value = form.watch(
+                                            item.fieldName1 as keyof ReportType
+                                          );
+                                          return typeof value === "string" ||
+                                            typeof value === "number" ||
+                                            typeof value === "boolean"
+                                            ? value + "Ω" || "--"
+                                            : "--";
+                                        })()
                                         : "--"}
                                     </div>
                                   </div>
@@ -1828,7 +1836,7 @@ export default function HTBreakerReportupdate() {
                     })}
                   </tbody>
                 </table>
-                <div className="w-full flex justify-between items-center font-bold text-lg">
+                <div className="w-full flex justify-between items-center font-bold text-lg px-6">
                   <div className="flex flex-col">
                     <span className="">For Client :</span>
                     <span>{form.watch("for_client") || "--"}</span>
@@ -1840,7 +1848,7 @@ export default function HTBreakerReportupdate() {
                 </div>
                 <img
                   ref={imgRef}
-                  className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab"
+                  className="object-contain max-h-[150px] ml-7 max-w-[150px]  bottom-0 cursor-grab"
                   src="/stamp.jpg"
                   onMouseDown={handleMouseDown}
                   style={{

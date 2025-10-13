@@ -1,5 +1,3 @@
-"use client";
-
 import { Bell, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,51 +60,6 @@ export default function Navbar({ onMenuClick }: EnhancedNavbarProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Notifications */}
-          <DropdownMenu modal={true}>
-            <DropdownMenuTrigger>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-blue-50 transition-colors"
-              >
-                <Bell className="h-5 w-5 text-gray-600" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 bg-red-500 hover:bg-red-500 text-xs flex items-center justify-center">
-                  3
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <div className="p-3 border-b">
-                <h3 className="font-semibold text-gray-900">Notifications</h3>
-                <p className="text-sm text-gray-500">
-                  You have 3 unread messages
-                </p>
-              </div>
-              <DropdownMenuItem className="p-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium text-sm">New report generated</p>
-                    <p className="text-xs text-gray-500">
-                      Oil filtration report is ready
-                    </p>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="p-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium text-sm">System update</p>
-                    <p className="text-xs text-gray-500">
-                      Dashboard has been updated
-                    </p>
-                  </div>
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           {/* User Menu */}
           <DropdownMenu modal={true}>

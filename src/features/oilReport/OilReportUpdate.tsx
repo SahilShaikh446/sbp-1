@@ -683,7 +683,7 @@ export default function OilReportUpdate() {
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
                         <span className="text-md font-bold">Report No.:</span>{" "}
-                        TR {form.watch("report_number") || "--"}
+                        TR -- {form.watch("report_number") || "--"}
                       </div>
                       <div className="text-md font-bold">
                         <span className="font-bold">Date of Filteration:</span>{" "}

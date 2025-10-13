@@ -91,6 +91,7 @@ const Client = () => {
       if (res.status === 201 || res.status === 200) {
         form.reset();
         toast.success("Client added Successfully");
+        dispatch(fetchCompanyAsync());
         await dispatch(fetchClientAsync("?page=0&size=10")).unwrap();
       }
     } catch (error: any) {
@@ -162,9 +163,8 @@ const Client = () => {
 
                 <div className="*:not-first:mt-2">
                   <Label
-                    className={`after:content-['*'] after:ml-0.5 after:text-red-500 ${
-                      form.formState.errors.company_id ? "text-red-500" : ""
-                    }`}
+                    className={`after:content-['*'] after:ml-0.5 after:text-red-500 ${form.formState.errors.company_id ? "text-red-500" : ""
+                      }`}
                   >
                     Company
                   </Label>
@@ -174,11 +174,10 @@ const Client = () => {
                         type="button"
                         variant="outline"
                         role="combobox"
-                        className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
-                          form.formState.errors.company_id
-                            ? "border-red-500"
-                            : ""
-                        }`}
+                        className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
+                          ? "border-red-500"
+                          : ""
+                          }`}
                       >
                         <span
                           className={cn(
@@ -188,8 +187,8 @@ const Client = () => {
                         >
                           {form.watch("company_id")
                             ? company?.find(
-                                (c) => `${c.id}` === form.watch("company_id")
-                              )?.name || "Select company"
+                              (c) => `${c.id}` === form.watch("company_id")
+                            )?.name || "Select company"
                             : "Select company"}
                         </span>
                         <ChevronDownIcon

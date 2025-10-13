@@ -546,23 +546,22 @@ function ACBReportUpdate() {
                           type="button"
                           variant="outline"
                           role="combobox"
-                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
-                            form.formState.errors.company_id
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
                               ? "border-red-500"
                               : ""
-                          }`}
+                            }`}
                         >
                           <span
                             className={cn(
                               "truncate",
                               !form.watch("company_id") &&
-                                "text-muted-foreground"
+                              "text-muted-foreground"
                             )}
                           >
                             {form.watch("company_id")
                               ? company?.find(
-                                  (c) => `${c.id}` === form.watch("company_id")
-                                )?.name || "Select company"
+                                (c) => `${c.id}` === form.watch("company_id")
+                              )?.name || "Select company"
                               : "Select company"}
                           </span>
                           <ChevronDownIcon
@@ -1347,7 +1346,7 @@ function ACBReportUpdate() {
       <Card className="">
         <div className="max-w-[2480px] max-h-[3508px]  px-8 mx-auto tinos-regular flex flex-col">
           {/* Header */}
-          <div className="border border-grayd q-300">
+          <div className="border border-gray">
             <div className="p-2">
               <div className="flex items-center justify-between">
                 <div className="w-[40%]">
@@ -1375,7 +1374,7 @@ function ACBReportUpdate() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Report No. ACB {form.watch("report_number") || "--"}
+                        Report No. ACB -- {form.watch("report_number") || "--"}
                       </td>
                       <td className="font-bold  text-left">
                         Date:-{" "}
@@ -1706,46 +1705,25 @@ function ACBReportUpdate() {
                       {form.watch("acb_release_testing").map((item, index) => (
                         <tr key={index}>
                           <td className="text-center border border-r-black border-b-black px-2 py-1">
-                            {item?.protection}
+                            {item.protection}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item?.setting_1}
+                            {item.setting_1}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item?.characteristics}
+                            {item.characteristics}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item?.tms_as_per_relay_setting}
+                            {item.tms_as_per_relay_setting}
                           </td>
                           <td className="text-center border border-x-black border-b-black px-2 py-1">
-                            {item?.actual_tms}
+                            {item.actual_tms}
                           </td>
                           <td className="text-center border border-l-black border-b-black px-2 py-1">
-                            {item?.result}
+                            {item.result}
                           </td>
                         </tr>
                       ))}
-
-                      <tr>
-                        <td className="text-center border border-r-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-x-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                        <td className="text-center border border-l-black border-b-black px-2 py-1">
-                          -
-                        </td>
-                      </tr>
                     </tbody>
                   </table>
 
@@ -1755,35 +1733,35 @@ function ACBReportUpdate() {
                       {form.watch("recommended_spares_for_replacement") || "--"}
                     </td>
                   </tr>
-                  <tr className="border-t border-b border-black">
+                  <tr className="">
                     <td className=" pl-4  text-left align-middle">
                       <span className="font-bold">Remarks:</span>{" "}
                       {form.watch("remarks") || "--"}
                     </td>
                   </tr>
-                  <tr className="flex justify-between">
-                    <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">For Client.:</span>{" "}
-                      {form.watch("for_client") || "--"}
-                    </td>
-                    <td className=" pl-4 pr-8 text-left align-middle">
-                      <span className="font-bold">For Ok Agencies.:-</span>
-                      {form.watch("for_ok_agency") || "--"}
-                    </td>
-                  </tr>
                 </table>
               </div>
-              <img
-                ref={imgRef}
-                className="object-contain max-h-[150px] max-w-[150px]  bottom-0 cursor-grab"
-                src="/stamp.jpg"
-                onMouseDown={handleMouseDown}
-                style={{
-                  transform: `translateX(${position.x}px)`,
-                }}
-                alt="Stamp"
-              />
+              <tr className="flex justify-between">
+                <td className=" pl-4 pr-8 text-left align-middle">
+                  <span className="font-bold">For Client:</span>{" "}
+                  {form.watch("for_client") || "--"}
+                </td>
+                <td className=" pl-4 pr-8 text-left align-middle">
+                  <span className="font-bold">For Ok Agencies.:-</span>
+                  {form.watch("for_ok_agency") || "--"}
+                </td>
+              </tr>
             </div>
+            <img
+              ref={imgRef}
+              className="object-contain max-h-[150px] max-w-[150px] ml-[65px]  bottom-0 cursor-grab"
+              src="/stamp.jpg"
+              onMouseDown={handleMouseDown}
+              style={{
+                transform: `translateX(${position.x}px)`,
+              }}
+              alt="Stamp"
+            />
 
             <div className="border-t-8 border-[#fcae08] text-center p-3 text-md mt-auto">
               <p className="">

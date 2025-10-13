@@ -138,10 +138,10 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                 <>
                   <View style={tw("flex flex-row justify-between text-lg")}>
                     <Text style={tw("font-bold")}>
-                      Report No.: EP {reportData?.report_number || "--"}
+                      Report No.: EP -- {reportData?.report_number || "--"}
                     </Text>
                     <Text style={tw("font-bold")}>
-                      Test Date:{" "}
+                      DATE OF EARTH TESTING:{" "}
                       {convertReportDate(reportData?.report_date) ||
                         "--/--/----"}
                     </Text>
@@ -221,26 +221,25 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         </View>
                         {String(reportData.show_location).toLowerCase() ===
                           "true" && (
-                          <View
-                            style={tw(
-                              "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
-                            )}
-                          >
-                            <Text
-                              style={tw("text-sm font-semibold text-center")}
+                            <View
+                              style={tw(
+                                "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
+                              )}
                             >
-                              Locations
-                            </Text>
-                          </View>
-                        )}
+                              <Text
+                                style={tw("text-sm font-semibold text-center")}
+                              >
+                                Locations
+                              </Text>
+                            </View>
+                          )}
                         <View
                           style={tw(
-                            `border-r border-black ${
-                              String(
-                                reportData.show_open_connected
-                              ).toLowerCase() === "true"
-                                ? "w-[151.8pt]"
-                                : "w-[151.8pt]"
+                            `border-r border-black ${String(
+                              reportData.show_open_connected
+                            ).toLowerCase() === "true"
+                              ? "w-[151.8pt]"
+                              : "w-[151.8pt]"
                             }`
                           )}
                         >
@@ -252,25 +251,25 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                           {String(
                             reportData.show_open_connected
                           ).toLowerCase() === "true" && (
-                            <View style={tw("flex flex-row")}>
-                              <View
-                                style={tw(
-                                  "border-t border-r border-black py-1 flex-1"
-                                )}
-                              >
-                                <Text style={tw("text-xs text-center")}>
-                                  Open Pit
-                                </Text>
+                              <View style={tw("flex flex-row")}>
+                                <View
+                                  style={tw(
+                                    "border-t border-r border-black py-1 flex-1"
+                                  )}
+                                >
+                                  <Text style={tw("text-xs text-center")}>
+                                    Open Pit
+                                  </Text>
+                                </View>
+                                <View
+                                  style={tw("border-t border-black py-1 flex-1")}
+                                >
+                                  <Text style={tw("text-xs text-center")}>
+                                    Connected
+                                  </Text>
+                                </View>
                               </View>
-                              <View
-                                style={tw("border-t border-black py-1 flex-1")}
-                              >
-                                <Text style={tw("text-xs text-center")}>
-                                  Connected
-                                </Text>
-                              </View>
-                            </View>
-                          )}
+                            )}
                         </View>
                         <View
                           style={tw(
@@ -367,80 +366,80 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                         {/* Location column: show borders only on first/last of page-group, text only on middle */}
                         {String(reportData.show_location).toLowerCase() ===
                           "true" && (
-                          <View
-                            style={[
-                              // keep basic layout from tailwind for spacing/alignment
-                              tw(
-                                "px-2 w-[120pt] flex justify-center items-center"
-                              ),
-                              {
-                                // always keep right border for the column edge
-                                borderRightWidth: 1,
-                                borderRightColor: "black",
+                            <View
+                              style={[
+                                // keep basic layout from tailwind for spacing/alignment
+                                tw(
+                                  "px-2 w-[120pt] flex justify-center items-center"
+                                ),
+                                {
+                                  // always keep right border for the column edge
+                                  borderRightWidth: 1,
+                                  borderRightColor: "black",
 
-                                // conditional top/bottom borders for merged look
-                                borderTopWidth: item.isPageFirst ? 1 : 0,
-                                borderBottomWidth: item.isPageLast ? 0 : 0,
-                                borderTopColor: "black",
-                                borderBottomColor: "black",
-                              },
-                            ]}
-                          >
-                            {item.isPageMiddle && (
-                              <Text
-                                style={{
-                                  fontSize: 10,
-                                  fontWeight: "500",
-                                  textAlign: "center",
-                                  alignSelf: "center",
-                                }}
-                              >
-                                {item.groupLocation || "--"}
-                              </Text>
-                            )}
-                          </View>
-                        )}
+                                  // conditional top/bottom borders for merged look
+                                  borderTopWidth: item.isPageFirst ? 1 : 0,
+                                  borderBottomWidth: item.isPageLast ? 0 : 0,
+                                  borderTopColor: "black",
+                                  borderBottomColor: "black",
+                                },
+                              ]}
+                            >
+                              {item.isPageMiddle && (
+                                <Text
+                                  style={{
+                                    fontSize: 10,
+                                    fontWeight: "500",
+                                    textAlign: "center",
+                                    alignSelf: "center",
+                                  }}
+                                >
+                                  {item.groupLocation || "--"}
+                                </Text>
+                              )}
+                            </View>
+                          )}
 
                         {/* Open Pit */}
                         {String(
                           reportData.show_open_connected
                         ).toLowerCase() === "true" && (
-                          <View
-                            style={tw(
-                              "border-r border-t border-black px-2 py-1 w-[76pt]"
-                            )}
-                          >
-                            <Text style={tw("text-sm text-center")}>
-                              {item.openPit}
-                            </Text>
-                          </View>
-                        )}
+                            <View
+                              style={tw(
+                                "border-r border-t border-black px-2 py-1 w-[76pt]"
+                              )}
+                            >
+                              <Text style={tw("text-sm text-center")}>
+                                {item.openPit}
+                              </Text>
+                            </View>
+                          )}
                         {String(
                           reportData.show_open_connected
                         ).toLowerCase() === "true" && (
-                          <View
-                            style={tw(
-                              "border-t border-black px-2 py-1 w-[75pt]"
-                            )}
-                          >
-                            <Text style={tw("text-sm text-center")}>
-                              {item.connected}
-                            </Text>
-                          </View>
-                        )}
+                            <View
+                              style={tw(
+                                "border-t border-black px-2 py-1 w-[75pt]"
+                              )}
+                            >
+                              <Text style={tw("text-sm text-center")}>
+                                {item.connected}
+                              </Text>
+                            </View>
+                          )}
                         {String(
                           reportData.show_open_connected
                         ).toLowerCase() === "false" && (
-                          <View
-                            style={tw(
-                              "border-t border-black px-2 py-1 w-[151pt]"
-                            )}
-                          >
-                            <Text style={tw("text-sm text-center")}>
-                              {item.combined}
-                            </Text>
-                          </View>
-                        )}
+                            <View
+                              style={tw(
+                                "border-t border-black px-2 py-1 w-[151pt]"
+                              )}
+                            >
+                              <Text style={tw("text-sm text-center")}>
+                                {item.combined}
+                              </Text>
+                            </View>
+                          )}
 
                         {/* Remark */}
                         <View

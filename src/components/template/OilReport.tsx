@@ -183,7 +183,7 @@ const OilReport = ({
           <View style={[styles.section, { position: "relative" }]}>
             <View style={styles.row}>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Report No.: TR {reportData.report_number || "--"}
+                Report No.: TR -- {reportData.report_number || "--"}
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
                 Date of Filteration:{" "}

@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
   footerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 3,
+    paddingHorizontal: 15,
     fontWeight: "bold",
-    fontSize: 10,
+    fontSize: 15,
     marginTop: 2,
   },
   footerColumn: {
@@ -312,23 +312,24 @@ const inspectionData = [
     fieldName: "repair",
     observationReport: "NIL",
   },
+
   {
     srNo: 23,
-    description: "REMARK",
-    fieldName: "remark",
-    observationReport: "Breaker found working satisfactory.",
-  },
-  {
-    srNo: 24,
     description: "Panel/VCB Spares Required",
     fieldName: "panel_vc_spares",
     observationReport: "Panel/VCB Spares Required.",
   },
   {
-    srNo: 25,
+    srNo: 24,
     description: "Vaccum Bottle Test",
     fieldName: "vaccum_bottle_test",
     observationReport: "Vaccum Bottle Test.",
+  },
+  {
+    srNo: 25,
+    description: "REMARK",
+    fieldName: "remark",
+    observationReport: "Breaker found working satisfactory.",
   },
 ];
 
@@ -391,7 +392,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
     } else if (
       item.observationReport === "special" &&
       item.fieldName ===
-        "insulation_resistance_check_using_5kv_insulation_tester"
+      "insulation_resistance_check_using_5kv_insulation_tester"
     ) {
       observationReport = "special";
       subRows =
@@ -488,7 +489,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                 <View style={styles.headerText}>
                   <Text>
                     {" "}
-                    Report No: HTCB{reportData?.report_number || "--"}
+                    Report No: HT -- {reportData?.report_number || "--"}
                   </Text>
                 </View>
 
@@ -808,18 +809,19 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                 <Text>For Ok Agencies: {reportData.for_ok_agency || "--"}</Text>
               </View>
             </View>
-          </View>
-          <View style={{ maxWidth: "90%" }}>
-            <Image
-              src="/stamp.jpg"
-              style={{
-                objectFit: "contain",
-                left: safeX,
-                width: 90,
-                height: 90,
-                marginLeft: 25,
-              }}
-            />
+            <View style={{ maxWidth: "90%" }}>
+              <Image
+                src="/stamp.jpg"
+                style={{
+                  objectFit: "contain",
+                  bottom: 18,
+                  left: safeX,
+                  marginLeft: 5,
+                  width: 110, // 150px * 0.75
+                  height: 110, // 150px * 0.75
+                }}
+              />
+            </View>
           </View>
         </View>
 

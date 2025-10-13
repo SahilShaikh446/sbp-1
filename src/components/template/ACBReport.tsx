@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     borderTop: 1,
     borderLeft: 1,
     borderRight: 1,
+    borderBottom: 1,
     maxWidth: "90%",
     margin: "0 auto", // Center the section
   },
@@ -261,7 +262,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   flexWrap: "nowrap",
                 }}
               >
-                Report No.: ACB {reportData.report_number}
+                Report No.: ACB -- {reportData.report_number}
               </Text>
               <Text
                 style={{
@@ -280,11 +281,10 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 {companyData?.find(
                   (i) => `${i.id}` === `${reportData.company_id}`
                 )?.address
-                  ? `; ${
-                      companyData.find(
-                        (i) => `${i.id}` === `${reportData.company_id}`
-                      )?.address
-                    }`
+                  ? `; ${companyData.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.address
+                  }`
                   : "Ambernath (E)"}
               </Text>
             </View>
@@ -724,7 +724,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </Text>
               </View>
-              <View style={styles.tableRow}>
+              <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
                 <Text style={styles.tableSingle}>
                   <Text
                     style={[styles.label, { fontSize: 12, paddingVertical: 1 }]}
@@ -734,25 +734,31 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   <Text style={styles.value}>{reportData.remarks || "--"}</Text>
                 </Text>
               </View>
-              <View style={styles.row}>
-                <Text>
-                  <Text style={[styles.label, { fontSize: 12 }]}>
-                    For Client .:{" "}
-                  </Text>
-                  <Text style={styles.value}>
-                    {reportData.for_client || "--"}
-                  </Text>
-                </Text>
-                <Text>
-                  <Text style={[styles.label, { fontSize: 12 }]}>
-                    For Ok Agencies:{" "}
-                  </Text>
-                  <Text style={styles.value}>
-                    {reportData.for_ok_agency || "--"}
-                  </Text>
-                </Text>
-              </View>
             </View>
+          </View>
+          <View style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 45, // Matches pr-8
+            fontSize: 10, // Matches text-sm
+            paddingVertical: 3,
+          }}>
+            <Text>
+              <Text style={[styles.label, { fontSize: 12 }]}>
+                For Client .:{" "}
+              </Text>
+              <Text style={styles.value}>
+                {reportData.for_client || "--"}
+              </Text>
+            </Text>
+            <Text>
+              <Text style={[styles.label, { fontSize: 12 }]}>
+                For Ok Agencies:{" "}
+              </Text>
+              <Text style={styles.value}>
+                {reportData.for_ok_agency || "--"}
+              </Text>
+            </Text>
           </View>
           <View style={{ maxWidth: "90%" }}>
             <Image
