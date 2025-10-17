@@ -124,9 +124,21 @@ export default function Login() {
   }
 
   async function handleGenerateOtp(targetUsername: string) {
-    await axios.post(`${BASE_URL}API/Generate/OTP`, {
-      username: targetUsername,
-    })
+    try {
+      const res = await axios.post<{ otp: string }>(`${BASE_URL}API/Generate/OTP`, {
+        username: targetUsername,
+      });
+      // Store OTP in localStorage
+      if (res.data.otp) {
+        toast.success("OTP generated successfully");
+        localStorage.setItem("resetOtp", res.data.otp);
+        return res.data.otp; // Return OTP for potential use
+      } else {
+        throw new Error("OTP not received from server");
+      }
+    } catch (error) {
+      throw error; // Let caller handle the error
+    }
   }
 
   // Credentials submit → Login/Check → if ok then Generate OTP → go to OTP step
@@ -188,78 +200,102 @@ export default function Login() {
 
   // Forgot password: start → Generate OTP for given email
   async function onSubmitResetStart(values: z.infer<typeof resetStartSchema>) {
-    setInfo(null)
-    setIsSubmitting(true)
+    setInfo(null);
+    setIsSubmitting(true);
     try {
-      await handleGenerateOtp(values.email)
-      setUsername(values.email) // carry forward
-      setPhase("resetOtp")
-      setInfo("We sent a verification code for password reset.")
+      await handleGenerateOtp(values.email);
+      setUsername(values.email);
+      setPhase("resetOtp");
+      setInfo("We sent a verification code for password reset. Please check your email/SMS.");
     } catch (err) {
-      const axiosError = err as AxiosError<ApiError>
-      const data = axiosError.response?.data
+      const axiosError = err as AxiosError<ApiError>;
+      const data = axiosError.response?.data;
       if (typeof data === "object" && (data as any)?.message === "Username Not Found") {
-        resetStartForm.setError("email", { type: "validate", message: "User not found" })
+        resetStartForm.setError("email", { type: "validate", message: "User not found" });
       } else {
-        setInfo("Unable to send code. Please try again.")
+        setInfo("Unable to send code. Please try again.");
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   // Forgot password: verify OTP → go to reset password fields
   async function onSubmitResetOtp(values: z.infer<typeof otpSchema>) {
-    setInfo(null)
-    setIsSubmitting(true)
+    setInfo(null);
+    setIsSubmitting(true);
     try {
-      await axios.post(`${BASE_URL}API/Login/Two/Step/Verification/Check`, {
-        username,
-        otp: values.otp,
-      })
-      setPhase("resetPassword")
-      setInfo("Code verified. Please set a new password.")
+      // Optional: Local OTP validation
+      const storedOtp = localStorage.getItem("resetOtp");
+      if (storedOtp && storedOtp !== values.otp) {
+        toast.error("Invalid code. Please try again.");
+        loginOtpForm.setError("otp", { type: "validate", message: "Invalid code" });
+        return;
+      }
+
+      // Clear OTP from localStorage after successful verification
+      localStorage.removeItem("resetOtp");
+
+      setPhase("resetPassword");
+      setInfo("Code verified. Please set a new password.");
     } catch (err) {
-      setInfo("Invalid or expired code. Please try again.")
+      const axiosError = err as AxiosError<ApiError>;
+      const data = axiosError.response?.data;
+      if (typeof data === "object" && (data as any)?.message) {
+        setInfo((data as any).message as string);
+      } else {
+        setInfo("Invalid or expired code. Please try again.");
+      }
+      loginOtpForm.setError("otp", { type: "validate", message: "Invalid or expired code" });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   // Forgot password: change password
   async function onSubmitResetFinish(values: z.infer<typeof resetFinishSchema>) {
-    setInfo(null)
-    setIsSubmitting(true)
+    setInfo(null);
+    setIsSubmitting(true);
     try {
       await axios.post(`${BASE_URL}API/Password/Change`, {
         username,
         password: values.newPassword,
-      })
-      setInfo("Password updated. You can login with your new password.")
-      // Reset all forms and return to login
-      credentialsForm.reset()
-      loginOtpForm.reset()
-      resetStartForm.reset()
-      resetFinishForm.reset()
-      setIsForgotFlow(false)
-      setPhase("credentials")
+      });
+
+      // Clear any remaining OTP data
+      localStorage.removeItem("resetOtp");
+
+      setInfo("Password updated successfully. You can now log in with your new password.");
+      credentialsForm.reset();
+      loginOtpForm.reset();
+      resetStartForm.reset();
+      resetFinishForm.reset();
+      setIsForgotFlow(false);
+      setPhase("credentials");
     } catch (err) {
-      setInfo("Could not update password. Please try again.")
+      const axiosError = err as AxiosError<ApiError>;
+      const data = axiosError.response?.data;
+      if (typeof data === "object" && (data as any)?.message) {
+        setInfo((data as any).message as string);
+      } else {
+        setInfo("Could not update password. Please try again.");
+      }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
+
   async function resendCode() {
-    setInfo(null)
-    setIsSubmitting(true)
+    setInfo(null);
+    setIsSubmitting(true);
     try {
-      await handleGenerateOtp(username)
-      setInfo("We resent the verification code.")
+      await handleGenerateOtp(username);
+      setInfo("We resent the verification code. Please check your email/SMS.");
     } catch {
-      setInfo("Unable to resend code. Please wait and try again.")
+      setInfo("Unable to resend code. Please wait and try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -557,7 +593,7 @@ export default function Login() {
                       <Button type="button" variant="secondary" onClick={switchToLogin}>
                         Back to login
                       </Button>
-                      <Button type="submit" disabled={isSubmitting} className="w-full bg-[#066dc4] hover:bg-[#0557a0]"
+                      <Button type="submit" disabled={isSubmitting} className="w-[65%] bg-[#066dc4] hover:bg-[#0557a0]"
                       >
                         {isSubmitting ? (
                           <>
