@@ -271,7 +271,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   flexWrap: "nowrap",
                 }}
               >
-                Date: {convertReportDate(reportData.report_date) || "--"}
+                Service Date: {convertReportDate(reportData.report_date) || "--"}
               </Text>
             </View>
 

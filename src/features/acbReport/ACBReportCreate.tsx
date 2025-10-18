@@ -1246,7 +1246,7 @@ function ABCReportCreate() {
                         Report No. ACB -- {form.watch("report_number") || "--"}
                       </td>
                       <td className="font-bold  text-left">
-                        Date:-{" "}
+                        Service Date:-{" "}
                         {convertReportDate(form.watch("report_date")) ||
                           "--/--/----"}
                       </td>
