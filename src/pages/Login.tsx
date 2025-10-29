@@ -156,7 +156,6 @@ export default function Login() {
 
 
       // Trigger OTP for login 2FA
-      await handleGenerateOtp(values.email)
       setPhase("otp")
       setInfo("We sent a verification code. Please check your email/SMS.")
     } catch (err) {
