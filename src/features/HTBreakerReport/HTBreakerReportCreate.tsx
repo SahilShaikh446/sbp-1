@@ -1355,10 +1355,10 @@ export default function HTBreakerReportCreate() {
                     </div>
                     <div>
                       <span>
-                        Report No.: HT -- {form.watch("report_number")}
+                        Report No.: HT - {form.watch("report_number")}
                       </span>
                       <span className="ml-1">
-                        {form.watch("report_number") || "--"}
+                        {form.watch("report_number") || "-"}
                       </span>
                     </div>
                     <>

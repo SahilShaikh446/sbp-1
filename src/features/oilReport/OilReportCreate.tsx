@@ -251,23 +251,22 @@ export default function OilReportCreate() {
                           type="button"
                           variant="outline"
                           role="combobox"
-                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${
-                            form.formState.errors.company_id
+                          className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
                               ? "border-red-500"
                               : ""
-                          }`}
+                            }`}
                         >
                           <span
                             className={cn(
                               "truncate",
                               !form.watch("company_id") &&
-                                "text-muted-foreground"
+                              "text-muted-foreground"
                             )}
                           >
                             {form.watch("company_id")
                               ? company?.find(
-                                  (c) => `${c.id}` === form.watch("company_id")
-                                )?.name || "Select company"
+                                (c) => `${c.id}` === form.watch("company_id")
+                              )?.name || "Select company"
                               : "Select company"}
                           </span>
                           <ChevronDownIcon
@@ -622,7 +621,7 @@ export default function OilReportCreate() {
                     <div className="flex justify-between items-center ">
                       <div className="text-md font-bold">
                         <span className="text-md font-bold">Report No.:</span>{" "}
-                        TR -- {form.watch("report_number") || "--"}
+                        TR - {form.watch("report_number") || "-"}
                       </div>
                       <div className="text-md font-bold">
                         <span className="font-bold">Date of Filteration:</span>{" "}
@@ -746,8 +745,8 @@ export default function OilReportCreate() {
                             <td className="py-0.5">
                               {form.watch("transformer_oil_quantity")
                                 ? `${form.watch(
-                                    "transformer_oil_quantity"
-                                  )} LITERS`
+                                  "transformer_oil_quantity"
+                                )} LITERS`
                                 : "--"}
                             </td>
                           </tr>
@@ -770,7 +769,7 @@ export default function OilReportCreate() {
                             <td className="py-0.5">
                               {form.watch("transformer_after_filtration")
                                 ? form.watch("transformer_after_filtration") +
-                                  " KV"
+                                " KV"
                                 : "--"}
                             </td>
                           </tr>

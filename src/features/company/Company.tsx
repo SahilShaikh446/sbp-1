@@ -32,6 +32,7 @@ import {
 export const schema = z.object({
   name: z.string().min(1, "Name is required"),
   address: z.string().min(1, "Address is required"),
+  remainder_date: z.string().min(1, "Remainder date is required"),
 });
 
 const Company = () => {
@@ -105,6 +106,26 @@ const Company = () => {
                           type="text"
                           placeholder="eg. 123 Main St"
                           {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="remainder_date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                        Remainder Date
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          placeholder="eg. 123 Main St"
+                          {...field}
+
                         />
                       </FormControl>
                       <FormMessage />

@@ -1243,7 +1243,7 @@ function ABCReportCreate() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Report No. ACB -- {form.watch("report_number") || "--"}
+                        Report No. ACB - {form.watch("report_number") || "-"}
                       </td>
                       <td className="font-bold  text-left">
                         Service Date:-{" "}

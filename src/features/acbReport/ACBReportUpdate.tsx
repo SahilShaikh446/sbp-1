@@ -547,8 +547,8 @@ function ACBReportUpdate() {
                           variant="outline"
                           role="combobox"
                           className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
-                              ? "border-red-500"
-                              : ""
+                            ? "border-red-500"
+                            : ""
                             }`}
                         >
                           <span
@@ -584,7 +584,7 @@ function ACBReportUpdate() {
                               {company?.map((c) => (
                                 <CommandItem
                                   key={c.id}
-                                  value={c.name} // search works by name
+                                  value={c.name}
                                   onSelect={() => {
                                     form.setValue("company_id", `${c.id}`, {
                                       shouldValidate: true,
@@ -1374,7 +1374,7 @@ function ACBReportUpdate() {
                   <div className="text-sm">
                     <tr className=" flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        Report No. ACB -- {form.watch("report_number") || "--"}
+                        Report No. ACB - {form.watch("report_number") || "-"}
                       </td>
                       <td className="font-bold  text-left">
                         Service Date:-{" "}
@@ -1384,25 +1384,28 @@ function ACBReportUpdate() {
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">
                       <td className="font-bold  text-left">
-                        <div>
-                          <span className="font-bold">Name of Client: </span>
-                          <span className="ml-2">
+                        <div className="text-sm leading-relaxed">
+                          {/* FIRST LINE */}
+                          <div>
+                            <span className="font-bold">Name of Client: </span>
+                            <span>
+                              {
+                                company?.find(
+                                  (i) => `${i.id}` === `${form.watch("company_id")}`
+                                )?.name || "--"
+                              }
+                            </span>
+                          </div>
+                          {/* SECOND LINE – ADDRESS */}
+                          <div className="pl-[100px]">
                             {
                               company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.name
+                                (i) => `${i.id}` === `${form.watch("company_id")}`
+                              )?.address || "--"
                             }
-                          </span>
-                          <span className="ml-2">
-                            {
-                              company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.address
-                            }
-                          </span>
+                          </div>
                         </div>
+
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">

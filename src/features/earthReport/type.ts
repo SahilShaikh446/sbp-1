@@ -41,6 +41,9 @@ export interface Report {
   for_ok_agency: string;
   show_location: boolean;
   show_open_connected: boolean;
+  show_area: boolean;
+  show_type_earthing: boolean;
+  show_ep_tag: boolean;
   company_id: number;
   remark: number;
   image_data: {
@@ -53,6 +56,9 @@ interface EarthPit {
   remark: string;
   location: string;
   description: string;
+  area: string;
+  type_earthing: string;
+  ep_tag: string;
   earth_resistance: {
     open_pit: string;
     Connected: string;

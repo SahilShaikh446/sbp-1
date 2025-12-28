@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   clientRow: {
     flexDirection: "row",
-    marginBottom: 12,
+    marginBottom: 2,
     fontSize: 13,
   },
   label: {
@@ -90,18 +90,25 @@ const styles = StyleSheet.create({
     width: 80,
   },
   colon: {
-    width: 5,
+    width: 10,
     textAlign: "center",
   },
   value: {
+    flex: 1,              // 👈 important
     fontWeight: "bold",
-    marginLeft: 10,
   },
   paragraph: {
     marginBottom: 10,
     fontSize: 13,
     lineHeight: 1.3,
     maxWidth: 460,
+  },
+  clientAddress: {
+    marginLeft: 90,       // aligns under company name
+    fontSize: 12,
+    lineHeight: 1.3,
+    maxWidth: 420,        // 👈 prevents overflow
+    flexWrap: "wrap",
   },
   table: {
     fontSize: 12,
@@ -183,7 +190,7 @@ const OilReport = ({
           <View style={[styles.section, { position: "relative" }]}>
             <View style={styles.row}>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Report No.: TR -- {reportData.report_number || "--"}
+                Report No.: TR - {reportData.report_number || "-"}
               </Text>
               <Text style={{ fontWeight: "bold", fontSize: 14 }}>
                 Date of Filteration:{" "}
@@ -197,31 +204,25 @@ const OilReport = ({
               <Text style={styles.label}>CLIENT</Text>
               <Text style={styles.colon}>:</Text>
               <View style={styles.value}>
-                {reportData.company_id ? (
-                  <>
-                    <Text>
-                      {
-                        companyData?.find(
-                          (i) => `${i.id}` == `${reportData.company_id}`
-                        )?.name
-                      }
-                    </Text>
-                    <Text>
-                      {
-                        companyData?.find(
-                          (i) => `${i.id}` == `${reportData.company_id}`
-                        )?.address
-                      }
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <div>Ms. Dr. Acharya Laboratories Pvt. Ltd.,</div>
-                    <div>Anand Nagar, Ambernath (East)</div>
-                  </>
-                )}
+                <Text>
+                  {
+                    companyData?.find(
+                      (i) => `${i.id}` == `${reportData.company_id}`
+                    )?.name || "--"
+                  }
+                </Text>
               </View>
             </View>
+
+            {/* ADDRESS — FULL WIDTH */}
+            <Text style={styles.clientAddress}>
+              {
+                companyData?.find(
+                  (i) => `${i.id}` == `${reportData.company_id}`
+                )?.address || "--"
+              }
+            </Text>
+
 
             <Text style={styles.paragraph}>
               {reportData.report_description ||

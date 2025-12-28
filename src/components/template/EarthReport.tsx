@@ -60,6 +60,9 @@ function groupByLocation(data: Array<any>) {
         connected: item.earth_resistance?.Connected || "",
         combined: item.earth_resistance?.combined || "",
         groupLocation: item.location || "",
+        groupArea: item.area || "",
+        groupType: item.type_earthing || "",
+        groupEP: item.ep_tag || "",
         isMiddleInGroup: idx === Math.floor(groupSize / 2), // ✅ only middle row shows location
       });
     });
@@ -69,6 +72,88 @@ function groupByLocation(data: Array<any>) {
 
   return groupedData;
 }
+
+const PAGE_WIDTH = 520;
+
+const getTableColumns = (reportData: any) => {
+  const columns: any[] = [
+    { key: "srNo", label: "Sr. No.", weight: 0.6, fixed: 35 },
+
+    { key: "area", label: "Area", weight: 1.2 },
+    { key: "location", label: "Location", weight: 2.2 },
+    { key: "type", label: "Type of Earthing", weight: 1.8 },
+
+    { key: "equipment", label: "Equipment", weight: 4.5 },
+
+    { key: "ep", label: "EP Tag", weight: 1.5 },
+    { key: "pit", label: "Pit Resis.", weight: 1.2 },
+    { key: "grid", label: "Grid Resis.", weight: 1.2 },
+
+    { key: "remark", label: "Remark", weight: 2.0, fixed: 65 },
+  ];
+
+  // remove columns based on flags
+  const activeCols = columns.filter((col) => {
+    if (col.key === "area") return reportData.is_area;
+    if (col.key === "location") return reportData.is_location;
+    if (col.key === "type") return reportData.is_type_earthing;
+    if (col.key === "ep") return reportData.is_ep_tag;
+    if (col.key === "pit") return reportData.is_pit;
+    if (col.key === "grid") return reportData.is_grid;
+    return true;
+  });
+
+  const fixedWidth = activeCols.reduce(
+    (sum, c) => sum + (c.fixed || 0),
+    0
+  );
+
+  const flexibleCols = activeCols.filter((c) => !c.fixed);
+  const totalWeight = flexibleCols.reduce(
+    (sum, c) => sum + c.weight,
+    0
+  );
+
+  const remainingWidth = PAGE_WIDTH - fixedWidth;
+
+  return activeCols.map((c) => ({
+    ...c,
+    width: c.fixed || (c.weight / totalWeight) * remainingWidth,
+  }));
+};
+
+const HeaderCell = ({ width, text, last }: any) => (
+  <View
+    style={{
+      width,
+      borderRightWidth: last ? 0 : 1,
+      borderColor: "black",
+      padding: 4,
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <Text style={{ fontSize: 10, fontWeight: "bold", textAlign: "center" }}>
+      {text}
+    </Text>
+  </View>
+);
+
+const BodyCell = ({ width, text, last }: any) => (
+  <View
+    style={{
+      width,
+      borderRightWidth: last ? 0 : 1,
+      borderColor: "black",
+      padding: 4,
+    }}
+  >
+    <Text style={{ fontSize: 9, textAlign: "center" }}>
+      {text || "--"}
+    </Text>
+  </View>
+);
 
 const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
   const PAGE_WIDTH = 510;
@@ -97,6 +182,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
     currentPage++;
   }
   console.log(reportData);
+  const columns = getTableColumns(reportData);
 
   return (
     <Document style={{ fontFamily: "Tinos" }}>
@@ -138,7 +224,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                 <>
                   <View style={tw("flex flex-row justify-between text-lg")}>
                     <Text style={tw("font-bold")}>
-                      Report No.: EP -- {reportData?.report_number || "--"}
+                      Report No.: EP - {reportData?.report_number || "-"}
                     </Text>
                     <Text style={tw("font-bold")}>
                       DATE OF EARTH TESTING:{" "}
@@ -161,7 +247,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                           (i) => `${i.id}` === `${reportData?.company_id}`
                         )?.name || "--"}
                       </Text>
-                      <Text>
+                      <Text style={tw("text-sm max-w-[420pt]")}>
                         {companyData?.find(
                           (i) => `${i.id}` === `${reportData?.company_id}`
                         )?.address || "--"}
@@ -182,307 +268,69 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
               )}
 
               {/* Table starts on the first page and continues on subsequent pages */}
-              <View style={tw("w-full")}>
-                <View style={tw("border border-black")}>
-                  {/* Table Header (only on the first page) */}
-                  {pageIndex === 0 && (
-                    <>
-                      <View
-                        style={tw(
-                          "border-b border-black flex flex-row justify-center items-center -py-2"
-                        )}
-                      >
-                        <Text
-                          style={tw(
-                            "text-xl mt-2 font-bold text-center underline"
-                          )}
-                        >
-                          Earth Pit List
-                        </Text>
-                      </View>
-                      <View style={tw("flex flex-row")}>
-                        <View
-                          style={tw(
-                            "border-r border-black px-2 py-1 w-[60pt] flex flex-col justify-center"
-                          )}
-                        >
-                          <Text style={tw("text-sm font-semibold text-center")}>
-                            Sr. No.
-                          </Text>
-                        </View>
-                        <View
-                          style={tw(
-                            "border-r border-black px-2 py-1 flex-1 flex flex-col justify-center"
-                          )}
-                        >
-                          <Text style={tw("text-sm font-semibold text-center")}>
-                            Description
-                          </Text>
-                        </View>
-                        {String(reportData.show_location).toLowerCase() ===
-                          "true" && (
-                            <View
-                              style={tw(
-                                "border-r border-black px-2 py-1 w-[120.3pt] flex flex-col justify-center"
-                              )}
-                            >
-                              <Text
-                                style={tw("text-sm font-semibold text-center")}
-                              >
-                                Locations
-                              </Text>
-                            </View>
-                          )}
-                        <View
-                          style={tw(
-                            `border-r border-black ${String(
-                              reportData.show_open_connected
-                            ).toLowerCase() === "true"
-                              ? "w-[151.8pt]"
-                              : "w-[151.8pt]"
-                            }`
-                          )}
-                        >
-                          <Text
-                            style={tw("text-sm font-semibold text-center py-1")}
-                          >
-                            Earth Resistance
-                          </Text>
-                          {String(
-                            reportData.show_open_connected
-                          ).toLowerCase() === "true" && (
-                              <View style={tw("flex flex-row")}>
-                                <View
-                                  style={tw(
-                                    "border-t border-r border-black py-1 flex-1"
-                                  )}
-                                >
-                                  <Text style={tw("text-xs text-center")}>
-                                    Open Pit
-                                  </Text>
-                                </View>
-                                <View
-                                  style={tw("border-t border-black py-1 flex-1")}
-                                >
-                                  <Text style={tw("text-xs text-center")}>
-                                    Connected
-                                  </Text>
-                                </View>
-                              </View>
-                            )}
-                        </View>
-                        <View
-                          style={tw(
-                            "px-2 py-1 w-[58.2pt] flex flex-col justify-center"
-                          )}
-                        >
-                          <Text style={tw("text-sm font-semibold text-center")}>
-                            Remark
-                          </Text>
-                        </View>
-                      </View>
-                    </>
-                  )}
-
-                  {/* Body (continued on subsequent pages without header) */}
-                  {/* ---------- Table Body (page-local grouping + merged Location) ---------- */}
-                  {(() => {
-                    // annotate pageData per-page (groups of consecutive same location)
-                    const annotated: any[] = [];
-                    let i = 0;
-                    while (i < pageData.length) {
-                      const loc = (
-                        pageData[i].groupLocation ||
-                        pageData[i].location ||
-                        ""
-                      ).toString();
-                      let j = i;
-                      while (
-                        j < pageData.length &&
-                        (
-                          pageData[j].groupLocation ||
-                          pageData[j].location ||
-                          ""
-                        ).toString() === loc
-                      ) {
-                        j++;
-                      }
-                      const groupSize = j - i;
-
-                      for (let k = 0; k < groupSize; k++) {
-                        const row = pageData[i + k];
-                        const isFirst = k === 0;
-                        const isLast = k === groupSize - 1;
-                        // choose middle row: single row -> that row; odd -> exact middle; even -> upper-middle (adjust if you want lower)
-                        let isPageMiddle: boolean;
-                        if (groupSize === 1) {
-                          isPageMiddle = true; // Single row, show location
-                        } else if (groupSize === 2) {
-                          isPageMiddle = k === 1; // For two rows, keep in second row
-                        } else if (groupSize === 3) {
-                          isPageMiddle = k === 1; // For three rows, show in second row (instead of second-to-last)
-                        } else {
-                          isPageMiddle = k === groupSize - 3; // For four or more rows, show in third-to-last row
-                        }
-
-                        annotated.push({
-                          ...row,
-                          isPageFirst: isFirst,
-                          isPageLast: isLast,
-                          isPageMiddle: isPageMiddle,
-                          pageGroupSize: groupSize,
-                        });
-                      }
-
-                      i = j;
-                    }
-
-                    // render annotated rows
-                    return annotated.map((item) => (
-                      <View
-                        key={item.srNo || `${item.location}-${Math.random()}`}
-                        style={tw("flex flex-row")}
-                      >
-                        {/* Sr. No. */}
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 w-[60pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.srNo}
-                          </Text>
-                        </View>
-
-                        {/* Description */}
-                        <View
-                          style={tw(
-                            "border-r border-t border-black px-2 py-1 flex-1"
-                          )}
-                        >
-                          <Text style={tw("text-sm")}>{item.description}</Text>
-                        </View>
-
-                        {/* Location column: show borders only on first/last of page-group, text only on middle */}
-                        {String(reportData.show_location).toLowerCase() ===
-                          "true" && (
-                            <View
-                              style={[
-                                // keep basic layout from tailwind for spacing/alignment
-                                tw(
-                                  "px-2 w-[120pt] flex justify-center items-center"
-                                ),
-                                {
-                                  // always keep right border for the column edge
-                                  borderRightWidth: 1,
-                                  borderRightColor: "black",
-
-                                  // conditional top/bottom borders for merged look
-                                  borderTopWidth: item.isPageFirst ? 1 : 0,
-                                  borderBottomWidth: item.isPageLast ? 0 : 0,
-                                  borderTopColor: "black",
-                                  borderBottomColor: "black",
-                                },
-                              ]}
-                            >
-                              {item.isPageMiddle && (
-                                <Text
-                                  style={{
-                                    fontSize: 10,
-                                    fontWeight: "500",
-                                    textAlign: "center",
-                                    alignSelf: "center",
-                                  }}
-                                >
-                                  {item.groupLocation || "--"}
-                                </Text>
-                              )}
-                            </View>
-                          )}
-
-                        {/* Open Pit */}
-                        {String(
-                          reportData.show_open_connected
-                        ).toLowerCase() === "true" && (
-                            <View
-                              style={tw(
-                                "border-r border-t border-black px-2 py-1 w-[76pt]"
-                              )}
-                            >
-                              <Text style={tw("text-sm text-center")}>
-                                {item.openPit}
-                              </Text>
-                            </View>
-                          )}
-                        {String(
-                          reportData.show_open_connected
-                        ).toLowerCase() === "true" && (
-                            <View
-                              style={tw(
-                                "border-t border-black px-2 py-1 w-[75pt]"
-                              )}
-                            >
-                              <Text style={tw("text-sm text-center")}>
-                                {item.connected}
-                              </Text>
-                            </View>
-                          )}
-                        {String(
-                          reportData.show_open_connected
-                        ).toLowerCase() === "false" && (
-                            <View
-                              style={tw(
-                                "border-t border-black px-2 py-1 w-[151pt]"
-                              )}
-                            >
-                              <Text style={tw("text-sm text-center")}>
-                                {item.combined}
-                              </Text>
-                            </View>
-                          )}
-
-                        {/* Remark */}
-                        <View
-                          style={tw(
-                            "border-l border-t border-black px-2 py-1 w-[59pt]"
-                          )}
-                        >
-                          <Text style={tw("text-sm text-center")}>
-                            {item.remark || "--"}
-                          </Text>
-                        </View>
-                      </View>
-                    ));
-                  })()}
-
-                  {pageIndex === pages.length - 1 && (
-                    <>
-                      <View style={tw("border-t border-black px-3 py-2")}>
-                        <View style={tw("flex flex-row justify-between")}>
-                          <Text style={tw("text-sm")}>
-                            <Text style={tw("font-bold")}>Remark</Text>
-                            {reportData?.remark || "--"}
-                          </Text>
-                        </View>
-                      </View>
-                    </>
-                  )}
-                </View>
-                {pageIndex === pages.length - 1 && (
-                  <View style={tw("border-t border-black px-3 py-2")}>
-                    <View style={tw("flex flex-row justify-between")}>
-                      <Text style={tw("text-sm")}>
-                        <Text style={tw("font-bold")}>For Client: </Text>
-                        {reportData?.for_client || "--"}
-                      </Text>
-                      <Text style={tw("text-sm")}>
-                        <Text style={tw("font-bold")}>For Ok Agencies.:- </Text>
-                        M/s. {reportData?.for_ok_agency || "--"}
-                      </Text>
-                    </View>
+              <View style={{ borderWidth: 1, borderColor: "black" }}>
+                {/* Title */}
+                {pageIndex === 0 && (
+                  <View style={{ borderBottomWidth: 1, padding: 6 }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      Earth Pit List
+                    </Text>
                   </View>
                 )}
+
+                {/* Header */}
+                {pageIndex === 0 && (
+                  <View style={{ flexDirection: "row", borderBottomWidth: 1 }}>
+                    {columns.map((col, i) => (
+                      <HeaderCell
+                        key={col.key}
+                        width={col.width}
+                        text={col.label}
+                        last={i === columns.length - 1}
+                      />
+                    ))}
+                  </View>
+                )}
+
+                {/* Rows */}
+                {pageData.map((item: any) => (
+                  <View
+                    key={item.srNo}
+                    style={{ flexDirection: "row" }}
+                  >
+                    {columns.map((col: any, i: number) => {
+                      const valueMap: any = {
+                        srNo: item.srNo,
+                        area: item.area,
+                        location: item.location,
+                        type: item.type_earthing,
+                        equipment: item.equipment || item.description,
+                        ep: item.ep_tag,
+                        pit: item.pit_resistance,
+                        grid: item.grid_resistance,
+                        remark: item.remark,
+                      };
+
+                      return (
+                        <BodyCell
+                          key={col.key}
+                          width={col.width}
+                          text={valueMap[col.key]}
+                          last={i === columns.length - 1}
+                        />
+                      );
+                    })}
+                  </View>
+                ))}
               </View>
+
 
               {/* Footer and stamp only on the last page */}
               <>

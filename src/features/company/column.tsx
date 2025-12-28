@@ -35,6 +35,7 @@ interface companyType {
   id: string;
   name: string;
   address: string;
+  remainder_date: string;
 }
 
 export const COLUMNS: ColumnDef<companyType>[] = [
@@ -47,6 +48,10 @@ export const COLUMNS: ColumnDef<companyType>[] = [
     accessorKey: "address",
   },
   {
+    header: "Remainder Date",
+    accessorKey: "remainder_date",
+  },
+  {
     header: "Edit",
     cell: ({ row }) => {
       const [open, setOpen] = useState(false);
@@ -56,6 +61,7 @@ export const COLUMNS: ColumnDef<companyType>[] = [
         defaultValues: {
           name: "",
           address: "",
+          remainder_date: "",
         },
       });
 
@@ -80,6 +86,7 @@ export const COLUMNS: ColumnDef<companyType>[] = [
       useEffect(() => {
         open && form.setValue("name", `${row.original.name}`);
         open && form.setValue("address", `${row.original.address}`);
+        open && form.setValue("remainder_date", `${row.original.remainder_date}`);
       }, [row, open]);
 
       return (
@@ -127,6 +134,25 @@ export const COLUMNS: ColumnDef<companyType>[] = [
                           <FormControl>
                             <Input
                               type="text"
+                              placeholder="eg. 123 Main St"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="remainder_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="after:content-['*'] after:ml-0.5 after:text-red-500">
+                            Remainder Date
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
                               placeholder="eg. 123 Main St"
                               {...field}
                             />

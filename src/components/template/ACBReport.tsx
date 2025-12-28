@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     borderRightWidth: 1,
     borderColor: "#000000",
-    paddingVertical: 6,
+    paddingVertical: 3,
     paddingHorizontal: 2,
   },
   tableCellLast: {
@@ -262,7 +262,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   flexWrap: "nowrap",
                 }}
               >
-                Report No.: ACB -- {reportData.report_number}
+                Report No.: ACB - {reportData.report_number}
               </Text>
               <Text
                 style={{
@@ -276,17 +276,31 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
             </View>
 
             <View style={styles.clientRow}>
-              <Text style={styles.label}>
+              <Text style={{ fontWeight: "bold", paddingLeft: 4, width: "15%" }}>
                 Name of Client:
-                {companyData?.find(
-                  (i) => `${i.id}` === `${reportData.company_id}`
-                )?.address
-                  ? `; ${companyData.find(
+              </Text>
+              <View>
+                <Text style={styles.value}>
+                  {companyData?.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.name
+                    ? `${companyData.find(
+                      (i) => `${i.id}` === `${reportData.company_id}`
+                    )?.name
+                    }`
+                    : "--"}
+                </Text>
+                <Text style={styles.value}>
+                  {companyData?.find(
                     (i) => `${i.id}` === `${reportData.company_id}`
                   )?.address
-                  }`
-                  : "Ambernath (E)"}
-              </Text>
+                    ? `${companyData.find(
+                      (i) => `${i.id}` === `${reportData.company_id}`
+                    )?.address
+                    }`
+                    : "--"}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.table}>

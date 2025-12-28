@@ -577,7 +577,7 @@ export default function HTBreakerReportupdate() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
-        {/* <Card className="h-fit">
+        <Card className="h-fit">
           <CardHeader>
             <h2 className="text-2xl font-bold text-gray-800">
               Create HT Breaker Report
@@ -1413,8 +1413,8 @@ export default function HTBreakerReportupdate() {
               </form>
             </Form>
           </CardContent>
-        </Card> */}
-        <PDFViewer className="w-full h-[800px]">
+        </Card>
+        {/* <PDFViewer className="w-full h-[800px]">
           <HTBreakerReport
             reportData={{
               ...form.watch(),
@@ -1422,7 +1422,7 @@ export default function HTBreakerReportupdate() {
             }}
             companyData={company || []}
           />
-        </PDFViewer>
+        </PDFViewer> */}
         <Card className="h-auto overflow-auto">
           <div className="max-w-[2480px] max-h-[3508px] px-8 mx-auto flex flex-col">
             <div className="border border-gray-300">
@@ -1442,52 +1442,57 @@ export default function HTBreakerReportupdate() {
                 <div className="bg-[#084f88] text-white text-center py-1 text-xs font-semibold"></div>
               </div>
               <div className="px-6 py-1" ref={containerRef}>
-                <div className="flex-col flex-wrap justify-between mx-auto tinos-regular">
-                  <div className="flex justify-between font-bold text-md ">
-                    <div className="flex gap-3">
-                      Client:-{" "}
-                      {form.watch("company_id") ? (
-                        <>
-                          <span>
-                            {
-                              company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.name
-                            }
-                          </span>
-                          <span className="ml-2 ">
-                            {
-                              company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.address
-                            }
-                          </span>
-                        </>
-                      ) : (
-                        <span>
-                          <span>-</span>
-                          <span>-</span>
-                        </span>
-                      )}
-                    </div>
+                <div className="mx-auto tinos-regular text-sm">
+
+                  {/* ROW 1 */}
+                  <div className="grid grid-cols-3 gap-4 font-bold">
+                    {/* Client Name */}
                     <div>
-                      <span>
-                        Report No.: HT -- {form.watch("report_number")}
-                      </span>
-                      <span className="ml-1">
-                        {form.watch("report_number") || "--"}
+                      Client:-{" "}
+                      <span className="font-normal">
+                        {company?.find(
+                          (i) => `${i.id}` === `${form.watch("company_id")}`
+                        )?.name || "--"}
                       </span>
                     </div>
-                    <>
+
+                    {/* Report No */}
+                    <div className="text-center">
+                      Report No.:{" "}
+                      <span className="font-normal">
+                        HT – {form.watch("report_number") || "-"}
+                      </span>
+                    </div>
+
+                    {/* Service Date */}
+                    <div className="text-right">
                       Service Date:-{" "}
-                      {convertReportDate(form.watch("report_date")) ||
-                        "--/--/----"}
-                    </>
+                      <span className="font-normal">
+                        {convertReportDate(form.watch("report_date")) || "--/--/----"}
+                      </span>
+                    </div>
                   </div>
-                  <div>Location:- {form.watch("location") || "--"}</div>
+
+                  {/* ROW 2 – ADDRESS (FULL WIDTH) */}
+                  <div className="mt-1">
+                    <span className="font-bold">Address:- </span>
+                    <span className="font-normal">
+                      {company?.find(
+                        (i) => `${i.id}` === `${form.watch("company_id")}`
+                      )?.address || "--"}
+                    </span>
+                  </div>
+
+                  {/* ROW 3 – LOCATION */}
+                  <div className="mt-1">
+                    <span className="font-bold">Location:- </span>
+                    <span className="font-normal">
+                      {form.watch("location") || "--"}
+                    </span>
+                  </div>
+
                 </div>
+
                 <table className="w-full border-collapse border border-black">
                   <thead>
                     <tr>

@@ -68,24 +68,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { PDFViewer } from "@react-pdf/renderer";
+import EarthReport from "@/components/template/EarthReport";
 
 export const reportFormSchema = z.object({
   earth_pit_list: z.array(
     z.object({
-      description: z.string(),
+      area: z.string(),
       location: z.string(),
+      type_earthing: z.string(),
+      equipment: z.string(),
+      ep_tag: z.string(),
+      pit_resistance: z.string(),
+      grid_resistance: z.string(),
       remark: z.string(),
-      earth_resistance: z.object({
-        open_pit: z.string(),
-        Connected: z.string(),
-        combined: z.string(),
-        id: z.number(),
-      }),
     })
   ),
   report_date: z.string().min(1, "Report date is required"),
-  show_location: z.boolean(),
-  show_open_connected: z.boolean(),
+  is_area: z.boolean(),
+  is_location: z.boolean(),
+  is_type_earthing: z.boolean(),
+  is_ep_tag: z.boolean(),
+  is_pit: z.boolean(),
+  is_grid: z.boolean(),
   for_client: z.string(),
   for_ok_agency: z.string(),
   company_id: z.string().min(1, "Company Name is required"),
@@ -176,12 +181,24 @@ export default function EarthReportUpdate() {
         form.setValue("company_id", `${res.data.company_id}`);
         form.setValue("remark", res.data.remark || "");
         form.setValue(
-          "show_location",
-          String(res.data.show_location).toLowerCase() === "true"
+          "is_area",
+          String(res.data.is_area).toLowerCase() === "true"
         );
         form.setValue(
-          "show_open_connected",
-          String(res.data.show_open_connected).toLowerCase() === "true"
+          "is_location",
+          String(res.data.is_location).toLowerCase() === "true"
+        );
+        form.setValue(
+          "is_type_earthing",
+          String(res.data.is_type_earthing).toLowerCase() === "true"
+        );
+        form.setValue(
+          "is_ep_tag",
+          String(res.data.is_ep_tag).toLowerCase() === "true"
+        );
+        form.setValue(
+          "is_pit",
+          String(res.data.is_pit).toLowerCase() === "true"
         );
         form.setValue("remark", res.data.remark);
         replace(res.data.earth_pit_list);
@@ -213,30 +230,39 @@ export default function EarthReportUpdate() {
     !company && dispatch(fetchCompanyAsync());
   }, [company]);
 
+  console.log("Submitting data:", form.watch());
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
-    data.show_location == false &&
+    data.is_location == false &&
       (data.earth_pit_list = data.earth_pit_list.map((i) => ({
         ...i,
         location: "",
       })));
-    if (data.show_open_connected === false) {
-      data.earth_pit_list = data.earth_pit_list.map((i) => ({
+    data.is_area == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
         ...i,
-        earth_resistance: {
-          ...i.earth_resistance,
-          Connected: "",
-          open_pit: "",
-        },
-      }));
-    } else {
-      data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        area: "",
+      })));
+    data.is_type_earthing == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
         ...i,
-        earth_resistance: {
-          ...i.earth_resistance,
-          combined: "",
-        },
-      }));
-    }
+        type_earthing: "",
+      })));
+    data.is_ep_tag == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        ep_tag: "",
+      })));
+    data.is_pit == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        pit_resistance: "",
+      })));
+    data.is_grid == false &&
+      (data.earth_pit_list = data.earth_pit_list.map((i) => ({
+        ...i,
+        grid_resistance: "",
+      })));
+
     try {
       const res = await axios.post(BASE_URL + "API/Update/Earth/Test/Report", {
         ...data,
@@ -263,42 +289,42 @@ export default function EarthReportUpdate() {
   }
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
-          <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-            <div
-              className="flex size-9 shrink-0 items-center justify-center rounded-full border"
-              aria-hidden="true"
-            >
-              <CircleAlertIcon className="opacity-80" size={16} />
-            </div>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to hide Open Connected Columns?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                setIsOpen(false); // just close modal
-                form.setValue("show_open_connected", true); // reset switch back to true
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setIsOpen(false);
-                form.setValue("show_open_connected", false); // confirm → set to false
-              }}
-            >
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+            <AlertDialogContent>
+              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                <div
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border"
+                  aria-hidden="true"
+                >
+                  <CircleAlertIcon className="opacity-80" size={16} />
+                </div>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to hide Open Connected Columns?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  onClick={() => {
+                    setIsOpen(false); // just close modal
+                    form.setValue("is_open_connected", true); // reset switch back to true
+                  }}
+                >
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    setIsOpen(false);
+                    form.setValue("show_open_connected", false); // confirm → set to false
+                  }}
+                >
+                  Confirm
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog> */}
       <div className="grid grid-cols-2 gap-6">
         {/* Form Section */}
         <Card className="h-fit">
@@ -408,8 +434,8 @@ export default function EarthReportUpdate() {
                             variant="outline"
                             role="combobox"
                             className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
-                                ? "border-red-500"
-                                : ""
+                              ? "border-red-500"
+                              : ""
                               }`}
                           >
                             <span
@@ -480,10 +506,27 @@ export default function EarthReportUpdate() {
                   </CardHeader>
                   <CardContent className="">
                     <div className="space-y-6">
-                      <div className="flex gap-2 w-full justify-between">
+                      <div className="grid grid-cols-2 gap-2 w-full ">
                         <FormField
                           control={form.control}
-                          name="show_location"
+                          name="is_area"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>Area</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="is_location"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
@@ -500,29 +543,73 @@ export default function EarthReportUpdate() {
                         />
                         <FormField
                           control={form.control}
-                          name="show_open_connected"
+                          name="is_type_earthing"
                           render={({ field }) => (
                             <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
-                                <FormLabel>Show Open Connected </FormLabel>
+                                <FormLabel>Type Earthing</FormLabel>
                               </div>
                               <FormControl>
                                 <Switch
                                   checked={field.value}
-                                  onCheckedChange={(val) => {
-                                    if (!val) {
-                                      // user unticked → ask confirmation
-                                      setIsOpen(true);
-                                    } else {
-                                      // user enabled directly
-                                      field.onChange(true);
-                                    }
-                                  }}
+                                  onCheckedChange={field.onChange}
                                 />
                               </FormControl>
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={form.control}
+                          name="is_ep_tag"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>EP Tag</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="is_pit"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>Pit Resistance</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="is_grid"
+                          render={({ field }) => (
+                            <FormItem className="flex w-full flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel>Grid Resistance</FormLabel>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
                       </div>
                       {fields.map((field, index) => (
                         <div
@@ -543,29 +630,74 @@ export default function EarthReportUpdate() {
                             )}
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {form.watch("is_area") && (
+                              <FormField
+                                control={form.control}
+                                name={`earth_pit_list.${index}.area`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Area</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="e.g., LT, ST, GF"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />)}
+                            {
+                              form.watch("is_location") && (
+                                <FormField
+                                  control={form.control}
+                                  name={`earth_pit_list.${index}.location`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Location</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="e.g.," {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />)
+                            }
+                            {form.watch("is_type_earthing") && (
+                              <FormField
+                                control={form.control}
+                                name={`earth_pit_list.${index}.type_earthing`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Type Earthing</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g.," {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
                             <FormField
                               control={form.control}
-                              name={`earth_pit_list.${index}.description`}
+                              name={`earth_pit_list.${index}.equipment`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Description</FormLabel>
+                                  <FormLabel>Equipment</FormLabel>
                                   <FormControl>
-                                    <Input
-                                      placeholder="e.g., LT, ST, GF"
-                                      {...field}
-                                    />
+                                    <Input placeholder="e.g.," {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                            {form.watch("show_location") && (
+                            {form.watch("is_ep_tag") && (
                               <FormField
                                 control={form.control}
-                                name={`earth_pit_list.${index}.location`}
+                                name={`earth_pit_list.${index}.ep_tag`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Location</FormLabel>
+                                    <FormLabel>EP Tag</FormLabel>
                                     <FormControl>
                                       <Input placeholder="e.g.," {...field} />
                                     </FormControl>
@@ -574,14 +706,14 @@ export default function EarthReportUpdate() {
                                 )}
                               />
                             )}
-                            {form.watch("show_open_connected") && (
+                            {form.watch("is_pit") && (
                               <>
                                 <FormField
                                   control={form.control}
-                                  name={`earth_pit_list.${index}.earth_resistance.open_pit`}
+                                  name={`earth_pit_list.${index}.pit_resistance`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel>Open Pit</FormLabel>
+                                      <FormLabel>Pit Resistance</FormLabel>
                                       <FormControl>
                                         <Input placeholder="e.g.," {...field} />
                                       </FormControl>
@@ -589,35 +721,22 @@ export default function EarthReportUpdate() {
                                     </FormItem>
                                   )}
                                 />
-                                <FormField
-                                  control={form.control}
-                                  name={`earth_pit_list.${index}.earth_resistance.Connected`}
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Connected</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="e.g.," {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
+                                {
+                                  form.watch("is_grid") &&
+                                  <FormField
+                                    control={form.control}
+                                    name={`earth_pit_list.${index}.grid_resistance`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Grid Resistance</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="e.g.," {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />}
                               </>
-                            )}
-                            {form.watch("show_open_connected") == false && (
-                              <FormField
-                                control={form.control}
-                                name={`earth_pit_list.${index}.earth_resistance.combined`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Combined</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="e.g.," {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
                             )}
                             <FormField
                               control={form.control}
@@ -640,14 +759,13 @@ export default function EarthReportUpdate() {
                         variant="outline"
                         onClick={() =>
                           append({
-                            description: "",
+                            area: "",
                             location: "",
-                            earth_resistance: {
-                              open_pit: "",
-                              Connected: "",
-                              combined: "",
-                              id: fields.length + 1,
-                            },
+                            type_earthing: "",
+                            equipment: "",
+                            ep_tag: "",
+                            pit_resistance: "",
+                            grid_resistance: "",
                             remark: "",
                           })
                         }
@@ -661,23 +779,25 @@ export default function EarthReportUpdate() {
                 </Card>
                 <Card>
                   <CardContent>
-                    <FormField
-                      control={form.control}
-                      name="remark"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>Remark</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              placeholder="Enter Remark"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="remark"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Remark</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="text"
+                                {...field}
+                                placeholder="Enter Remark"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <div className="grid grid-cols-2 gap-4 mt-3">
                       <FormField
                         control={form.control}
@@ -762,7 +882,7 @@ export default function EarthReportUpdate() {
                 <div className="">
                   <div className="flex justify-between items-start text-xl">
                     <div className="font-bold">
-                      Report No.:EP -- {form.watch("report_number") || "--"}
+                      Report No.: EP - {form.watch("report_number") || "-"}
                     </div>
                     <div className="font-bold">
                       DATE OF EARTH TESTING:
@@ -808,152 +928,169 @@ export default function EarthReportUpdate() {
                 <div className="mt-">
                   <table className="w-full border-collapse border border-black">
                     <thead>
-                      <tr className="">
+                      <tr>
                         <th
-                          className="border border-black px-2  font-bold text-xl underline"
-                          colSpan={6}
+                          colSpan={
+                            3 +
+                            Number(form.watch("is_area")) +
+                            Number(form.watch("is_location")) +
+                            Number(form.watch("is_type_earthing")) +
+                            Number(form.watch("is_ep_tag")) +
+                            Number(form.watch("is_pit")) +
+                            Number(form.watch("is_grid"))
+                          }
+                          className="border border-black text-xl font-bold underline text-center py-2"
                         >
                           Earth Pit List
                         </th>
                       </tr>
-                      <tr className="">
-                        <th
-                          className="border border-black px-2  text-sm font-semibold"
-                          rowSpan={2}
-                        >
+
+                      <tr>
+                        <th className="border border-black px-2 text-sm font-semibold">
                           Sr. No.
                         </th>
-                        <th
-                          rowSpan={2}
-                          className="border border-black px-2  text-sm font-semibold"
-                        >
-                          Description
-                        </th>
-                        {form.watch("show_location") && (
-                          <th
-                            rowSpan={2}
-                            className="border border-black px-2  text-sm font-semibold"
-                          >
+
+                        {form.watch("is_area") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
+                            Area
+                          </th>
+                        )}
+
+                        {form.watch("is_location") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
                             Location
                           </th>
                         )}
-                        <th
-                          className="border border-black px-2  text-sm font-semibold"
-                          colSpan={
-                            form.watch("show_open_connected") == true ? 2 : 1
-                          }
-                        >
-                          Earth Resistance
+
+                        {form.watch("is_type_earthing") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
+                            Type of Earthing
+                          </th>
+                        )}
+
+                        <th className="border border-black px-2 text-sm font-semibold">
+                          Equipment
                         </th>
-                        <th
-                          className={`border border-black px-2  text-sm font-semibold`}
-                          rowSpan={2}
-                        >
-                          Remark
+
+                        {form.watch("is_ep_tag") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
+                            EP No./Tag
+                          </th>
+                        )}
+
+                        {form.watch("is_pit") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
+                            Pit Resis.
+                          </th>
+                        )}
+
+                        {form.watch("is_grid") && (
+                          <th className="border border-black px-2 text-sm font-semibold">
+                            Grid Resis.
+                          </th>
+                        )}
+
+                        <th className="border border-black px-2 text-sm font-semibold">
+                          Remarks
                         </th>
                       </tr>
-                      {form.watch("show_open_connected") && (
-                        <tr className="">
-                          <th className="border border-black px-2  text-xs">
-                            Open Pit
-                          </th>
-                          <th className="border border-black px-2  text-xs">
-                            Connected
-                          </th>
-                        </tr>
-                      )}
                     </thead>
                     <tbody>
-                      {earthPitList.map((item, index) => {
-                        const location = item.location || "No Location";
+                      {earthPitList.map((item, index) => (
+                        <tr key={index}>
+                          <td className="border border-black text-center text-sm">
+                            {index + 1}
+                          </td>
 
-                        let rowSpan = 1;
-                        if (
-                          index === 0 ||
-                          location !== earthPitList[index - 1].location
-                        ) {
-                          for (
-                            let i = index + 1;
-                            i < earthPitList.length;
-                            i++
-                          ) {
-                            if (earthPitList[i].location === location)
-                              rowSpan++;
-                            else break;
+                          {form.watch("is_area") && (
+                            <td className="border border-black px-1 text-center text-sm">
+                              {item.area || ""}
+                            </td>
+                          )}
+
+                          {form.watch("is_location") && (
+                            <td className="border border-black px-1 text-center text-sm">
+                              {item.location || ""}
+                            </td>
+                          )}
+
+                          {form.watch("is_type_earthing") && (
+                            <td className="border border-black px-1 text-center text-sm">
+                              {item.type_earthing || ""}
+                            </td>
+                          )}
+
+                          <td className="border border-black px-1 text-center text-sm">
+                            {item.equipment || "--"}
+                          </td>
+
+                          {form.watch("is_ep_tag") && (
+                            <td className="border border-black text-center text-sm">
+                              {item.ep_tag || "--"}
+                            </td>
+                          )}
+
+                          {form.watch("is_pit") && (
+                            <td className="border border-black text-center text-sm">
+                              {item.pit_resistance || "--"}
+                            </td>
+                          )}
+
+                          {form.watch("is_grid") && (
+                            <td className="border border-black text-center text-sm">
+                              {item.grid_resistance || "--"}
+                            </td>
+                          )}
+
+                          <td className="border border-black text-center text-sm">
+                            {item.remark || "--"}
+                          </td>
+                        </tr>
+                      ))}
+
+                      <tr>
+                        <td
+                          colSpan={
+                            3 +
+                            Number(form.watch("is_area")) +
+                            Number(form.watch("is_location")) +
+                            Number(form.watch("is_type_earthing")) +
+                            Number(form.watch("is_ep_tag")) +
+                            Number(form.watch("is_pit")) +
+                            Number(form.watch("is_grid"))
                           }
-                        } else {
-                          rowSpan = 0;
-                        }
-
-                        return (
-                          <tr key={index}>
-                            <td className="border border-black px-2 text-center text-sm">
-                              {item.earth_resistance?.id || index + 1}
-                            </td>
-                            <td className="border border-black px-2 text-sm">
-                              {item.description || "--"}
-                            </td>
-                            {form.watch("show_location") && rowSpan > 0 && (
-                              <td
-                                className="border border-black px-2 text-sm font-medium"
-                                rowSpan={rowSpan}
-                              >
-                                {location === "No Location" ? "" : location}
-                              </td>
-                            )}
-                            {form.watch("show_open_connected") && (
-                              <td className="border border-black px-2 text-center text-sm">
-                                {item.earth_resistance?.open_pit || "--"}
-                              </td>
-                            )}
-                            {form.watch("show_open_connected") && (
-                              <td className="border border-black px-2 text-center text-sm">
-                                {item.earth_resistance?.Connected || "--"}
-                              </td>
-                            )}
-                            {form.watch("show_open_connected") == false && (
-                              <td className="border border-black px-2 text-center text-sm">
-                                {item.earth_resistance?.combined || "--"}
-                              </td>
-                            )}
-
-                            <td
-                              className={`border border-black px-2 text-center text-sm ${form.watch("show_open_connected") === false &&
-                                "border-b-black"
-                                }`}
-                            >
-                              {item.remark || "--"}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      <tr className="border-b-black">
-                        <td colSpan={6}>
-                          <div className="flex justify-between px-3">
-                            <div className=" ">
-                              <span className="font-bold">Remark</span>{" "}
-                              {form.watch("remark") || "--"}
-                            </div>
-                          </div>
+                          className="border border-black px-3 text-sm"
+                        >
+                          <span className="font-bold">Remark:</span>{" "}
+                          {form.watch("remark") || "--"}
                         </td>
                       </tr>
-                      <tr className="border border-white border-t-black">
-                        <td colSpan={6} className="border-b-0">
-                          <div className="flex justify-between px-3">
-                            <div className=" ">
-                              <span className="font-bold">For Client:</span>{" "}
-                              {form.watch("for_client") || "--"}
-                            </div>
-                            <div className=" ">
-                              <span className="font-bold">
-                                For Ok Agencies.:-
-                              </span>{" "}
-                              {form.watch("for_ok_agency") || "--"}
-                            </div>
+
+                      <tr>
+                        <td
+                          colSpan={
+                            3 +
+                            Number(form.watch("is_area")) +
+                            Number(form.watch("is_location")) +
+                            Number(form.watch("is_type_earthing")) +
+                            Number(form.watch("is_ep_tag")) +
+                            Number(form.watch("is_pit")) +
+                            Number(form.watch("is_grid"))
+                          }
+                          className="border border-black px-3 text-sm"
+                        >
+                          <div className="flex justify-between">
+                            <span>
+                              <b>For Client:</b> {form.watch("for_client") || "--"}
+                            </span>
+                            <span>
+                              <b>For OK Agencies:</b> {form.watch("for_ok_agency") || "--"}
+                            </span>
                           </div>
                         </td>
                       </tr>
                     </tbody>
+
                   </table>
                 </div>
                 <img
@@ -990,18 +1127,18 @@ export default function EarthReportUpdate() {
               </div>
             </div>
           </div>
-          ;
+
           {/* <PDFViewer width="100%" height="600px" className="w-full">
-                <EarthReport
-                  reportData={{
-                    ...form.watch(),
-                    image_data: { x: position.x },
-                  }}
-                  companyData={company || []}
-                />
-              </PDFViewer> */}
+            <EarthReport
+              reportData={{
+                ...form.watch(),
+                image_data: { x: position.x },
+              }}
+              companyData={company || []}
+            />
+          </PDFViewer> */}
         </Card>
       </div>
-    </div>
+    </div >
   );
 }

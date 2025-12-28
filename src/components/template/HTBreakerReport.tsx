@@ -69,20 +69,23 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     width: "100%",
-    display: "flex",
     flexDirection: "column",
-    margin: "auto",
+    paddingVertical: 4,
+    gap: 2,
+  },
+  headerTopRow: {
+    flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-    fontSize: 33,
-    fontWeight: "bold",
-    gap: 4,
+    alignItems: "flex-start",
   },
   headerText: {
     fontSize: 10,
-    display: "flex",
-    flexDirection: "row",
+    fontWeight: "bold",
+  },
+  headerSubText: {
+    fontSize: 10,
+    fontWeight: "normal",
+    marginTop: 2,
   },
   table: {
     width: "100%",
@@ -450,57 +453,39 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
 
           <View style={styles.container}>
             <View style={styles.headerContainer}>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  margin: "auto",
-                  width: "100%",
-                  fontSize: 33,
-                  fontWeight: "bold",
-                }}
-              >
-                <View style={styles.headerText}>
-                  <Text>Client: </Text>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      gap: 4,
-                    }}
-                  >
-                    <Text style={{}}>
-                      {
-                        companyData?.find(
-                          (i) => `${i.id}` == `${reportData.company_id}`
-                        )?.name
-                      }
-                    </Text>
-                    <Text>
-                      {
-                        companyData?.find(
-                          (i) => `${i.id}` == `${reportData.company_id}`
-                        )?.address
-                      }
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.headerText}>
-                  <Text>
-                    {" "}
-                    Report No: HT -- {reportData?.report_number || "--"}
-                  </Text>
-                </View>
+
+              {/* ROW 1 */}
+              <View style={styles.headerTopRow}>
+                <Text style={styles.headerText}>
+                  Client:{" "}
+                  {companyData?.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.name || "--"}
+                </Text>
+
+                <Text style={styles.headerText}>
+                  Report No: HT – {reportData?.report_number || "-"}
+                </Text>
 
                 <Text style={styles.headerText}>
                   Service Date: {convertReportDate(reportData?.report_date)}
                 </Text>
               </View>
-              <Text style={styles.headerText}>
+
+              {/* ROW 2 – ADDRESS (FULL WIDTH) */}
+              <Text style={styles.headerSubText}>
+                {companyData?.find(
+                  (i) => `${i.id}` === `${reportData.company_id}`
+                )?.address || "--"}
+              </Text>
+
+              {/* ROW 3 – LOCATION */}
+              <Text style={styles.headerSubText}>
                 Location: {reportData?.location || "--"}
               </Text>
+
             </View>
+
 
             <View style={styles.table}>
               <View style={styles.tableRow}>
