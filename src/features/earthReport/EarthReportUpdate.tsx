@@ -79,8 +79,8 @@ export const reportFormSchema = z.object({
       type_earthing: z.string(),
       equipment: z.string(),
       ep_tag: z.string(),
-      pit_resistance: z.string(),
-      grid_resistance: z.string(),
+      pit_resistance: z.string().optional(),
+      grid_resistance: z.string().optional(),
       remark: z.string(),
     })
   ),
@@ -200,6 +200,10 @@ export default function EarthReportUpdate() {
           "is_pit",
           String(res.data.is_pit).toLowerCase() === "true"
         );
+        form.setValue(
+          "is_grid",
+          String(res.data.is_grid).toLowerCase() === "true"
+        );
         form.setValue("remark", res.data.remark);
         replace(res.data.earth_pit_list);
         setPosition({ x: res.data.image_data.x, y: 0 });
@@ -229,8 +233,7 @@ export default function EarthReportUpdate() {
   useEffect(() => {
     !company && dispatch(fetchCompanyAsync());
   }, [company]);
-
-  console.log("Submitting data:", form.watch());
+  console.log(form.formState.errors)
   async function onSubmit(data: z.infer<typeof reportFormSchema>) {
     data.is_location == false &&
       (data.earth_pit_list = data.earth_pit_list.map((i) => ({
@@ -1129,14 +1132,14 @@ export default function EarthReportUpdate() {
           </div>
 
           {/* <PDFViewer width="100%" height="600px" className="w-full">
-            <EarthReport
-              reportData={{
-                ...form.watch(),
-                image_data: { x: position.x },
-              }}
-              companyData={company || []}
-            />
-          </PDFViewer> */}
+                    <EarthReport
+                      reportData={{
+                        ...form.watch(),
+                        image_data: { x: position.x },
+                      }}
+                      companyData={company || []}
+                    />
+                  </PDFViewer> */}
         </Card>
       </div>
     </div >

@@ -91,17 +91,19 @@ const getTableColumns = (reportData: any) => {
 
     { key: "remark", label: "Remark", weight: 2.0, fixed: 65 },
   ];
+  const toBool = (v: any) => v === true || v === "true";
 
   // remove columns based on flags
   const activeCols = columns.filter((col) => {
-    if (col.key === "area") return reportData.is_area;
-    if (col.key === "location") return reportData.is_location;
-    if (col.key === "type") return reportData.is_type_earthing;
-    if (col.key === "ep") return reportData.is_ep_tag;
-    if (col.key === "pit") return reportData.is_pit;
-    if (col.key === "grid") return reportData.is_grid;
+    if (col.key === "area") return toBool(reportData.is_area);
+    if (col.key === "location") return toBool(reportData.is_location);
+    if (col.key === "type") return toBool(reportData.is_type_earthing);
+    if (col.key === "ep") return toBool(reportData.is_ep_tag);
+    if (col.key === "pit") return toBool(reportData.is_pit);
+    if (col.key === "grid") return toBool(reportData.is_grid);
     return true;
   });
+
 
   const fixedWidth = activeCols.reduce(
     (sum, c) => sum + (c.fixed || 0),
@@ -147,6 +149,7 @@ const BodyCell = ({ width, text, last }: any) => (
       borderRightWidth: last ? 0 : 1,
       borderColor: "black",
       padding: 4,
+      borderBottomWidth: 1,
     }}
   >
     <Text style={{ fontSize: 9, textAlign: "center" }}>
@@ -329,6 +332,32 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                     })}
                   </View>
                 ))}
+                {pageIndex === pages.length - 1 && (
+                  <>
+                    <View style={tw("border-black px-3 py-2")}>
+                      <View style={tw("flex flex-row justify-between")}>
+                        <Text style={tw("text-sm")}>
+                          <Text style={tw("font-bold")}>Remark</Text>
+                          {reportData?.remark || "--"}
+                        </Text>
+                      </View>
+                    </View>
+                  </>
+                )}
+                {pageIndex === pages.length - 1 && (
+                  <View style={tw("border-t border-black px-3 py-2")}>
+                    <View style={tw("flex flex-row justify-between")}>
+                      <Text style={tw("text-sm")}>
+                        <Text style={tw("font-bold")}>For Client: </Text>
+                        {reportData?.for_client || "--"}
+                      </Text>
+                      <Text style={tw("text-sm")}>
+                        <Text style={tw("font-bold")}>For Ok Agencies.:- </Text>
+                        M/s. {reportData?.for_ok_agency || "--"}
+                      </Text>
+                    </View>
+                  </View>
+                )}
               </View>
 
 
