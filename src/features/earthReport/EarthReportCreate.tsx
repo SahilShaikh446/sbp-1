@@ -850,7 +850,7 @@ export default function EarthReportCreate() {
                       Report No.: EP - {form.watch("report_number") || "-"}
                     </div>
                     <div className="font-bold">
-                      DATE OF EARTH TESTING:
+                      DATE OF EP TESTING:
                       {convertReportDate(form.watch("report_date")) ||
                         "--/--/----"}
                     </div>

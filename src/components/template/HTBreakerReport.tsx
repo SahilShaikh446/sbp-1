@@ -73,18 +73,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     gap: 2,
   },
-  headerTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
   headerText: {
     fontSize: 10,
     fontWeight: "bold",
   },
+
   headerSubText: {
     fontSize: 10,
-    fontWeight: "normal",
     marginTop: 2,
   },
   table: {
@@ -454,17 +449,16 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
           <View style={styles.container}>
             <View style={styles.headerContainer}>
 
-              {/* ROW 1 */}
-              <View style={styles.headerTopRow}>
+              {/* ROW 1: Report No (Left) | Service Date (Right) */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
                 <Text style={styles.headerText}>
-                  Client:{" "}
-                  {companyData?.find(
-                    (i) => `${i.id}` === `${reportData.company_id}`
-                  )?.name || "--"}
-                </Text>
-
-                <Text style={styles.headerText}>
-                  Report No: HT – {reportData?.report_number || "-"}
+                  Report No: HT – {reportData?.report_number || "--"}
                 </Text>
 
                 <Text style={styles.headerText}>
@@ -472,19 +466,28 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                 </Text>
               </View>
 
-              {/* ROW 2 – ADDRESS (FULL WIDTH) */}
+              {/* ROW 2: Client Name (Full Width) */}
+              <Text style={[styles.headerText, { marginTop: 2 }]}>
+                Client:{" "}
+                {companyData?.find(
+                  (i) => `${i.id}` === `${reportData.company_id}`
+                )?.name || "--"}
+              </Text>
+
+              {/* ROW 3: Address (Full Width) */}
               <Text style={styles.headerSubText}>
                 {companyData?.find(
                   (i) => `${i.id}` === `${reportData.company_id}`
                 )?.address || "--"}
               </Text>
 
-              {/* ROW 3 – LOCATION */}
+              {/* ROW 4: Location */}
               <Text style={styles.headerSubText}>
                 Location: {reportData?.location || "--"}
               </Text>
 
             </View>
+
 
 
             <View style={styles.table}>

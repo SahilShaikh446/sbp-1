@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   section: {
-    paddingVertical: 2, // Matches py-2
+    paddingVertical: 1, // Matches py-2
     borderTop: 1,
     borderLeft: 1,
     borderRight: 1,
@@ -99,13 +99,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#000000",
     paddingVertical: 3,
+    alignItems: "flex-start", // important
   },
   label: {
     fontWeight: "bold",
-    paddingLeft: 4,
+    paddingVertical: 1,
+    paddingRight: 8,
+    width: "40%",
+  },
+  label1: {
+    fontWeight: "bold",
+    paddingVertical: 1,
+    paddingRight: 8,
     width: "60%",
-    flexWrap: "nowrap",
-    paddingVertical: 1, // Matches py-1
+  },
+  label2: {
+    fontWeight: "bold",
+    paddingVertical: 1,
+    paddingRight: 8,
+    width: "60%",
+  },
+  label3: {
+    fontWeight: "bold",
+    paddingVertical: 1,
+  },
+  label4: {
+    fontWeight: "bold",
+    paddingVertical: 1,
   },
   value: {
     fontWeight: "normal",
@@ -129,20 +149,18 @@ const styles = StyleSheet.create({
     borderColor: "#000000",
   },
   tableLabel: {
-    display: "flex",
     flexDirection: "row",
-    width: "66%", // Matches w-2/2
+    width: "63%",        // ✅ balanced (not 66%, not 60%)
     fontWeight: "bold",
     borderRightWidth: 1,
     borderColor: "#000000",
-    paddingRight: 4,
-    paddingLeft: 9, // Matches px-2
+    paddingLeft: 10,      // ✅ add back space
+    paddingRight: 6,
   },
   tableValue: {
-    display: "flex",
     flexDirection: "row",
-    width: "34%", // Matches w-1/2
-    paddingLeft: 2, // Matches px-2
+    width: "37%",        // complements 63%
+    paddingLeft: 6,      // ✅ breathing room
   },
   tableSingle: {
     width: "100%",
@@ -154,13 +172,16 @@ const styles = StyleSheet.create({
     width: "60%", // Matches w-[60%]
     fontWeight: "bold",
   },
+  tableSingleLabel1: {
+    width: "35%", // Matches w-[60%]
+    fontWeight: "bold",
+  },
   tableSingleValue: {},
   tableTriple: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingRight: 8,
     paddingLeft: 14,
-    paddingVertical: 4,
     borderBottomWidth: 1,
     borderColor: "#000000",
     fontWeight: "bold",
@@ -175,7 +196,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignItems: "center",
     borderColor: "#000000",
-    paddingVertical: 4,
+    paddingVertical: 2,
     paddingHorizontal: 2,
   },
   tableCell: {
@@ -193,15 +214,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   sectionTitle: {
-    fontSize: 18, // Matches text-2xl
+    fontSize: 14, // Matches text-2xl
     fontWeight: "bold",
     textAlign: "center",
     borderBottomWidth: 1,
     borderColor: "#000000",
-    paddingVertical: 2,
+    paddingVertical: 1,
   },
   footer: {
-    borderTopWidth: 8, // Matches border-t-8
+    borderTopWidth: 4, // Matches border-t-8
     borderColor: "#fcae08",
     paddingTop: 12, // Matches p-3
     paddingHorizontal: 9,
@@ -276,29 +297,39 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
             </View>
 
             <View style={styles.clientRow}>
-              <Text style={{ fontWeight: "bold", paddingLeft: 4, width: "15%" }}>
+              {/* Label */}
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  paddingLeft: 4,
+                  width: "18%", // slightly more stable
+                }}
+              >
                 Name of Client:
               </Text>
-              <View>
-                <Text style={styles.value}>
+
+              {/* Value */}
+              <View style={{ width: "82%" }}>
+                <Text
+                  style={{
+                    fontWeight: "normal",
+                    flexWrap: "wrap",
+                  }}
+                >
                   {companyData?.find(
                     (i) => `${i.id}` === `${reportData.company_id}`
-                  )?.name
-                    ? `${companyData.find(
-                      (i) => `${i.id}` === `${reportData.company_id}`
-                    )?.name
-                    }`
-                    : "--"}
+                  )?.name || "--"}
                 </Text>
-                <Text style={styles.value}>
+
+                <Text
+                  style={{
+                    fontWeight: "normal",
+                    flexWrap: "wrap",
+                  }}
+                >
                   {companyData?.find(
                     (i) => `${i.id}` === `${reportData.company_id}`
-                  )?.address
-                    ? `${companyData.find(
-                      (i) => `${i.id}` === `${reportData.company_id}`
-                    )?.address
-                    }`
-                    : "--"}
+                  )?.address || "--"}
                 </Text>
               </View>
             </View>
@@ -322,7 +353,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Closing Coil Voltage: </Text>
+                  <Text style={styles.label1}>Closing Coil Voltage: </Text>
                   <Text style={styles.value}>
                     {reportData.closing_coil_voltage || "--"}
                   </Text>
@@ -336,7 +367,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Shunt Release: </Text>
+                  <Text style={styles.label1}>Shunt Release: </Text>
                   <Text style={styles.value}>
                     {reportData.shunt_release || "--"}
                   </Text>
@@ -350,7 +381,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Motor Voltage: </Text>
+                  <Text style={styles.label1}>Motor Voltage: </Text>
                   <Text style={styles.value}>
                     {reportData.motor_voltage || "--"}
                   </Text>
@@ -364,7 +395,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>U/V Release: </Text>
+                  <Text style={styles.label1}>U/V Release: </Text>
                   <Text style={styles.value}>
                     {reportData.u_v_release || "--"}
                   </Text>
@@ -378,7 +409,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Setting: </Text>
+                  <Text style={styles.label1}>Setting: </Text>
                   <Text style={styles.value}>{reportData.setting || "--"}</Text>
                 </View>
               </View>
@@ -388,13 +419,13 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
             <View style={styles.table}>
               <View style={styles.tableRowSplit}>
                 <View style={styles.tableLabel}>
-                  <Text style={styles.label}>ON/OFF Operations Manual: </Text>
+                  <Text style={styles.label2}>ON/OFF Operations Manual: </Text>
                   <Text style={styles.value}>
                     {reportData.on_off_operations_manual || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Moving: </Text>
+                  <Text style={styles.label2}>Moving: </Text>
                   <Text style={styles.value}>
                     {reportData.electrical || "--"}
                   </Text>
@@ -402,7 +433,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
               </View>
               <View style={styles.tableRowSplit}>
                 <View style={styles.tableLabel}>
-                  <Text style={styles.label}>
+                  <Text style={styles.label2}>
                     Condition of Arcing Contacts (Fixed):{" "}
                   </Text>
                   <Text style={styles.value}>
@@ -410,7 +441,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Moving: </Text>
+                  <Text style={styles.label2}>Moving: </Text>
                   <Text style={styles.value}>
                     {reportData.condition_of_arcing_contacts_moving || "--"}
                   </Text>
@@ -418,7 +449,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
               </View>
               <View style={styles.tableRowSplit}>
                 <View style={styles.tableLabel}>
-                  <Text style={styles.label}>
+                  <Text style={styles.label2}>
                     Condition of Main Contacts (Fixed):{" "}
                   </Text>
                   <Text style={styles.value}>
@@ -426,7 +457,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Moving: </Text>
+                  <Text style={styles.label2}>Moving: </Text>
                   <Text style={styles.value}>
                     {reportData.condition_of_main_contacts_moving || "--"}
                   </Text>
@@ -434,13 +465,13 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
               </View>
               <View style={styles.tableRowSplit}>
                 <View style={styles.tableLabel}>
-                  <Text style={styles.label}>Condition of SIC (Fixed): </Text>
+                  <Text style={styles.label2}>Condition of SIC (Fixed): </Text>
                   <Text style={styles.value}>
                     {reportData.condition_of_sic_fixed || "--"}
                   </Text>
                 </View>
                 <View style={styles.tableValue}>
-                  <Text style={styles.label}>Moving: </Text>
+                  <Text style={styles.label2}>Moving: </Text>
                   <Text style={styles.value}>
                     {reportData.condition_of_sic_moving || "--"}
                   </Text>
@@ -449,11 +480,11 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
               <View style={styles.tableRow}>
                 <View
                   style={{
-                    width: "50%", // Matches w-[60%]
+                    width: "35%", // Matches w-[60%]
                     fontWeight: "bold",
                   }}
                 >
-                  <Text style={styles.label}>Condition of Jaw Contact: </Text>
+                  <Text style={styles.label3}>Condition of Jaw Contact: </Text>
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
@@ -462,8 +493,8 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.label}>
+                <View style={{ width: "35%" }}>
+                  <Text style={styles.label3}>
                     Condition of Cradle Terminals:{" "}
                   </Text>
                 </View>
@@ -474,8 +505,8 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.label}>
+                <View style={{ width: "35%" }}>
+                  <Text style={styles.label3}>
                     Condition of Earthing Terminals:{" "}
                   </Text>
                 </View>
@@ -486,8 +517,8 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.label}>Arcing Contact Gap: </Text>
+                <View style={{ width: "35%" }}>
+                  <Text style={styles.label3}>Arcing Contact Gap: </Text>
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
@@ -496,8 +527,8 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.label}>Condition of Arc Chute: </Text>
+                <View style={{ width: "35%" }}>
+                  <Text style={styles.label3}>Condition of Arc Chute: </Text>
                 </View>
                 <View style={styles.tableSingleValue}>
                   <Text style={styles.value}>
@@ -513,25 +544,25 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                     width: "30%",
                   }}
                 >
-                  <Text style={{ paddingRight: 8 }}>a) Dusty Housing: </Text>
+                  <Text style={{ paddingRight: 3 }}>a) Dusty Housing: </Text>
                   <Text style={styles.value}>
                     {reportData.dusty_housing || "--"}
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row", width: "30%" }}>
-                  <Text style={{ paddingRight: 8 }}>b) Broken Housing: </Text>
+                  <Text style={{ paddingRight: 3 }}>b) Broken Housing: </Text>
                   <Text style={styles.value}>
                     {reportData.broken_housing || "--"}
                   </Text>
                 </View>
                 <View style={{ flexDirection: "row", width: "30%" }}>
-                  <Text style={{ paddingRight: 8 }}>c) Clean: </Text>
+                  <Text style={{ paddingRight: 3 }}>c) Clean: </Text>
                   <Text style={styles.value}>{reportData.clean || "--"}</Text>
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={styles.tableSingleLabel}>
-                  <Text style={styles.label}>
+                <View style={styles.tableSingleLabel1}>
+                  <Text style={styles.label4}>
                     Operation Of Auxiliary Contacts:{" "}
                   </Text>
                 </View>
@@ -542,8 +573,8 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 </View>
               </View>
               <View style={styles.tableRow}>
-                <View style={styles.tableSingleLabel}>
-                  <Text style={styles.label}>
+                <View style={styles.tableSingleLabel1}>
+                  <Text style={styles.label4}>
                     Condition of Current Transformers:{" "}
                   </Text>
                 </View>
@@ -558,8 +589,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                   <Text
                     style={{
                       fontWeight: "bold",
-                      paddingLeft: 4,
-                      width: "80%",
+                      width: "75%",
                       flexWrap: "nowrap",
                     }}
                   >
@@ -604,7 +634,6 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                       paddingRight: 8,
                       paddingLeft: 4,
                       flexWrap: "nowrap",
-                      paddingVertical: 1,
                     }}
                   >
                     Greasing of moving parts of mechanism & rails:{" "}
@@ -782,7 +811,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 bottom: 10,
                 left: safeX,
                 width: 110, // 150px * 0.75
-                height: 110, // 150px * 0.75
+                height: 100, // 150px * 0.75
                 marginLeft: 25,
               }}
             />

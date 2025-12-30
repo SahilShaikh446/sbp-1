@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   paragraph: {
+    marginTop: 10,
     marginBottom: 10,
     fontSize: 13,
     lineHeight: 1.3,

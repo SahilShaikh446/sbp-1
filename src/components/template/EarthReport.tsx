@@ -230,7 +230,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       Report No.: EP - {reportData?.report_number || "-"}
                     </Text>
                     <Text style={tw("font-bold")}>
-                      DATE OF EARTH TESTING:{" "}
+                      DATE OF EP TESTING:{" "}
                       {convertReportDate(reportData?.report_date) ||
                         "--/--/----"}
                     </Text>
@@ -240,23 +240,55 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                     EARTH TEST REPORT
                   </Text>
 
-                  <View style={tw("flex flex-row items-start mb-4")}>
-                    <Text style={tw("font-bold text-xl mr-2")}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      marginBottom: 6,
+                    }}
+                  >
+                    {/* Label */}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "bold",
+                        marginRight: 6,
+                        width: 90, // 👈 fixed label width
+                      }}
+                    >
                       Client Name:
                     </Text>
-                    <View style={tw("flex flex-col")}>
-                      <Text style={tw("font-bold")}>
+
+                    {/* Value (WRAPS properly) */}
+                    <View style={{ width: 420 }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "bold",
+                          flexWrap: "wrap",
+                          lineHeight: 1.2,
+                        }}
+                      >
                         {companyData?.find(
                           (i) => `${i.id}` === `${reportData?.company_id}`
                         )?.name || "--"}
                       </Text>
-                      <Text style={tw("text-sm max-w-[420pt]")}>
+
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          marginTop: 2,
+                          flexWrap: "wrap",
+                          lineHeight: 1.2,
+                        }}
+                      >
                         {companyData?.find(
                           (i) => `${i.id}` === `${reportData?.company_id}`
                         )?.address || "--"}
                       </Text>
                     </View>
                   </View>
+
 
                   <Text style={tw("text-base")}>
                     We certify that we have carried out the Earth Resistance
