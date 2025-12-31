@@ -129,7 +129,7 @@ export type ReportType = z.infer<typeof reportFormSchema>;
 export function convertReportDate(dateStr: string): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "MM.dd.yyyy");
+    return format(date, "dd.MM.yyyy");
   } catch (error) {
     console.error("Invalid date:", dateStr);
     return "";
@@ -1324,48 +1324,42 @@ export default function HTBreakerReportCreate() {
               </div>
               <div className="px-6 py-1" ref={containerRef}>
                 <div className="flex-col flex-wrap justify-between mx-auto tinos-regular">
-                  <div className="flex justify-between font-bold text-md ">
-                    <div className="flex gap-3">
-                      Client:-{" "}
-                      {form.watch("company_id") ? (
-                        <>
-                          <span>
-                            {
-                              company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.name
-                            }
-                          </span>
-                          <span className="ml-2 ">
-                            {
-                              company?.find(
-                                (i) =>
-                                  `${i.id}` == `${form.watch("company_id")}`
-                              )?.address
-                            }
-                          </span>
-                        </>
-                      ) : (
-                        <span>
-                          <span>-</span>
-                          <span>-</span>
+                  <div className="flex-col gap-3">
+
+                    <div className="flex  justify-between">
+                      {/* Report No */}
+                      <div className="text-center">
+                        Report No.:{" "}
+                        <span className="font-normal">
+                          HT – {form.watch("report_number") || "-"}
                         </span>
-                      )}
+                      </div>
+
+                      {/* Service Date */}
+                      <div className="text-right">
+                        Service Date:-{" "}
+                        <span className="font-normal">
+                          {convertReportDate(form.watch("report_date")) || "--/--/----"}
+                        </span>
+                      </div>
                     </div>
+                    {/* Client Name */}
                     <div>
-                      <span>
-                        Report No.: HT - {form.watch("report_number")}
-                      </span>
-                      <span className="ml-1">
-                        {form.watch("report_number") || "-"}
+                      Client:-{" "}
+                      <span className="font-normal">
+                        {company?.find(
+                          (i) => `${i.id}` === `${form.watch("company_id")}`
+                        )?.name || "--"}
                       </span>
                     </div>
-                    <>
-                      Service Date:-{" "}
-                      {convertReportDate(form.watch("report_date")) ||
-                        "--/--/----"}
-                    </>
+                  </div>
+                  <div className="mt-1">
+                    <span className="font-bold">Address:- </span>
+                    <span className="font-normal">
+                      {company?.find(
+                        (i) => `${i.id}` === `${form.watch("company_id")}`
+                      )?.address || "--"}
+                    </span>
                   </div>
                   <div>Location:- {form.watch("location") || "--"}</div>
                 </div>

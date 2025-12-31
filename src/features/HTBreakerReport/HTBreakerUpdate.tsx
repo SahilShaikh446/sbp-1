@@ -130,7 +130,7 @@ export type ReportType = z.infer<typeof reportFormSchema>;
 export function convertReportDate(dateStr: string): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "MM.dd.yyyy");
+    return format(date, "dd.MM.yyyy");
   } catch (error) {
     console.error("Invalid date:", dateStr);
     return "";
@@ -1445,7 +1445,25 @@ export default function HTBreakerReportupdate() {
                 <div className="mx-auto tinos-regular text-sm">
 
                   {/* ROW 1 */}
-                  <div className="grid grid-cols-3 gap-4 font-bold">
+                  <div className="flex-col gap-3">
+
+                    <div className="flex  justify-between">
+                      {/* Report No */}
+                      <div className="text-center">
+                        Report No.:{" "}
+                        <span className="font-normal">
+                          HT – {form.watch("report_number") || "-"}
+                        </span>
+                      </div>
+
+                      {/* Service Date */}
+                      <div className="text-right">
+                        Service Date:-{" "}
+                        <span className="font-normal">
+                          {convertReportDate(form.watch("report_date")) || "--/--/----"}
+                        </span>
+                      </div>
+                    </div>
                     {/* Client Name */}
                     <div>
                       Client:-{" "}
@@ -1453,22 +1471,6 @@ export default function HTBreakerReportupdate() {
                         {company?.find(
                           (i) => `${i.id}` === `${form.watch("company_id")}`
                         )?.name || "--"}
-                      </span>
-                    </div>
-
-                    {/* Report No */}
-                    <div className="text-center">
-                      Report No.:{" "}
-                      <span className="font-normal">
-                        HT – {form.watch("report_number") || "-"}
-                      </span>
-                    </div>
-
-                    {/* Service Date */}
-                    <div className="text-right">
-                      Service Date:-{" "}
-                      <span className="font-normal">
-                        {convertReportDate(form.watch("report_date")) || "--/--/----"}
                       </span>
                     </div>
                   </div>

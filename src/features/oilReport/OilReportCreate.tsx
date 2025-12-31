@@ -71,7 +71,7 @@ export type ReportType = z.infer<typeof reportFormSchema>;
 export function convertReportDate(dateStr: string): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "MM.dd.yyyy");
+    return format(date, "dd.MM.yyyy");
   } catch (error) {
     console.error("Invalid date:", dateStr);
     return "";
@@ -252,8 +252,8 @@ export default function OilReportCreate() {
                           variant="outline"
                           role="combobox"
                           className={`bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px] ${form.formState.errors.company_id
-                              ? "border-red-500"
-                              : ""
+                            ? "border-red-500"
+                            : ""
                             }`}
                         >
                           <span

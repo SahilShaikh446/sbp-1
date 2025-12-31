@@ -104,7 +104,7 @@ export type ReportType = z.infer<typeof reportFormSchema>;
 export function convertReportDate(dateStr: string): string {
   try {
     const date = parseISO(dateStr);
-    return format(date, "MM.dd.yyyy");
+    return format(date, "dd.MM.yyyy");
   } catch (error) {
     console.error("Invalid date:", dateStr);
     return "";

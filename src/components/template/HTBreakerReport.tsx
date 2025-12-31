@@ -10,6 +10,7 @@ import {
 import { companyType } from "@/features/company/companySlice"; // Adjust import path
 import { ReportType } from "@/features/HTBreakerReport/HTBreakerReportCreate";
 import { Report } from "@/features/HTBreakerReport/type";
+import { parseISO, format } from "date-fns";
 
 // Register Tinos fonts (regular and bold)
 Font.register({
@@ -339,17 +340,11 @@ interface HTBreakerReportProps {
 const convertReportDate = (dateStr: string | null): string => {
   if (!dateStr) return "--.--.----";
   try {
-    const date = new Date(dateStr);
-    return date
-      .toLocaleDateString("en-US", {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, ".");
+    const date = parseISO(dateStr);
+    return format(date, "dd.MM.yyyy");
   } catch (error) {
     console.error("Invalid date:", dateStr);
-    return "--.--.----";
+    return "";
   }
 };
 
