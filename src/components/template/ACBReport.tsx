@@ -337,7 +337,7 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
             <View style={styles.table}>
               <View style={styles.tableRow}>
                 <Text
-                  style={{ fontWeight: "bold", paddingLeft: 4, width: "38%" }}
+                  style={{ fontWeight: "bold", paddingLeft: 4, width: "24.5%" }}
                 >
                   Location:{" "}
                 </Text>

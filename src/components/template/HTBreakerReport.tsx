@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   headerBarBlue: {
     backgroundColor: "#084f88",
     height: 4,
-    marginBottom: 8,
+    marginBottom: 1,
   },
   container: {
     // padding: 2,
@@ -800,8 +800,8 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                   bottom: 18,
                   left: safeX,
                   marginLeft: 5,
-                  width: 110, // 150px * 0.75
-                  height: 110, // 150px * 0.75
+                  width: 100, // 150px * 0.75
+                  height: 100, // 150px * 0.75
                 }}
               />
             </View>

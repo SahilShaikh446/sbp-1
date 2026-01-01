@@ -16,6 +16,13 @@ import { useNavigate } from "react-router-dom";
 import HTBreakerReport from "@/components/template/HTBreakerReport";
 import { Report } from "./type";
 import EarthReport from "@/components/template/EarthReport";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { format } from "date-fns";
+
 
 export const COLUMNS: ColumnDef<Report>[] = [
   {
@@ -25,18 +32,54 @@ export const COLUMNS: ColumnDef<Report>[] = [
   {
     header: "Report Date",
     accessorKey: "report_date",
+    cell: ({ row }) => {
+      return format(new Date(row.original.report_date), "dd-MM-yyyy");
+    },
   },
   {
     header: "Next Date of Filtration",
     accessorKey: "next_date_of_filtriation",
+    cell: ({ row }) => {
+      return format(new Date(row.original.report_date), "dd-MM-yyyy");
+    },
   },
   {
     header: "Company Name",
     accessorKey: "company_name",
+    cell: ({ row }) => {
+      const value = row.original.company_name || "";
+
+      const words = value.trim().split(/\s+/);
+
+      const displayText =
+        words.length > 2
+          ? words.slice(0, 4).join(" ") + "..."
+          : value;
+
+      return <Tooltip>
+        <TooltipTrigger>{displayText}</TooltipTrigger>
+        <TooltipContent>{row.original.company_name}</TooltipContent>
+      </Tooltip >
+    },
   },
   {
     header: "Company Address",
     accessorKey: "company_address",
+    cell: ({ row }) => {
+      const value = row.original.company_address || "";
+
+      const words = value.trim().split(/\s+/);
+
+      const displayText =
+        words.length > 2
+          ? words.slice(0, 4).join(" ") + "..."
+          : value;
+
+      return <Tooltip>
+        <TooltipTrigger>{displayText}</TooltipTrigger>
+        <TooltipContent>{row.original.company_address}</TooltipContent>
+      </Tooltip >
+    },
   },
   {
     header: "Actions",

@@ -141,18 +141,24 @@ const HeaderCell = ({ width, text, last }: any) => (
     </Text>
   </View>
 );
+const ROW_HEIGHT = 22;
 
 const BodyCell = ({ width, text, last }: any) => (
   <View
     style={{
       width,
+      height: ROW_HEIGHT,
       borderRightWidth: last ? 0 : 1,
-      borderColor: "black",
-      padding: 4,
       borderBottomWidth: 1,
+      borderColor: "black",
+      paddingHorizontal: 4,
+      justifyContent: "center",
     }}
   >
-    <Text style={{ fontSize: 9, textAlign: "center" }}>
+    <Text
+      style={{ fontSize: 9, textAlign: "center", lineHeight: 1.1 }}
+      maxLines={2}
+    >
       {text || "--"}
     </Text>
   </View>
