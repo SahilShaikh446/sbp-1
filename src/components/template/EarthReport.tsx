@@ -251,6 +251,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       flexDirection: "row",
                       alignItems: "flex-start",
                       marginBottom: 6,
+                      marginTop: 6,
                     }}
                   >
                     {/* Label */}

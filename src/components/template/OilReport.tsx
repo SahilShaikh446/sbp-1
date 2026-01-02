@@ -303,16 +303,16 @@ const OilReport = ({
                 justifyContent: "space-between",
                 fontWeight: "bold",
                 fontSize: 15,
-                marginTop: 5,
+                marginTop: 8,
               }}
             >
               <View
-                style={{ display: "flex", flexDirection: "column", gap: 5 }}
+                style={{ display: "flex", flexDirection: "row", gap: 5 }}
               >
                 <Text>For Client :</Text>
                 <Text>{reportData.for_client || "--"}</Text>
               </View>
-              <View style={{ display: "flex", flexDirection: "column" }}>
+              <View style={{ display: "flex", flexDirection: "row", gap: 5 }}>
                 <Text>For Ok Agencies :</Text>
                 <Text>{reportData.for_ok_agency || "--"}</Text>
               </View>

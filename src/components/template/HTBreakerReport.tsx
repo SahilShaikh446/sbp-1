@@ -461,20 +461,22 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                 </Text>
               </View>
 
-              {/* ROW 2: Client Name (Full Width) */}
-              <Text style={[styles.headerText, { marginTop: 2 }]}>
-                Client:{" "}
-                {companyData?.find(
-                  (i) => `${i.id}` === `${reportData.company_id}`
-                )?.name || "--"}
-              </Text>
+              <View style={{ paddingVertical: 2 }} >
+                {/* ROW 2: Client Name (Full Width) */}
+                <Text style={[styles.headerText, { marginTop: 2 }]}>
+                  Client:{" "}
+                  {companyData?.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.name || "--"}
+                </Text>
 
-              {/* ROW 3: Address (Full Width) */}
-              <Text style={styles.headerSubText}>
-                {companyData?.find(
-                  (i) => `${i.id}` === `${reportData.company_id}`
-                )?.address || "--"}
-              </Text>
+                {/* ROW 3: Address (Full Width) */}
+                <Text style={styles.headerSubText}>
+                  {companyData?.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.address || "--"}
+                </Text>
+              </View>
 
               {/* ROW 4: Location */}
               <Text style={styles.headerSubText}>
