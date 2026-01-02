@@ -236,7 +236,7 @@ const EarthReport = ({ reportData, companyData }: EarthReportProps) => {
                       Report No.: EP - {reportData?.report_number || "-"}
                     </Text>
                     <Text style={tw("font-bold")}>
-                      DATE OF EP TESTING:{" "}
+                      Date Of EP Testing:{" "}
                       {convertReportDate(reportData?.report_date) ||
                         "--/--/----"}
                     </Text>

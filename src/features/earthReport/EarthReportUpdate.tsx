@@ -888,7 +888,7 @@ export default function EarthReportUpdate() {
                       Report No.: EP - {form.watch("report_number") || "-"}
                     </div>
                     <div className="font-bold">
-                      DATE OF EP TESTING:
+                      Date Of EP Testing:
                       {convertReportDate(form.watch("report_date")) ||
                         "--/--/----"}
                     </div>
