@@ -93,18 +93,12 @@ const styles = StyleSheet.create({
   },
   clientRow: {
     flexDirection: "row",
+    paddingRight: 8,
     paddingLeft: 12,
-    fontSize: 10,
-
-    borderColor: "#000000",
-    paddingVertical: 3,
-    alignItems: "flex-start", // important
-  },
-  clientRow1: {
-    flexDirection: "column",
     fontSize: 10,
     borderBottomWidth: 1,
     borderColor: "#000000",
+    paddingVertical: 3,
     alignItems: "flex-start", // important
   },
   label: {
@@ -301,36 +295,32 @@ const ACBReport = ({ reportData, companyData }: ACBReportProps) => {
                 Service Date: {convertReportDate(reportData.report_date) || "--"}
               </Text>
             </View>
-            <View style={styles.clientRow1}>
 
-              <View style={styles.clientRow}>
-                {/* Label */}
+            <View style={styles.clientRow}>
+              {/* Label */}
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  paddingLeft: 4,
+                  width: "18%", // slightly more stable
+                }}
+              >
+                Name of Client:
+              </Text>
+
+              {/* Value */}
+              <View style={{ width: "82%" }}>
                 <Text
                   style={{
-                    fontWeight: "bold",
-                    paddingLeft: 4,
-                    width: "18%", // slightly more stable
+                    fontWeight: "normal",
+                    flexWrap: "wrap",
                   }}
                 >
-                  Name of Client:
+                  {companyData?.find(
+                    (i) => `${i.id}` === `${reportData.company_id}`
+                  )?.name || "--"}
                 </Text>
 
-                {/* Value */}
-                <View style={{ width: "82%" }}>
-                  <Text
-                    style={{
-                      fontWeight: "normal",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {companyData?.find(
-                      (i) => `${i.id}` === `${reportData.company_id}`
-                    )?.name || "--"}
-                  </Text>
-
-                </View>
-              </View>
-              <View style={{ paddingLeft: 14 }}>
                 <Text
                   style={{
                     fontWeight: "normal",

@@ -1252,29 +1252,26 @@ function ABCReportCreate() {
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">
-                    <td className="font-bold  text-left">
-                        <div className="text-sm leading-relaxed">
-                          {/* FIRST LINE */}
-                          <div>
-                            <span className="font-bold">Name of Client: </span>
-                            <span>
-                              {
-                                company?.find(
-                                  (i) => `${i.id}` === `${form.watch("company_id")}`
-                                )?.name || "--"
-                              }
-                            </span>
-                          </div>
-                          {/* SECOND LINE – ADDRESS */}
-                          <div className="mt-1">
+                      <td className="font-bold  text-left">
+                        <div>
+                          <span className="font-bold">Name of Client: </span>
+                          <span className="ml-2">
                             {
                               company?.find(
-                                (i) => `${i.id}` === `${form.watch("company_id")}`
-                              )?.address || "--"
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.name
                             }
-                          </div>
+                          </span>
+                          <span className="ml-2">
+                            {
+                              company?.find(
+                                (i) =>
+                                  `${i.id}` == `${form.watch("company_id")}`
+                              )?.address
+                            }
+                          </span>
                         </div>
-
                       </td>
                     </tr>
                     <tr className="border-t border-black flex justify-between pr-8 pl-4">

@@ -471,7 +471,7 @@ const HTBreakerReport = ({ reportData, companyData }: HTBreakerReportProps) => {
                 </Text>
 
                 {/* ROW 3: Address (Full Width) */}
-                <Text style={styles.headerSubText}>
+                <Text style={[styles.headerSubText, { marginLeft: 32 }]}>
                   {companyData?.find(
                     (i) => `${i.id}` === `${reportData.company_id}`
                   )?.address || "--"}
