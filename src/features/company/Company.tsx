@@ -28,6 +28,7 @@ import {
   fetchAllCompanyAsync,
   selectAllCompany,
 } from "./paginateCompanySlice";
+import { fetchCompanyAsync } from "./companySlice";
 
 export const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -62,9 +63,11 @@ const Company = () => {
         form.reset();
         toast.success("Company added Successfully");
         await dispatch(fetchAllCompanyAsync("?page=0&size=10"));
+        dispatch(fetchCompanyAsync());
       }
     } catch (error: any) {
       toast.error(error?.response?.data || "Error adding Company");
+      console.error("Error adding Company:", error);
     }
   };
 

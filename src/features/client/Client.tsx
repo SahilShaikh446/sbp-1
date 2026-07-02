@@ -65,7 +65,6 @@ const Client = () => {
   const company = useAppSelector(selectCompany);
 
   useEffect(() => {
-    console.log("hi");
     dispatch(fetchClientAsync(params));
   }, [params]);
 

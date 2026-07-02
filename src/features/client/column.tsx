@@ -37,6 +37,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { selectCompany } from "../company/companySlice";
+import { Badge } from "@/components/ui/badge";
+import { useLocation } from "react-router";
 
 interface clientType {
   id: string;
@@ -47,12 +49,62 @@ interface clientType {
   mobile_number: string;
   designation: string;
   company_name: string;
+  lock_status: number;
 }
 
 export const COLUMNS: ColumnDef<clientType>[] = [
   {
     header: "Company",
     accessorKey: "company_name",
+  },
+  {
+    id: "status",
+    accessorFn: (row) => row.lock_status === 1 ? "Active" : "Inactive",
+    filterFn: "equalsString",
+    header: "Status",
+    cell: ({ row }) => {
+      const dispatch = useAppDispatch();
+      const params = useLocation().search;
+
+      const isActive =
+        row.original?.lock_status === 1;
+
+      const handleStatusChange = async () => {
+        const isActive = row.original.lock_status === 1;
+
+        try {
+          await axios.post(
+            `${BASE_URL}API/Status/User/Update`, {
+            id: row.original.id
+          }
+          );
+
+          toast.success(
+            `Status updated to ${isActive ? "Inactive" : "Active"}`
+          );
+          dispatch(fetchClientAsync(params));
+
+        } catch (error) {
+          toast.error("Failed to update status");
+        }
+      };
+
+      return (
+        <>
+          <Badge
+            onClick={handleStatusChange}
+            variant="outline"
+            className={
+              isActive
+                ? " bg-green-50 text-green-700 border-green-200 cursor-pointer"
+                : " bg-red-50 text-red-700 border-red-200 cursor-pointer"
+            }
+          >
+            {isActive ? "Active" : "Inactive"}
+          </Badge>
+        </>
+      );
+    },
   },
   {
     header: "First Name",
